@@ -15,6 +15,7 @@ habis itu jalanin ini:
 
 
 npm install
+
 npm run dev
 
 ## Expanding the ESLint configuration
