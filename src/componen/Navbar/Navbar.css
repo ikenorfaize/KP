@@ -1,0 +1,64 @@
+/* Navbar.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+.navbar-wrapper {
+  width: 100%;
+  background-color: white;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navbar {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: 'Poppins', sans-serif;
+}
+
+.logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.navbar-right ul {
+  list-style: none;
+  display: flex;
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.navbar-right li {
+  font-size: 16px;
+  color: #1f1f1f;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+.navbar-right li:hover {
+  color: #1e7e34;
+}
+
+@media screen and (max-width: 768px) {
+  .navbar {
+    padding: 12px 16px;
+  }
+
+  .navbar-right ul {
+    gap: 20px;
+  }
+
+  .navbar-right li {
+    font-size: 15px;
+  }
+}
