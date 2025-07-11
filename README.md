@@ -11,7 +11,9 @@ Currently, two official plugins are available:
 
 jadi sebelum kamu run buat file public kosong gada isinya
 
-habisa itu jalanin ini 
+habis itu jalanin ini: 
+
+
 npm install
 npm run dev
 
