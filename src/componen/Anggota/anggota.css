@@ -1,0 +1,57 @@
+.anggota-section {
+  padding: 40px 20px;
+  background-color: #f9f9f9;
+  text-align: center;
+}
+
+.anggota-title {
+  color: #1a8d4c;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.anggota-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+}
+
+.anggota-card {
+  background-color: #e7e7e7;
+  border-radius: 8px;
+  padding: 30px 20px;
+  width: 250px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.anggota-img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.anggota-nama {
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111;
+}
+
+.anggota-jabatan {
+  font-size: 14px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.dot {
+  margin-top: 10px;
+  width: 8px;
+  height: 8px;
+  background-color: #111;
+  border-radius: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}

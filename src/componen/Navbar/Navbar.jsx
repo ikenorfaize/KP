@@ -11,12 +11,12 @@ const Navbar = () => {
       </div>
       <nav className="navbar-right">
         <ul>
-          <li>home</li>
+          <li><a href="#">Home</a></li>
           <li><a href="#tentang">Tentang</a></li>
-          <li>Kegiatan</li>
-          <li>Berita</li>
-          <li>Layanan</li>
-          <li>Hubungi kami</li>
+          <li><a href="#kegiatan">Kegiatan</a></li>
+          <li><a href="#berita">Berita</a></li>
+          <li><a href="#layanan">Layanan</a></li>
+          <li><a href="#hubungi kami">Hubungi Kami</a></li>
         </ul>
       </nav>
     </header>
