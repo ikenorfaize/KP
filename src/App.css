@@ -1,0 +1,6 @@
+.app-wrapper {
+  background-color: #f3f3f3;   /* warna luar hero */
+  padding: 80px 40px;          /* ⬅️ atas-bawah 80px, kiri-kanan 40px */
+  display: flex;
+  justify-content: center;     /* ⬅️ pusatkan konten (optional) */
+}
