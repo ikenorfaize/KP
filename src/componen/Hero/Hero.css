@@ -8,18 +8,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0px 20px;
+  padding: 80px 20px; /* ini yang kasih ruang luar */
   font-family: 'Poppins', sans-serif;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9 );
+  overflow: hidden; /* untuk memastikan gambar background tidak keluar */
+  background-clip: padding-box;
+  box-sizing: border-box;
 }
 
 .hero-overlay {
   width: 100%;
-  padding: 0 60px; /* kiri-kanan seimbang */
-  box-sizing: border-box;
-  position: relative;
   display: flex;
-  justify-content: center; /* pastiin card di tengah */
+  justify-content: center;
 }
+
 
 .hero-card {
   display: flex;
@@ -36,6 +39,15 @@
   align-items: flex-start;
   animation: fadeSlideUp 1s ease forwards;
   opacity: 0;
+}
+
+.hero-container {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  justify-content: center;
 }
 
 @keyframes fadeSlideUp {
@@ -76,10 +88,11 @@
 }
 
 .hero-desc {
-  font-size: 16px;
+  font-size: 20px;
   color: #444;
   margin-bottom: 20px;
   font-weight: 400;
+  max-width: 100%;
 }
 
 .hero-button {

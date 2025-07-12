@@ -12,7 +12,7 @@ const Navbar = () => {
       <nav className="navbar-right">
         <ul>
           <li>home</li>
-          <li>Tentang</li>
+          <li><a href="#tentang">Tentang</a></li>
           <li>Kegiatan</li>
           <li>Berita</li>
           <li>Layanan</li>
