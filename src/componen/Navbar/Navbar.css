@@ -41,13 +41,14 @@
   font-size: 15px;
   color: #1f1f1f;
   cursor: pointer;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
   text-transform: capitalize;
   font-weight: 400;
 }
 
 .navbar-right li:hover {
   color: #1e7e34;
+    transform: scale(1.05);
 }
 
 @media screen and (max-width: 768px) {
