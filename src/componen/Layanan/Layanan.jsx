@@ -11,9 +11,9 @@ const layananData = [
   },
   {
     id: "jago",
-    title: "Jago",
+    title: "JAGO",
     content:
-      "JAGO adalah sebuah sistem aplikasi inovatif yang dirancang khusus untuk mendukung dan memperkuat komunitas Persatuan Guru Nahdlatul Ulama (Pergunu).\n\n- Terpercaya\n- Layanan cepat",
+      "JAGO adalah sebuah sistem aplikasi inovatif yang dirancang khusus untuk mendukung dan memperkuat komunitas Persatuan Guru Nahdlatul Ulama (Pergunu).\n\nTerpercaya\nLayanan cepat",
     image: jagoImg,
   },
   {
@@ -25,8 +25,7 @@ const layananData = [
   {
     id: "alumni",
     title: "Kumpul Alumni Pergunu",
-    content:
-      "Reuni dan temu kangen para alumni Pergunu untuk mempererat silaturahmi.",
+    content: "Reuni dan temu kangen para alumni Pergunu untuk mempererat silaturahmi.",
     image: null,
   },
   {
@@ -38,7 +37,7 @@ const layananData = [
 ];
 
 const Layanan = () => {
-  const [selected, setSelected] = useState("ramadhan");
+  const [selected, setSelected] = useState("jago");
 
   const detail = layananData.find((item) => item.id === selected);
 
@@ -46,33 +45,31 @@ const Layanan = () => {
     <section className="layanan-section">
       <p className="layanan-sub">layanan</p>
       <h2 className="layanan-title">
-        <u>Bangun impian masa depan anda</u>
-        <br />
-        <u>dengan PERGUNU Situbondo</u>
+        Bangun impian masa depan anda<br />
+        dengan PERGUNU Situbondo
       </h2>
-      <div className="layanan-container">
-        <div className="layanan-list">
+      <div className="layanan-wrapper">
+        <div className="layanan-menu">
           {layananData.map((item) => (
             <button
               key={item.id}
-              className={`layanan-item ${selected === item.id ? "active" : ""}`}
+              className={`layanan-button ${selected === item.id ? "active" : ""}`}
               onClick={() => setSelected(item.id)}
             >
-              <span className="radio-circle">
-                <span className="dot" />
+              <span className="radio-button">
+                {selected === item.id && <span className="radio-dot" />}
               </span>
               {item.title}
             </button>
           ))}
         </div>
-
-        <div className="layanan-detail">
+        <div className="layanan-content">
           {detail.image && (
             <img src={detail.image} alt={detail.title} className="layanan-image" />
           )}
-          <div>
-            <h3>{detail.title}</h3>
-            <p style={{ whiteSpace: "pre-line" }}>{detail.content}</p>
+          <div className="layanan-detail">
+            <h3 className="detail-title">{detail.title}</h3>
+            <p className="detail-content" style={{ whiteSpace: "pre-line" }}>{detail.content}</p>
           </div>
         </div>
       </div>
