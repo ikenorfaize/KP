@@ -1,6 +1,7 @@
 import React from "react";
 import "./Tentang.css";
-import aboutImg from "../../assets/about.png"; // ganti dengan gambar kamu
+import TentangCard from "./TentangCard";
+import aboutImg from "../../assets/about.png";
 
 const Tentang = () => {
 return (
@@ -19,41 +20,43 @@ dalam membangun peradaban bangsa.
 </p>
 <button className="tentang-button">Baca selengkapnya</button>
 </div>
+
+php-template
+Copy
+Edit
     <div className="tentang-middle">
       <img src={aboutImg} alt="guru mengajar" />
     </div>
 
-    <div className="tentang-right">
-      <div className="tentang-card green">
-        <h4>Misi</h4>
-        <ul>
-          <li>Meningkatkan kompetensi dan profesionalisme guru</li>
-          <li>
-            Mengembangkan budaya pendidikan yang unggul dalam iman, ilmu,
-            teknologi, seni, dan budaya
-          </li>
-        </ul>
+        {/* Kanan */}
+        <div className="tentang-right">
+          <TentangCard title="Misi">
+            <ul>
+              <li>Meningkatkan kompetensi dan profesionalisme guru</li>
+              <li>
+                Mengembangkan budaya pendidikan yang unggul dalam iman, ilmu,
+                teknologi, seni, dan budaya
+              </li>
+            </ul>
+          </TentangCard>
+
+          <TentangCard title="Visi">
+            <p>
+              Menjadi organisasi profesi guru yang berdaya, berkarakter, dan
+              bermanfaat bagi umat.
+            </p>
+          </TentangCard>
+
+          <TentangCard title="Nilai">
+            <p>
+              Nilai keislaman, kebangsaan, keilmuan, dan ke-NU-an sebagai ruh
+              perjuangan guru.
+            </p>
+          </TentangCard>
+        </div>
       </div>
-      <div className="tentang-card white">
-        <details>
-          <summary>Visi</summary>
-          <p>
-            Menjadi organisasi profesi guru yang berdaya, berkarakter, dan
-            bermanfaat bagi umat.
-          </p>
-        </details>
-        <details>
-          <summary>Nilai</summary>
-          <p>
-            Nilai keislaman, kebangsaan, keilmuan, dan ke-NU-an sebagai
-            ruh perjuangan guru.
-          </p>
-        </details>
-      </div>
-    </div>
-  </div>
-</section>
-);
+    </section>
+  );
 };
 
 export default Tentang;

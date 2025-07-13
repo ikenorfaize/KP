@@ -1,67 +1,102 @@
 .tentang-section {
-padding: 80px 20px;
-background: #fff;
+  padding: 80px 20px;
+  background: #fff;
 }
 
 .tentang-container {
-display: flex;
-flex-wrap: wrap;
-gap: 40px;
-max-width: 1240px;
-margin: 0 auto;
-align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  max-width: 1240px;
+  margin: 0 auto;
+  align-items: flex-start;
 }
 
 .tentang-left,
 .tentang-middle,
 .tentang-right {
-flex: 1;
-min-width: 280px;
+  flex: 1;
+  min-width: 280px;
 }
 
 .tentang-sub {
-color: #1e7e34;
-font-weight: 600;
-font-size: 14px;
-text-transform: uppercase;
-margin-bottom: 10px;
+  color: #1e7e34;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
 }
 
 .tentang-title {
-font-size: 28px;
-font-weight: 800;
-margin-bottom: 16px;
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  color: #111;
 }
 
 .tentang-desc {
-font-size: 16px;
-color: #444;
-margin-bottom: 20px;
+  font-size: 16px;
+  color: #444;
+  margin-bottom: 20px;
 }
 
 .tentang-button {
-background-color: #1e7e34;
-color: white;
-padding: 10px 24px;
-border: none;
-border-radius: 8px;
-cursor: pointer;
+  background-color: #1e7e34;
+  color: white;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
 .tentang-card {
-background: white;
-border-radius: 12px;
-padding: 20px;
-box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-margin-bottom: 20px;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.tentang-card.white {
+  background-color: #fff;
+  color: #111;
 }
 
 .tentang-card.green {
-background-color: #1e7e34;
-color: white;
+  background-color: #1e7e34;
+  color: #fff;
 }
 
-.tentang-card.white summary {
-font-weight: 600;
-cursor: pointer;
+.tentang-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.tentang-card-title {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.tentang-card-arrow {
+  font-size: 18px;
+  margin-left: 10px;
+  transition: transform 0.3s ease;
+}
+
+.tentang-card-content {
+  margin-top: 10px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
