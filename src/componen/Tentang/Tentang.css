@@ -47,6 +47,12 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tentang-button:hover {
+  background-color: #16682b;
+  transform: scale(1.05);
 }
 
 .tentang-card {
@@ -54,7 +60,13 @@
   padding: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.tentang-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
 }
 
 .tentang-card.white {

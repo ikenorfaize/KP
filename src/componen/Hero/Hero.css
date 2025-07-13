@@ -105,11 +105,12 @@
   border-radius: 999px;
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 .hero-button:hover {
   background-color: #16682b;
+  transform: scale(1.05);
 }
 
 .nav-buttons {

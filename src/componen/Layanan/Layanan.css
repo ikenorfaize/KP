@@ -1,0 +1,109 @@
+/* Layanan.css */
+
+.layanan-section {
+  background-color: #f9f9f9;
+  padding: 80px 20px;
+  min-height: 100vh;
+}
+
+.layanan-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.layanan-sub {
+  color: #1e7e34;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.layanan-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #111;
+  text-decoration: underline;
+}
+
+.layanan-container {
+  display: flex;
+  gap: 40px;
+  max-width: 1240px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.layanan-menu {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.layanan-item {
+  background: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: #333;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+}
+
+.layanan-item.active {
+  background-color: #1e7e34;
+  color: white;
+  font-weight: 600;
+}
+
+.layanan-item .circle {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  background-color: white;
+}
+
+.layanan-item.active .circle {
+  background-color: white;
+  border-color: white;
+}
+
+.layanan-content {
+  flex: 2;
+  min-width: 280px;
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.layanan-image {
+  max-width: 160px;
+  object-fit: contain;
+}
+
+.layanan-detail {
+  flex: 1;
+}
+
+.layanan-detail h4 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.layanan-detail p {
+  font-size: 16px;
+  color: #333;
+  line-height: 1.5;
+}

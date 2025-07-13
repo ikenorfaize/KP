@@ -1,5 +1,5 @@
 import React from "react";
-import "./Anggota.css";
+import "./anggota.css";
 
 import andrewImg from "../../assets/andrew.png";
 import delwynImg from "../../assets/delwyn.png";
@@ -12,13 +12,13 @@ const anggotaList = [
     foto: andrewImg,
   },
   {
-    nama: "Delwyn Alexander",
+    nama: "Delwyn Alexander", 
     jabatan: "Presiden",
     foto: delwynImg,
   },
   {
     nama: "Sergio Costa",
-    jabatan: "Sekretaris",
+    jabatan: "Sekretaris", 
     foto: sergioImg,
   },
 ];
