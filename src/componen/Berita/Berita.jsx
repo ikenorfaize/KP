@@ -1,4 +1,3 @@
-// src/componen/Berita/Berita.jsx
 import React from "react";
 import "./Berita.css";
 import { useNavigate } from "react-router-dom";
@@ -12,8 +11,10 @@ const Berita = () => {
 
   return (
     <section className="berita-section" id="berita">
-      <p className="berita-label">Berita</p>
       <div className="berita-wrapper">
+        {/* Pindahkan label ke dalam wrapper agar sejajar dengan card */}
+        <p className="berita-label">Berita</p>
+
         <div className="berita-utama-card">
           <div className="berita-utama-content">
             <h3>
