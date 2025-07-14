@@ -13,15 +13,24 @@ import BeritaUtama from "./pages/BeritaUtama";
 import Berita1 from "./pages/Berita1";
 import Berita2 from "./pages/Berita2";
 import Berita3 from "./pages/Berita3";
+
+import "./App.css";
+
 const App = () => {
   return (
     <>
       <Navbar />
-      <div className="app-wrapper">
-        <Routes>
-          <Route path="/" element={
+      <Routes>
+        <Route
+          path="/"
+          element={
             <>
-              <Hero />
+              {/* ✅ Hanya Hero dibungkus */}
+              <div className="app-wrapper">
+                <Hero />
+              </div>
+
+              {/* ⛔ Komponen lain tetap normal */}
               <Tentang />
               <StatsSection />
               <Anggota />
@@ -29,16 +38,15 @@ const App = () => {
               <Layanan />
               <Footer />
             </>
-          } />
-          <Route path="/berita-utama" element={<BeritaUtama />} />
-          <Route path="/berita-1" element={<Berita1 />} />
-          <Route path="/berita-2" element={<Berita2 />} />
-          <Route path="/berita-3" element={<Berita3 />} />
-        </Routes>
-      </div>
+          }
+        />
+        <Route path="/berita-utama" element={<BeritaUtama />} />
+        <Route path="/berita-1" element={<Berita1 />} />
+        <Route path="/berita-2" element={<Berita2 />} />
+        <Route path="/berita-3" element={<Berita3 />} />
+      </Routes>
     </>
   );
 };
 
 export default App;
-
