@@ -1,6 +1,23 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
+
+/* Ini hanya untuk halaman / */
 .app-wrapper {
-  background-color: #f3f3f3;   /* warna luar hero */
-  padding: 80px 40px;          /* ⬅️ atas-bawah 80px, kiri-kanan 40px */
-  display: flex;
-  justify-content: center;     /* ⬅️ pusatkan konten (optional) */
+background-color: #f3f3f3; /* background abu-abu untuk Hero */
+  padding: 40px 40px;
+  width: 100%;
+  min-height: 100vh;
+}
+
+html {
+  scroll-behavior: smooth;
 }
