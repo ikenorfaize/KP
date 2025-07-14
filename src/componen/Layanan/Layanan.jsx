@@ -12,8 +12,10 @@ const layananData = [
   {
     id: "jago",
     title: "JAGO",
-    content:
-      "JAGO adalah sebuah sistem aplikasi inovatif yang dirancang khusus untuk mendukung dan memperkuat komunitas Persatuan Guru Nahdlatul Ulama (Pergunu).\n\nTerpercaya\nLayanan cepat",
+    content: {
+      description: "JAGO adalah sebuah sistem aplikasi inovatif yang dirancang khusus untuk mendukung dan memperkuat komunitas Persatuan Guru Nahdlatul Ulama (Pergunu).",
+      features: ["Terpercaya", "Layanan cepat"]
+    },
     image: jagoImg,
   },
   {
@@ -38,12 +40,11 @@ const layananData = [
 
 const Layanan = () => {
   const [selected, setSelected] = useState("jago");
-
   const detail = layananData.find((item) => item.id === selected);
 
   return (
     <section className="layanan-section">
-      <p className="layanan-sub">layanan</p>
+      <p className="layanan-sub" />
       <h2 className="layanan-title">
         Bangun impian masa depan anda<br />
         dengan PERGUNU Situbondo
@@ -69,7 +70,20 @@ const Layanan = () => {
           )}
           <div className="layanan-detail">
             <h3 className="detail-title">{detail.title}</h3>
-            <p className="detail-content" style={{ whiteSpace: "pre-line" }}>{detail.content}</p>
+            <div className="detail-content">
+              {typeof detail.content === 'object' ? (
+                <>
+                  <p>{detail.content.description}</p>
+                  <ul>
+                    {detail.content.features.map((feature, index) => (
+                      <li key={index}>{feature}</li>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <p>{detail.content}</p>
+              )}
+            </div>
           </div>
         </div>
       </div>

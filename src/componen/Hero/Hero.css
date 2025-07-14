@@ -78,6 +78,10 @@
   text-transform: uppercase;
   font-weight: 600;
   margin-bottom: 12px;
+  background-color: rgba(30, 126, 52, 0.1);
+  padding: 4px 12px;
+  border-radius: 10px;
+  display: inline-block;
 }
 
 .hero-title {
