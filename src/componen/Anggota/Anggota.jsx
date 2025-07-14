@@ -25,7 +25,7 @@ const anggotaList = [
 
 const Anggota = () => {
   return (
-    <section className="anggota-section">
+    <section className="anggota-section" id="anggota">
       <h2 className="anggota-title">Anggota</h2>
       <div className="anggota-container">
         {anggotaList.map((anggota, index) => (

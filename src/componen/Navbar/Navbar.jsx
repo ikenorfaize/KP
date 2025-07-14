@@ -1,7 +1,7 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./Navbar.css";
 import logo from "../../assets/logo.png";
-import { Link } from "react-router-dom";
 
 const Navbar = () => {
   return (
@@ -15,9 +15,9 @@ const Navbar = () => {
       <nav className="navbar-right">
         <ul>
           <li><a href="#tentang">Tentang</a></li>
-          <li><a href="#kegiatan">Kegiatan</a></li>
+          <li><a href="#anggota">Anggota</a></li>
           <li><a href="#berita">Berita</a></li>
-          <li><Link to="/layanan">Layanan</Link></li>
+          <li><a href="#layanan">Layanan</a></li>
           <li><a href="#hubungi">Hubungi Kami</a></li>
         </ul>
       </nav>
