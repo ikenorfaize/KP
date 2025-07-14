@@ -20,10 +20,6 @@ dalam membangun peradaban bangsa.
 </p>
 <button className="tentang-button">Baca selengkapnya</button>
 </div>
-
-php-template
-Copy
-Edit
     <div className="tentang-middle">
       <img src={aboutImg} alt="guru mengajar" />
     </div>
