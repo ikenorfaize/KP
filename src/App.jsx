@@ -7,6 +7,7 @@ import Berita from "./componen/Berita/Berita";
 import StatsSection from "./componen/Stats/StatsSection";
 import Anggota from "./componen/Anggota/Anggota";
 import Layanan from "./componen/Layanan/Layanan";
+import Footer from "./componen/Footer/Footer";
 
 import BeritaUtama from "./pages/BeritaUtama";
 import Berita1 from "./pages/Berita1";
@@ -26,6 +27,7 @@ const App = () => {
               <Anggota />
               <Berita />
               <Layanan />
+              <Footer />
             </>
           } />
           <Route path="/berita-utama" element={<BeritaUtama />} />
