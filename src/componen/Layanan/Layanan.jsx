@@ -43,8 +43,8 @@ const Layanan = () => {
   const detail = layananData.find((item) => item.id === selected);
 
   return (
-    <section className="layanan-section">
-      <p className="layanan-sub" />
+    <section className="layanan-section" id="layanan">
+      <p className="layanan-sub">layanan</p>
       <h2 className="layanan-title">
         Bangun impian masa depan anda<br />
         dengan PERGUNU Situbondo
