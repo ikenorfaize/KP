@@ -1,22 +1,44 @@
 .tentang-section {
   padding: 80px 20px;
   background: #fff;
+  font-family: 'Poppins', sans-serif;
 }
 
 .tentang-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 40px;
-  max-width: 1240px;
+  max-width: 1200px;
   margin: 0 auto;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: 1fr 300px 1fr;
+  gap: 40px;
+  align-items: start;
 }
 
+/* Default state - hidden (PENTING: Hapus animasi langsung) */
 .tentang-left,
 .tentang-middle,
 .tentang-right {
-  flex: 1;
-  min-width: 280px;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 0.8s ease-out;
+}
+
+/* Animated state - visible (Hanya aktif saat class 'animate' ditambahkan) */
+.tentang-section.animate .tentang-left {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0s;
+}
+
+.tentang-section.animate .tentang-middle {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.2s;
+}
+
+.tentang-section.animate .tentang-right {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.4s;
 }
 
 .tentang-sub {
@@ -24,40 +46,77 @@
   font-weight: 600;
   text-transform: uppercase;
   margin-bottom: 20px;
-  background-color: rgba(30, 126, 52, 0.1);
+  background-color: rgba(30, 126, 52, 0.2);
   padding: 4px 12px;
-  border-radius: 10px;
+  border-radius: 20px;
   display: inline-block;
 }
 
 .tentang-title {
   font-size: 28px;
-  font-weight: 800;
-  margin-bottom: 16px;
-  color: #111;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.4;
+  margin-bottom: 20px;
 }
 
 .tentang-desc {
   font-size: 16px;
-  color: #444;
-  margin-bottom: 20px;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 30px;
 }
 
 .tentang-button {
   background-color: #1e7e34;
   color: white;
-  padding: 10px 24px;
+  padding: 12px 24px;
   border: none;
   border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .tentang-button:hover {
-  background-color: #16682b;
   transform: scale(1.05);
+  background-color: #155724;
 }
 
+.tentang-middle img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.tentang-right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Card animations dengan delay berbeda */
+.tentang-section.animate .tentang-right > *:nth-child(1) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.6s;
+}
+
+.tentang-section.animate .tentang-right > *:nth-child(2) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.8s;
+}
+
+.tentang-section.animate .tentang-right > *:nth-child(3) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 1.0s;
+}
+
+/* TentangCard default state - hidden */
 .tentang-card {
   border-radius: 12px;
   padding: 20px;
@@ -65,10 +124,12 @@
   margin-bottom: 20px;
   transition: all 0.3s ease;
   cursor: pointer;
+  opacity: 0;
+  transform: translateY(30px);
 }
 
 .tentang-card:hover {
-  transform: scale(1.02);
+  transform: scale(1.02) translateY(0);
   box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
 }
 
@@ -102,16 +163,18 @@
 
 .tentang-card-content {
   margin-top: 10px;
-  animation: fadeIn 0.3s ease-in-out;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
+/* Responsive */
+@media (max-width: 768px) {
+  .tentang-container {
+    grid-template-columns: 1fr;
+    text-align: center;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  
+  .tentang-left,
+  .tentang-middle,
+  .tentang-right {
+    animation-delay: 0s !important;
   }
 }

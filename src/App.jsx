@@ -25,12 +25,9 @@ const App = () => {
           path="/"
           element={
             <>
-              {/* ✅ Hanya Hero dibungkus */}
               <div className="app-wrapper">
                 <Hero />
               </div>
-
-              {/* ⛔ Komponen lain tetap normal */}
               <Tentang />
               <StatsSection />
               <Anggota />

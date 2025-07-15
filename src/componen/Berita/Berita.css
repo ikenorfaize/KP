@@ -109,3 +109,43 @@ font-weight: 500;
 color: #111;
 margin: 0;
 }
+
+/* Default state - hidden */
+.berita-label,
+.berita-utama-card,
+.berita-card {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 0.8s ease-out;
+}
+
+/* Animated state - visible */
+.berita-section.animate .berita-label {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0s;
+}
+
+.berita-section.animate .berita-utama-card {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.2s;
+}
+
+.berita-section.animate .berita-card:nth-child(1) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.4s;
+}
+
+.berita-section.animate .berita-card:nth-child(2) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.6s;
+}
+
+.berita-section.animate .berita-card:nth-child(3) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.8s;
+}

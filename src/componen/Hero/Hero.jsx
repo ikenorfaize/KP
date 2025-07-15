@@ -1,12 +1,35 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import "./Hero.css";
 import heroImg from "../../assets/hero.png";
 
 const Hero = () => {
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (ref.current) {
+        const { top } = ref.current.getBoundingClientRect();
+        const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+        if (top <= windowHeight * 0.8) {
+          ref.current.classList.add("animate");
+        } else {
+          ref.current.classList.remove("animate");
+        }
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // jalankan sekali saat mount
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <section className="hero-section" style={{ backgroundImage: `url(${heroImg})` }}>
+    <section
+      className="hero-section"
+      style={{ backgroundImage: `url(${heroImg})` }}
+      ref={ref}
+    >
       <div className="hero-overlay">
-        <div className="hero-container"> 
+        <div className="hero-container">
           <div className="hero-card">
             <div className="hero-left">
               <p className="hero-label">
