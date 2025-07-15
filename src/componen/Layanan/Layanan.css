@@ -159,3 +159,31 @@
   margin: 10px 0;
   color: #444;
 }
+
+/* Default state - hidden */
+.layanan-sub,
+.layanan-title,
+.layanan-wrapper {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 0.8s ease-out;
+}
+
+/* Animated state - visible */
+.layanan-section.animate .layanan-sub {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0s;
+}
+
+.layanan-section.animate .layanan-title {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.2s;
+}
+
+.layanan-section.animate .layanan-wrapper {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.4s;
+}

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Layanan.css";
+import { useScrollAnimation } from "../../hooks/useScrollAnimation";
 import jagoImg from "../../assets/jago.png";
 
 const layananData = [
@@ -40,11 +41,12 @@ const layananData = [
 
 const Layanan = () => {
   const [selected, setSelected] = useState("jago");
+  const [ref, isVisible] = useScrollAnimation();
   const detail = layananData.find((item) => item.id === selected);
 
   return (
-    <section className="layanan-section" id="layanan">
-      <p className="layanan-sub">layanan</p>
+    <section className={`layanan-section ${isVisible ? 'animate' : ''}`} id="layanan" ref={ref}>
+      <p className="layanan-sub"></p>
       <h2 className="layanan-title">
         Bangun impian masa depan anda<br />
         dengan PERGUNU Situbondo

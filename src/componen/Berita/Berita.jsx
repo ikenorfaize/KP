@@ -1,6 +1,7 @@
 import React from "react";
-import "./Berita.css";
 import { useNavigate } from "react-router-dom";
+import "./Berita.css";
+import { useScrollAnimation } from "../../hooks/useScrollAnimation";
 import beritaUtamaImg from "../../assets/BeritaUtama.png";
 import berita1Img from "../../assets/Berita1.png";
 import berita2Img from "../../assets/Berita2.png";
@@ -8,11 +9,11 @@ import berita3Img from "../../assets/Berita3.png";
 
 const Berita = () => {
   const navigate = useNavigate();
+  const [ref, isVisible] = useScrollAnimation();
 
   return (
-    <section className="berita-section" id="berita">
+    <section className={`berita-section ${isVisible ? 'animate' : ''}`} id="berita" ref={ref}>
       <div className="berita-wrapper">
-        {/* Pindahkan label ke dalam wrapper agar sejajar dengan card */}
         <p className="berita-label">Berita</p>
 
         <div className="berita-utama-card">

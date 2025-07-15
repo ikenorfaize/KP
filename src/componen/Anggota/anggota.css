@@ -11,6 +11,26 @@
   margin-bottom: 30px;
 }
 
+/* Default state - hidden */
+.anggota-title,
+.anggota-card {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 0.8s ease-out;
+}
+
+/* Animated state - visible */
+.anggota-section.animate .anggota-title {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0s;
+}
+
+.anggota-section.animate .anggota-card {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .anggota-container {
   display: flex;
   flex-wrap: wrap;
