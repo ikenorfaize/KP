@@ -13,34 +13,56 @@
   flex-wrap: wrap;
 }
 
+/* WRAPPER UTAMA, DIANIMASI SCROLL MASUK */
 .stat-box {
-  background-color: #28a745; 
-  color: white;
   width: 150px;
-  text-align: center;
-  padding: 48px 20px;
+  height: 170px; /* 💡 Tambahkan tinggi tetap agar saat scale tidak mendorong layout */
+  padding: 0;     /* Reset padding di sini */
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease-in-out;
-  /* Default state - hidden */
+  background-color: transparent;
   opacity: 0;
   transform: translateX(60px);
-  transition: all 0.8s cubic-bezier(.4,1,.4,1);
+  transition:
+    transform 0.8s ease-out,
+    opacity 0.8s ease-out;
+  overflow: visible;
+  position: relative;
 }
 
-/* Card ganjil keluar dari kiri */
+
+/* Ganjil dari kiri */
 .stat-box:nth-child(odd) {
   transform: translateX(-60px);
 }
 
-/* Animated state - visible */
+/* Ketika scroll masuk viewport */
 .stats-section.animate .stat-box {
   opacity: 1;
   transform: translateX(0);
 }
 
-.stat-box:hover {
-  transform: scale(1.05);
+/* ✅ CARD DI DALAMNYA UNTUK EFEK HOVER */
+.stat-inner {
+  background-color: #28a745;
+  color: white;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 48px 20px;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.stat-inner:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 24px rgba(30, 126, 52, 0.2);
+  z-index: 1;
 }
 
 .stat-value {

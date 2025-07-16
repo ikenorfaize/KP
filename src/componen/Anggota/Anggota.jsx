@@ -19,7 +19,7 @@ const Anggota = () => {
       <h2 className="anggota-title">Anggota</h2>
       <div className="anggota-container">
         {anggotaList.map((anggota, index) => (
-          <div className="anggota-card" key={index} style={{transitionDelay: `${index * 0.2}s`}}>
+          <div className="anggota-card" key={index}>
             <img src={anggota.foto} alt={anggota.nama} className="anggota-img" />
             <h3 className="anggota-nama">{anggota.nama}</h3>
             <p className="anggota-jabatan">{anggota.jabatan}</p>

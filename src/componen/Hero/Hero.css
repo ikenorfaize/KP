@@ -8,11 +8,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 80px 20px; /* ini yang kasih ruang luar */
+  padding: 80px 20px;
   font-family: 'Poppins', sans-serif;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9 );
-  overflow: hidden; /* untuk memastikan gambar background tidak keluar */
+  overflow: hidden;
   background-clip: padding-box;
   box-sizing: border-box;
 }
@@ -23,7 +23,6 @@
   justify-content: center;
 }
 
-
 .hero-card {
   display: flex;
   flex-wrap: wrap;
@@ -31,7 +30,7 @@
   background-color: white;
   border-radius: 30px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  padding: 48px 60px; /* kanan-kiri seimbang */
+  padding: 48px 60px;
   max-width: 1240px;
   width: 100%;
   position: relative;
@@ -39,6 +38,11 @@
   align-items: flex-start;
   animation: fadeSlideUp 1s ease forwards;
   opacity: 0;
+}
+
+.hero-card.animate {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .hero-container {
@@ -62,12 +66,12 @@
 }
 
 .hero-left {
-  flex: 1.6; /* Lebarkan kiri */
+  flex: 1.6;
   min-width: 320px;
 }
 
 .hero-right {
-  flex: 1.1; /* Biar kanan tetap cukup */
+  flex: 1.1;
   min-width: 300px;
   position: relative;
 }
@@ -115,11 +119,12 @@
 .hero-button:hover {
   background-color: #16682b;
   transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .nav-buttons {
   position: absolute;
-  right: 20px; /* ✅ jangan pakai nilai negatif */
+  right: 20px;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
@@ -181,5 +186,3 @@
     margin-top: 20px;
   }
 }
-
-/* Responsive adjustments for smaller screens */  
