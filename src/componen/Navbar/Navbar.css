@@ -79,3 +79,21 @@
     font-size: 15px;
   }
 }
+
+/* Tombol Login Custom (Outline Button Style) */
+.login-link {
+  padding: 6px 16px;
+  border: 2px solid #1e7e34;
+  color: #1e7e34;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 550;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.login-link:hover {
+  background-color: #1e7e34;
+  color: #fff;
+  transform: scale(1.05);
+}

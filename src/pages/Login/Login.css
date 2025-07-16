@@ -1,0 +1,210 @@
+.login-container {
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* KIRI */
+.login-left {
+  flex: 1;
+  background: url("../../assets/about.png") no-repeat center center;
+  background-size: cover;
+  position: relative;
+}
+
+.login-overlay {
+  background-color: rgba(0, 128, 128, 0.85); /* ✅ overlay semi transparan */
+  color: white;
+  width: 100%;
+  height: 100%;
+  padding: 60px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-logo {
+  width: 60px;
+  margin-bottom: 20px;
+}
+
+.login-overlay h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.login-overlay p {
+  font-size: 14px;
+  text-align: center;
+  max-width: 300px;
+}
+
+/* KANAN */
+.login-right {
+  flex: 1;
+  background: white; /* ✅ ini wajib agar tidak hitam */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-box {
+  width: 100%;
+  max-width: 380px;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+.login-box h2 {
+  margin-bottom: 24px;
+  text-align: center;
+  font-weight: 700;
+  color: #222;
+}
+
+/* FORM */
+.login-box input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.2s ease;
+  color: black;
+}
+
+.login-box input::placeholder {
+  color: #999;
+}
+
+.login-box input:focus {
+  border-color: #1e7e34;
+  background-color: #fff;
+}
+
+.login-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  margin-bottom: 20px;
+  color: #444;
+  padding-left: 2px; /* sejajarkan kiri dengan input */
+}
+
+
+.login-options a {
+  color: #1e7e34;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-options a:hover {
+  text-decoration: underline;
+}
+
+.login-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #00796b;
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: #005f56;
+}
+
+.login-divider {
+  text-align: center;
+  margin: 12px 0;
+  color: #888;
+}
+
+.login-social {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.login-social button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  color: white;
+}
+
+.google {
+  background-color: #dd4b39;
+}
+.facebook {
+  background-color: #3b5998;
+}
+.twitter {
+  background-color: #55acee;
+}
+
+.create-account {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13px;
+  color: #777;
+}
+
+
+
+.checkbox-container input[type="checkbox"] {
+  accent-color: #1e7e34;
+  transform: scale(1.1);
+  cursor: pointer;
+  margin-top: 2px; /* sejajarkan dengan teks */
+}
+
+
+.checkbox-container input[type="checkbox"] {
+  accent-color: #1e7e34;
+  transform: scale(1.1);
+  cursor: pointer;
+}
+
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-input-wrapper input[type="password"],
+.password-input-wrapper input[type="text"] {
+  padding-right: 40px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #888;
+  font-size: 20px;
+  user-select: none;
+}
+.toggle-password:focus {
+  outline: 2px solid #1e7e34;
+}
+

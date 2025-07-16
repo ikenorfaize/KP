@@ -13,6 +13,7 @@ import BeritaUtama from "./pages/BeritaUtama";
 import Berita1 from "./pages/Berita1";
 import Berita2 from "./pages/Berita2";
 import Berita3 from "./pages/Berita3";
+import Login from "./pages/Login/Login"; // ✅ Tambahkan ini
 
 import "./App.css";
 
@@ -41,6 +42,7 @@ const App = () => {
         <Route path="/berita-1" element={<Berita1 />} />
         <Route path="/berita-2" element={<Berita2 />} />
         <Route path="/berita-3" element={<Berita3 />} />
+        <Route path="/login" element={<Login />} /> {/* ✅ Tambahkan ini */}
       </Routes>
     </>
   );
