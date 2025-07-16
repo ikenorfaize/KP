@@ -16,7 +16,7 @@
 .anggota-card {
   opacity: 0;
   transform: translateY(50px);
-  transition: all 0.8s ease-out;
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
 /* Animated state - visible */
@@ -29,6 +29,34 @@
 .anggota-section.animate .anggota-card {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Animasi staggered untuk setiap card berdasarkan urutan */
+.anggota-section.animate .anggota-card:nth-child(1) {
+  transition-delay: 0.1s;
+}
+
+.anggota-section.animate .anggota-card:nth-child(2) {
+  transition-delay: 0.2s;
+}
+
+.anggota-section.animate .anggota-card:nth-child(3) {
+  transition-delay: 0.3s;
+}
+
+/* Override delay untuk hover - hapus delay setelah scroll selesai */
+.anggota-section.animate .anggota-card:nth-child(1),
+.anggota-section.animate .anggota-card:nth-child(2),
+.anggota-section.animate .anggota-card:nth-child(3) {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, opacity 0.8s ease-out !important;
+}
+
+/* Specific hover rules that override any delay */
+.anggota-section.animate .anggota-card:nth-child(1):hover,
+.anggota-section.animate .anggota-card:nth-child(2):hover,
+.anggota-section.animate .anggota-card:nth-child(3):hover {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease !important;
+  transition-delay: 0s !important;
 }
 
 .anggota-container {
@@ -45,13 +73,28 @@
   width: 250px;
   text-align: center;
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  transition: all 0.3s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
   cursor: pointer;
 }
 
 .anggota-card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  transform: translateY(0) scale(1.08);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+  background-color: #f0f0f0;
+  z-index: 2;
+}
+
+/* Pastikan hover berfungsi setelah animasi scroll selesai */
+.anggota-section.animate .anggota-card:hover {
+  transform: translateY(0) scale(1.08);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+  background-color: #f0f0f0;
+  z-index: 2;
+}
+
+/* SOLUSI: Override transition untuk menghapus delay pada hover */
+.anggota-section.animate .anggota-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease !important;
 }
 
 .anggota-img {
@@ -61,6 +104,13 @@
   border-radius: 50%;
   margin: 0 auto;
   display: block;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Efek hover pada foto anggota */
+.anggota-card:hover .anggota-img {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(26, 141, 76, 0.3);
 }
 
 .anggota-nama {
@@ -68,6 +118,12 @@
   font-size: 18px;
   font-weight: 600;
   color: #111;
+  transition: color 0.15s ease;
+}
+
+/* Efek hover pada nama anggota */
+.anggota-card:hover .anggota-nama {
+  color: #1a8d4c;
 }
 
 .anggota-jabatan {

@@ -12,7 +12,11 @@ const Berita = () => {
   const [ref, isVisible] = useScrollAnimation();
 
   return (
-    <section className={`berita-section ${isVisible ? 'animate' : ''}`} id="berita" ref={ref}>
+    <section
+      className={`berita-section ${isVisible ? "animate" : ""}`}
+      id="berita"
+      ref={ref}
+    >
       <div className="berita-wrapper">
         <p className="berita-label">Berita</p>
 
@@ -26,7 +30,9 @@ const Berita = () => {
               Diskusi mengenai RUU Sisdiknas yang menyoroti kontribusi, aspirasi,
               dan inspirasi dari berbagai elemen pendidikan.
             </p>
-            <button onClick={() => navigate("/berita-utama")}>baca selengkapnya</button>
+            <button onClick={() => navigate("/berita-utama")}>
+              baca selengkapnya
+            </button>
           </div>
           <img src={beritaUtamaImg} alt="Berita utama" />
         </div>

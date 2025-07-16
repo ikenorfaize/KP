@@ -13,7 +13,7 @@
   align-items: start;
 }
 
-/* Default state - hidden (PENTING: Hapus animasi langsung) */
+/* Animasi masuk tiap kolom */
 .tentang-left,
 .tentang-middle,
 .tentang-right {
@@ -22,7 +22,43 @@
   transition: all 0.8s ease-out;
 }
 
-/* Animated state - visible (Hanya aktif saat class 'animate' ditambahkan) */
+.tentang-section.animate .tentang-left {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0s;
+}
+
+.tentang-section.animate .tentang-middle {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.2s;
+}
+
+.tentang-section.animate .tentang-right {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.4s;
+}
+
+/* Card animations dengan delay berbeda */
+.tentang-section.animate .tentang-right > *:nth-child(1) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.6s;
+}
+
+.tentang-section.animate .tentang-right > *:nth-child(2) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.8s;
+}
+
+.tentang-section.animate .tentang-right > *:nth-child(3) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 1.0s;
+}
+
 .tentang-section.animate .tentang-left {
   opacity: 1;
   transform: translateY(0);
@@ -97,7 +133,7 @@
   gap: 20px;
 }
 
-/* Card animations dengan delay berbeda */
+/* Animasi masuk tiap card */
 .tentang-section.animate .tentang-right > *:nth-child(1) {
   opacity: 1;
   transform: translateY(0);
@@ -116,31 +152,47 @@
   transition-delay: 1.0s;
 }
 
-/* TentangCard default state - hidden */
+/* === TentangCard === */
 .tentang-card {
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
-  transition: all 0.3s ease;
   cursor: pointer;
   opacity: 0;
   transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+/* Efek sinkron perubahan warna saat expand/collapse langsung */
+.tentang-card.expanding,
+.tentang-card.collapsing {
+  background-color: #1e7e34 !important;
+  color: white !important;
+}
+
+.tentang-card.expanding .tentang-card-arrow,
+.tentang-card.collapsing .tentang-card-arrow {
+  color: white;
 }
 
 .tentang-card:hover {
-  transform: scale(1.02) translateY(0);
-  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
+  transform: translateY(0) scale(1.03);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  z-index: 2;
 }
 
-.tentang-card.white {
-  background-color: #fff;
+.tentang-card:not(.active):hover {
+  background-color: #f8f9fa;
   color: #111;
+  box-shadow: 0 6px 20px rgba(30, 126, 52, 0.15);
 }
 
-.tentang-card.green {
-  background-color: #1e7e34;
-  color: #fff;
+/* Pastikan hover berfungsi setelah animasi scroll selesai */
+.tentang-section.animate .tentang-card:hover {
+  transform: translateY(0) scale(1.03);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  z-index: 2;
 }
 
 .tentang-card-header {
@@ -161,8 +213,40 @@
   transition: transform 0.3s ease;
 }
 
+/* === TRANSISI wrapper (konten terbuka) === */
+.tentang-card-content-wrapper {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  padding-top: 0;
+  background-color: inherit; /* ✅ mewarisi warna latar dari parent */
+  transition:
+    max-height 0.5s ease,
+    opacity 0.5s ease,
+    padding-top 0.3s ease;
+}
+
+.tentang-card.active .tentang-card-content-wrapper {
+  max-height: 500px;
+  opacity: 1;
+  padding-top: 10px;
+}
+
+/* Konten dalam card */
 .tentang-card-content {
-  margin-top: 10px;
+  animation: fadeInSmooth 0.4s ease-in-out;
+  padding-bottom: 5px;
+}
+
+@keyframes fadeInSmooth {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Responsive */
@@ -171,7 +255,7 @@
     grid-template-columns: 1fr;
     text-align: center;
   }
-  
+
   .tentang-left,
   .tentang-middle,
   .tentang-right {

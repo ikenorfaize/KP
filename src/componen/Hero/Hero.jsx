@@ -1,15 +1,32 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./Hero.css";
 import heroImg from "../../assets/hero.png";
 
+const heroContents = [
+  {
+    title: "Bergerak dan Menggerakkan, Merawat Jagad dan Membangun Peradaban",
+    desc: "Persatuan Guru Nahdlatul Ulama (Pergunu) merupakan salah satu badan otonom NU yang menghimpun dan menaungi para guru, dosen dan ustad.",
+  },
+  {
+    title: "Menguatkan Peran Guru dalam Era Digital",
+    desc: "Pergunu berkomitmen meningkatkan kapasitas guru melalui pelatihan, kolaborasi, dan inovasi teknologi pendidikan.",
+  },
+  {
+    title: "Membangun Generasi Unggul dan Bermoral",
+    desc: "Kami percaya pendidikan karakter dan akhlak adalah kunci membentuk generasi penerus bangsa yang berkualitas.",
+  },
+];
+
 const Hero = () => {
   const ref = useRef(null);
+  const [index, setIndex] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
       if (ref.current) {
         const { top } = ref.current.getBoundingClientRect();
-        const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+        const windowHeight =
+          window.innerHeight || document.documentElement.clientHeight;
         if (top <= windowHeight * 0.8) {
           ref.current.classList.add("animate");
         } else {
@@ -17,10 +34,21 @@ const Hero = () => {
         }
       }
     };
+
     window.addEventListener("scroll", handleScroll);
-    handleScroll(); // jalankan sekali saat mount
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const nextContent = () => {
+    setIndex((prevIndex) => (prevIndex + 1) % heroContents.length);
+  };
+
+  const prevContent = () => {
+    setIndex((prevIndex) =>
+      (prevIndex - 1 + heroContents.length) % heroContents.length
+    );
+  };
 
   return (
     <section
@@ -35,21 +63,19 @@ const Hero = () => {
               <p className="hero-label">
                 PERGUNU (Persatuan Guru Nahdlatul Ulama)
               </p>
-              <h1 className="hero-title">
-                Bergerak dan Menggerakkan, <br />
-                Merawat Jagad dan Membangun Peradaban
-              </h1>
+              <h1 className="hero-title">{heroContents[index].title}</h1>
             </div>
             <div className="hero-right">
-              <p className="hero-desc">
-                Persatuan Guru Nahdlatul Ulama (Pergunu) merupakan salah satu badan otonom NU
-                yang menghimpun dan menaungi para guru, dosen dan ustad.
-              </p>
+              <p className="hero-desc">{heroContents[index].desc}</p>
               <button className="hero-button">Daftarkan diri anda</button>
             </div>
             <div className="nav-buttons">
-              <button className="nav-button filled">→</button>
-              <button className="nav-button outlined">←</button>
+              <button className="nav-button filled" onClick={nextContent}>
+                →
+              </button>
+              <button className="nav-button outlined" onClick={prevContent}>
+                ←
+              </button>
             </div>
           </div>
         </div>

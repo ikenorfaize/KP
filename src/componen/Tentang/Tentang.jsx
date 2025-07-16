@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Tentang.css";
 import TentangCard from "./TentangCard";
 import aboutImg from "../../assets/about.png";
@@ -6,6 +6,20 @@ import { useScrollAnimation } from "../../hooks/useScrollAnimation";
 
 const Tentang = () => {
   const [ref, isVisible] = useScrollAnimation();
+
+  // 👇 Banyak card bisa aktif sekaligus
+  const [openCards, setOpenCards] = useState({
+    Misi: false,
+    Visi: false,
+    Nilai: false,
+  });
+
+  const handleToggle = (cardName) => {
+    setOpenCards((prev) => ({
+      ...prev,
+      [cardName]: !prev[cardName],
+    }));
+  };
 
   return (
     <section
@@ -27,13 +41,17 @@ const Tentang = () => {
           </p>
           <button className="tentang-button">Baca selengkapnya</button>
         </div>
+
         <div className="tentang-middle">
           <img src={aboutImg} alt="guru mengajar" />
         </div>
 
-        {/* Kanan */}
         <div className="tentang-right">
-          <TentangCard title="Misi">
+          <TentangCard
+            title="Misi"
+            isOpen={openCards.Misi}
+            onToggle={() => handleToggle("Misi")}
+          >
             <ul>
               <li>Meningkatkan kompetensi dan profesionalisme guru</li>
               <li>
@@ -43,14 +61,22 @@ const Tentang = () => {
             </ul>
           </TentangCard>
 
-          <TentangCard title="Visi">
+          <TentangCard
+            title="Visi"
+            isOpen={openCards.Visi}
+            onToggle={() => handleToggle("Visi")}
+          >
             <p>
               Menjadi organisasi profesi guru yang berdaya, berkarakter, dan
               bermanfaat bagi umat.
             </p>
           </TentangCard>
 
-          <TentangCard title="Nilai">
+          <TentangCard
+            title="Nilai"
+            isOpen={openCards.Nilai}
+            onToggle={() => handleToggle("Nilai")}
+          >
             <p>
               Nilai keislaman, kebangsaan, keilmuan, dan ke-NU-an sebagai ruh
               perjuangan guru.
