@@ -1,0 +1,413 @@
+/* aku */
+.register-container {
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* KIRI */
+.register-left {
+  flex: 1;
+  background: url("../../assets/hero.png") no-repeat center center;
+  background-size: cover;
+  position: relative;
+}
+
+.register-overlay {
+  background-color: rgba(0, 100, 180, 0.85); /* Blue overlay untuk distinguish dari login */
+  color: white;
+  width: 100%;
+  height: 100%;
+  padding: 60px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.register-logo {
+  width: 60px;
+  margin-bottom: 20px;
+}
+
+.register-overlay h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.register-overlay p {
+  font-size: 14px;
+  text-align: center;
+  max-width: 320px;
+  line-height: 1.5;
+}
+
+/* KANAN */
+.register-right {
+  flex: 1;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.register-box {
+  width: 100%;
+  max-width: 420px; /* Sedikit lebih lebar untuk accommodate more fields */
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+.register-box h2 {
+  margin-bottom: 24px;
+  text-align: center;
+  font-weight: 700;
+  color: #222;
+  font-size: 24px;
+}
+
+/* FORM */
+.register-box input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.08s cubic-bezier(0.4, 0, 0.2, 1); /* Optimized transition */
+  color: black;
+  box-sizing: border-box;
+}
+
+.register-box input.error {
+  border-color: #dc3545;
+  background-color: rgba(220, 53, 69, 0.05);
+}
+
+.register-box input::placeholder {
+  color: #999;
+}
+
+.register-box input:focus {
+  border-color: #0064b4; /* Blue focus untuk distinguish */
+  background-color: #fff;
+  box-shadow: 0 0 0 2px rgba(0, 100, 180, 0.1);
+}
+
+.register-options {
+  margin-bottom: 20px;
+  padding-left: 2px;
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: #444;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+
+.checkbox-container input[type="checkbox"] {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  position: relative;
+  margin-top: 3px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.checkbox-container input[type="checkbox"]:checked {
+  background-color: #0064b4;
+  border-color: #0064b4;
+}
+
+.checkbox-container input[type="checkbox"]::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 3px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  opacity: 0;
+  transition: opacity 0.1s ease-in-out;
+}
+
+.checkbox-container input[type="checkbox"]:checked::after {
+  opacity: 1;
+}
+
+.checkbox-container label {
+  flex: 1;
+  cursor: pointer;
+}
+
+.checkbox-container a {
+  color: #0064b4;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.checkbox-container a:hover {
+  text-decoration: underline;
+}
+
+.register-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #0064b4; /* Blue button untuk distinguish */
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 16px;
+  transition: all 0.08s cubic-bezier(0.4, 0, 0.2, 1); /* Optimized transition */
+}
+
+.register-button:hover {
+  background-color: #004d8c; /* Darker blue on hover */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 100, 180, 0.3);
+}
+
+.register-divider {
+  text-align: center;
+  margin: 12px 0;
+  color: #888;
+  font-size: 13px;
+}
+
+.register-social {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.register-social button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  color: white;
+  transition: all 0.08s cubic-bezier(0.4, 0, 0.2, 1); /* Optimized transition */
+}
+
+.register-social button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.google {
+  background-color: #dd4b39;
+}
+
+.google:hover {
+  background-color: #c23321;
+}
+
+.facebook {
+  background-color: #3b5998;
+}
+
+.facebook:hover {
+  background-color: #2d4373;
+}
+
+.twitter {
+  background-color: #55acee;
+}
+
+.twitter:hover {
+  background-color: #2795e9;
+}
+
+.login-link {
+  text-align: center;
+  margin: 30px auto;
+  padding: 15px 0;
+  font-size: 14px;
+  color: #777;
+  line-height: 1.5;
+}
+
+.login-link a {
+  color: #0064b4; /* Blue link untuk distinguish */
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.08s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-input-wrapper input[type="password"],
+.password-input-wrapper input[type="text"] {
+  padding-right: 40px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #888;
+  font-size: 20px;
+  user-select: none;
+  transition: color 0.08s cubic-bezier(0.4, 0, 0.2, 1); /* Optimized transition */
+}
+
+.toggle-password:hover {
+  color: #0064b4; /* Blue hover untuk distinguish */
+}
+
+.toggle-password:focus {
+  outline: 2px solid #0064b4; /* Blue outline untuk distinguish */
+}
+
+.custom-checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.08s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.custom-checkbox-wrapper.error {
+  border: 1px solid #dc3545;
+  border-radius: 6px;
+  padding: 8px;
+  background-color: rgba(220, 53, 69, 0.05);
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 13px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  background-color: rgba(220, 53, 69, 0.1);
+  border: 1px solid rgba(220, 53, 69, 0.3);
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.custom-checkbox-wrapper input[type="checkbox"] {
+  display: none;
+}
+
+.custom-checkbox-box {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  background-color: #fff;
+  border: 2px solid #007bff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+}
+
+.custom-checkbox-box .checkmark {
+  color: white;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.custom-checkbox-wrapper input[type="checkbox"]:checked + .custom-checkbox-box {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.checkbox-text {
+  color: #444;
+  line-height: 1.4;
+}
+
+.checkbox-text a {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.checkbox-text a:hover {
+  text-decoration: underline;
+}
+
+.login-text-link {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #777;
+}
+
+.login-text-link a {
+  color: #0064b4;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-text-link a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .register-container {
+    flex-direction: column;
+  }
+  
+  .register-left {
+    min-height: 200px;
+  }
+  
+  .register-overlay {
+    padding: 40px 20px;
+  }
+  
+  .register-overlay h2 {
+    font-size: 24px;
+  }
+  
+  .register-overlay p {
+    font-size: 13px;
+    max-width: 280px;
+  }
+  
+  .register-right {
+    padding: 20px 15px;
+  }
+  
+  .register-box {
+    max-width: 100%;
+    padding: 25px 20px;
+  }
+}

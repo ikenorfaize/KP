@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "./Login.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import logo from "../../assets/logo.png";
@@ -56,7 +57,9 @@ const Login = () => {
             </div>
           </form>
 
-          <p className="create-account">Create a new Account</p>
+          <p className="create-account">
+            <Link to="/register">Create a new Account</Link>
+          </p>
         </div>
       </div>
     </div>
