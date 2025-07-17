@@ -1,3 +1,4 @@
+/* aku */
 /* Navbar.css */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
@@ -81,19 +82,38 @@
 }
 
 /* Tombol Login Custom (Outline Button Style) */
-.login-link {
-  padding: 6px 16px;
-  border: 2px solid #1e7e34;
-  color: #1e7e34;
-  border-radius: 999px;
-  text-decoration: none;
-  font-weight: 550;
-  transition: all 0.3s ease;
-  display: inline-block;
+.login-button-wrapper {
+  display: flex;
+  align-items: center;
 }
 
-.login-link:hover {
-  background-color: #1e7e34;
-  color: #fff;
-  transform: scale(1.05);
+.navbar-login-btn {
+  padding: 10px 24px !important;
+  border: 2px solid #1e7e34;
+  color: #1e7e34 !important;
+  border-radius: 25px;
+  text-decoration: none !important;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.08s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-block;
+  background-color: transparent;
+  min-width: 80px;
+  text-align: center;
+  height: auto !important;
+  line-height: 1.2 !important;
+  box-sizing: border-box !important;
+}
+
+.navbar-login-btn:hover {
+  background-color: #1e7e34 !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(30, 126, 52, 0.3);
+  text-decoration: none !important;
+}
+
+.login-button-wrapper:hover {
+  transform: none !important;
+  color: inherit !important;
 }

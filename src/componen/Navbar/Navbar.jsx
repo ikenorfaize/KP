@@ -20,13 +20,14 @@ const Navbar = () => {
             <li><a href="#berita">Berita</a></li>
             <li><a href="#layanan">Layanan</a></li>
             <li><a href="#hubungi">Hubungi Kami</a></li>
+            <li className="login-button-wrapper">
               <NavLink
-              to="/login"
-              className={({ isActive }) => `login-link ${isActive ? "active" : ""}`}
-            >
-              Login
-            </NavLink>
-
+                to="/login"
+                className={({ isActive }) => `navbar-login-btn ${isActive ? "active" : ""}`}
+              >
+                Login
+              </NavLink>
+            </li>
           </ul>
         </nav>
       </header>
