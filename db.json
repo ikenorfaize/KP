@@ -1,0 +1,142 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "fullName": "Demo User",
+      "email": "demo@pergunu.com",
+      "username": "demo",
+      "password": "$2b$12$M5h98irDfJH7EZqlv3AjceSCrbx4yCatuEX/KHLumWnnSLS9d/AX.",
+      "createdAt": "2025-01-18T10:00:00Z",
+      "role": "user",
+      "avatar": "https://ui-avatars.com/api/?name=Demo+User&background=0D8ABC&color=fff"
+    },
+    {
+      "id": "2",
+      "fullName": "Admin Pergunu",
+      "email": "admin@pergunu.com",
+      "username": "admin",
+      "password": "$2b$12$BNUmVyFMI/MMOd7aXmBx7OcFGEDPbJ9WOnbqoyPZGRc.m4v2pJBRG",
+      "createdAt": "2025-01-18T09:00:00Z",
+      "role": "admin",
+      "avatar": "https://ui-avatars.com/api/?name=Admin+Pergunu&background=28a745&color=fff"
+    },
+    {
+      "id": "3",
+      "fullName": "Fajar Rahman",
+      "email": "fajar@example.com",
+      "username": "fajar123",
+      "password": "$2b$12$r2RKoKodF86ULObplR8rn.jHQfcRYGFjJKjEUXExoLlcNrYGn54Da",
+      "createdAt": "2025-01-17T14:30:00Z",
+      "role": "user",
+      "avatar": "https://ui-avatars.com/api/?name=Fajar+Rahman&background=6f42c1&color=fff"
+    },
+    {
+      "id": "2a27",
+      "fullName": "Test Persistence User",
+      "email": "testpersist@demo.com",
+      "username": "testpersist",
+      "password": "$2b$12$BtP8ssPJ.Ifv4vYGBPpCt.uKE6xRjHOsSw3AFarCUY.J.69uzH2RK",
+      "createdAt": "2025-01-18T12:00:00Z",
+      "role": "user"
+    },
+    {
+      "id": 1752825090241,
+      "fullName": "luwak white coffe",
+      "email": "luwakwhitecoffe@gmail.com",
+      "username": "luwakwhitecoffe",
+      "password": "$2b$12$vKF0OykbYOhUcnlgaIL0E.WQHjGw8VtKfXsS.NBvn6e1xo.CGaXzO",
+      "createdAt": "2025-07-18T07:51:30.241Z",
+      "role": "user"
+    },
+    {
+      "id": 1752825480839,
+      "fullName": "irwan",
+      "email": "irwan@gmail.com",
+      "username": "irwan",
+      "password": "$2b$12$4RH31ledhKl8lS5hPJLQfuLlHo6q/L4YSuR8qhC5GdBom4J3MwoSO",
+      "createdAt": "2025-07-18T07:58:00.839Z",
+      "role": "user"
+    },
+    {
+      "id": 1752825999444,
+      "fullName": "akun1",
+      "email": "akun1@gmail.com",
+      "username": "akun1",
+      "password": "$2b$12$A1CfbogXUJSNQqGcd4NKq.2wUwAT1e6WNZC4pLicRfy5yIN2xJHse",
+      "createdAt": "2025-07-18T08:06:39.444Z",
+      "role": "user"
+    }
+  ],
+  "news": [
+    {
+      "id": "1",
+      "title": "Pengumuman Rapat Koordinasi",
+      "content": "Rapat koordinasi akan dilaksanakan pada tanggal 25 Januari 2025 di Aula Pergunu. Semua anggota diharapkan hadir tepat waktu.",
+      "author": "Admin Pergunu",
+      "authorId": 2,
+      "createdAt": "2025-01-18T08:00:00Z",
+      "category": "announcement",
+      "image": "https://via.placeholder.com/400x200/0D8ABC/FFFFFF?text=Rapat+Koordinasi"
+    },
+    {
+      "id": "2",
+      "title": "Peluncuran Program Beasiswa 2025",
+      "content": "Pergunu dengan bangga mengumumkan peluncuran program beasiswa untuk mahasiswa berprestasi tahun 2025. Pendaftaran dibuka mulai 1 Februari 2025.",
+      "author": "Admin Pergunu",
+      "authorId": 2,
+      "createdAt": "2025-01-17T16:20:00Z",
+      "category": "program",
+      "image": "https://via.placeholder.com/400x200/28a745/FFFFFF?text=Program+Beasiswa"
+    },
+    {
+      "id": "3",
+      "title": "Workshop Digital Marketing",
+      "content": "Mengundang seluruh anggota untuk mengikuti workshop digital marketing yang akan dilaksanakan secara hybrid pada akhir Januari 2025.",
+      "author": "Demo User",
+      "authorId": 1,
+      "createdAt": "2025-01-16T11:45:00Z",
+      "category": "event",
+      "image": "https://via.placeholder.com/400x200/6f42c1/FFFFFF?text=Digital+Marketing"
+    }
+  ],
+  "sessions": [
+    {
+      "id": "1",
+      "userId": 1,
+      "token": "demo_session_token_12345",
+      "expiresAt": "2025-01-19T10:00:00Z",
+      "device": "Chrome - Windows",
+      "lastActivity": "2025-01-18T10:00:00Z"
+    },
+    {
+      "id": "018a",
+      "userId": "1",
+      "token": "session_1752822685693",
+      "expiresAt": "2025-07-19T07:11:25.693Z"
+    },
+    {
+      "id": "4f5f",
+      "userId": "2",
+      "token": "session_1752823464679",
+      "expiresAt": "2025-07-19T07:24:24.679Z"
+    },
+    {
+      "id": "b72d",
+      "userId": 1752825480839,
+      "token": "session_1752825490034",
+      "expiresAt": "2025-07-19T07:58:10.034Z"
+    },
+    {
+      "id": "a406",
+      "userId": 1752825999444,
+      "token": "session_1752826009251",
+      "expiresAt": "2025-07-19T08:06:49.251Z"
+    }
+  ],
+  "statistics": {
+    "totalUsers": 6,
+    "totalNews": 3,
+    "activeSessions": 4,
+    "lastUpdated": "2025-07-18T08:00:00Z"
+  }
+}

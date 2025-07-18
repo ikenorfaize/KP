@@ -7,16 +7,52 @@ Currently, two official plugins are available:
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-  # Langkah langkah
+## 🚀 DEMO UNTUK PRESENTASI CLIENT
 
-jadi sebelum kamu run buat file public kosong gada isinya
+### Cara Termudah (Windows):
+```bash
+# Double-click file start-demo.bat
+# Atau jalankan di terminal:
+start-demo.bat
+```
 
-habis itu jalanin ini: 
+### Manual Setup:
 
-
+#### 1. Install Dependencies
+```bash
 npm install
+```
 
+#### 2. Install JSON Server (API Demo)
+```bash
+npm install -g json-server
+```
+
+#### 3. Jalankan Demo
+```bash
+# Terminal 1: API Server
+json-server --watch db.json --port 3001
+
+# Terminal 2: Website
 npm run dev
+```
+
+### 🎯 Demo Flow untuk Client:
+1. **Website**: http://localhost:5173
+2. **API Data**: http://localhost:3001/users
+3. **Demo Register**: Buat user baru di `/register`
+4. **Demo Login**: Login dengan user yang sudah dibuat
+5. **Show API**: Tunjukkan data tersimpan di API endpoint
+
+### 📝 Demo Credentials:
+- **Username**: `demo` | **Email**: `demo@pergunu.com`
+- **Username**: `admin` | **Email**: `admin@pergunu.com`
+
+### 🔧 API Endpoints (untuk demo):
+- `GET /users` - Lihat semua user
+- `POST /users` - Register user baru
+- `GET /news` - Lihat berita
+- `GET /statistics` - Lihat statistik
 
 ## Expanding the ESLint configuration
 
