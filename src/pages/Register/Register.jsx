@@ -1,14 +1,18 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash, FaGoogle, FaFacebookF, FaTwitter } from 'react-icons/fa';
 import './Register.css';
 import logo from '../../assets/logo.png';
+import { apiService } from '../../services/apiService';
 
 const Register = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [termsError, setTermsError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiMessage, setApiMessage] = useState('');
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -48,7 +52,7 @@ const Register = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     console.log('Form submitted!'); // Debug log
@@ -80,9 +84,39 @@ const Register = () => {
     if (hasError) {
       return;
     }
+
+    // API Registration Process
+    setIsLoading(true);
+    setApiMessage('');
     
-    console.log('Registration data:', formData);
-    // Proceed with registration...
+    try {
+      const result = await apiService.register({
+        fullName: formData.fullName,
+        email: formData.email,
+        username: formData.username,
+        password: formData.password
+      });
+      
+      console.log('Registration successful:', result);
+      setApiMessage('✅ Registration successful! Redirecting to login...');
+      
+      // Reset form
+      setFormData({
+        fullName: '', email: '', username: '', 
+        password: '', confirmPassword: '', agreeTerms: false
+      });
+      
+      // Redirect to login after 2 seconds
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+      
+    } catch (error) {
+      console.error('Registration failed:', error);
+      setApiMessage(`❌ Registration failed: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -190,9 +224,16 @@ const Register = () => {
               )}
             </div>
 
-            <button type="submit" className="register-button">
-              Create Account
+            <button type="submit" className="register-button" disabled={isLoading}>
+              {isLoading ? 'Creating Account...' : 'Create Account'}
             </button>
+            
+            {/* API Status Message */}
+            {apiMessage && (
+              <div className={`api-message ${apiMessage.includes('✅') ? 'success' : 'error'}`}>
+                {apiMessage}
+              </div>
+            )}
           </form>
 
           <div className="register-divider">or sign up with</div>

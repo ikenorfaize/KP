@@ -1,11 +1,55 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import logo from "../../assets/logo.png";
+import { apiService } from '../../services/apiService';
 
 const Login = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiMessage, setApiMessage] = useState('');
+  const [loginData, setLoginData] = useState({
+    username: '',
+    password: ''
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setLoginData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    setApiMessage(''); // Clear message when user types
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setApiMessage('');
+    
+    try {
+      const result = await apiService.login({
+        username: loginData.username,
+        password: loginData.password
+      });
+      
+      console.log('Login successful:', result);
+      setApiMessage(`✅ Welcome back, ${result.user.fullName}!`);
+      
+      // Redirect to home after 1.5 seconds
+      setTimeout(() => {
+        navigate('/');
+      }, 1500);
+      
+    } catch (error) {
+      console.error('Login failed:', error);
+      setApiMessage(`❌ Login failed: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="login-container">
@@ -22,12 +66,22 @@ const Login = () => {
       <div className="login-right">
         <div className="login-box">
           <h2>Log in</h2>
-          <form>
-            <input type="text" placeholder="Username" required />
+          <form onSubmit={handleSubmit}>
+            <input 
+              type="text" 
+              name="username"
+              placeholder="Username or Email" 
+              value={loginData.username}
+              onChange={handleInputChange}
+              required 
+            />
             <div className="password-input-wrapper">
               <input
                 type={showPassword ? "text" : "password"}
+                name="password"
                 placeholder="Password"
+                value={loginData.password}
+                onChange={handleInputChange}
                 required
               />
               <span
@@ -44,9 +98,16 @@ const Login = () => {
               <a href="#">Forgot Password?</a>
             </div>
 
-            <button type="submit" className="login-button">
-              Log in
+            <button type="submit" className="login-button" disabled={isLoading}>
+              {isLoading ? 'Logging in...' : 'Log in'}
             </button>
+            
+            {/* API Status Message */}
+            {apiMessage && (
+              <div className={`api-message ${apiMessage.includes('✅') ? 'success' : 'error'}`}>
+                {apiMessage}
+              </div>
+            )}
 
             <p className="login-divider">Or with</p>
 
