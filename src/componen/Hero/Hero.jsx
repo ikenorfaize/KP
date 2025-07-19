@@ -67,8 +67,16 @@ const Hero = () => {
             </div>
             <div className="hero-right">
               <p className="hero-desc">{heroContents[index].desc}</p>
-              <button className="hero-button">Daftarkan diri anda</button>
+              <a
+                href="https://docs.google.com/forms/d/e/1FAIpQLSeRLaYBI9DDEg23yFs8LbOw01U-m1rr7l87VWwCQTl6AJRNUA/viewform?usp=dialog"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hero-button"
+              >
+                Daftarkan diri anda
+              </a>
             </div>
+
             <div className="nav-buttons">
               <button className="nav-button filled" onClick={nextContent}>
                 →
