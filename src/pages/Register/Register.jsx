@@ -37,7 +37,7 @@ const Register = () => {
     
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : (value?.trim() || '') // Trim text inputs
     }));
     
     // Clear terms error when checkbox is checked

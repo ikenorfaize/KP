@@ -31,25 +31,7 @@
       "avatar": "https://ui-avatars.com/api/?name=Fajar+Rahman&background=6f42c1&color=fff"
     },
     {
-      "id": "2a27",
-      "fullName": "Test Persistence User",
-      "email": "testpersist@demo.com",
-      "username": "testpersist",
-      "password": "$2b$12$BtP8ssPJ.Ifv4vYGBPpCt.uKE6xRjHOsSw3AFarCUY.J.69uzH2RK",
-      "createdAt": "2025-01-18T12:00:00Z",
-      "role": "user"
-    },
-    {
-      "id": 1752825090241,
-      "fullName": "luwak white coffe",
-      "email": "luwakwhitecoffe@gmail.com",
-      "username": "luwakwhitecoffe",
-      "password": "$2b$12$vKF0OykbYOhUcnlgaIL0E.WQHjGw8VtKfXsS.NBvn6e1xo.CGaXzO",
-      "createdAt": "2025-07-18T07:51:30.241Z",
-      "role": "user"
-    },
-    {
-      "id": 1752825480839,
+      "id": "1752825480839",
       "fullName": "irwan",
       "email": "irwan@gmail.com",
       "username": "irwan",
@@ -58,13 +40,66 @@
       "role": "user"
     },
     {
-      "id": 1752825999444,
+      "id": "1752825999444",
       "fullName": "akun1",
       "email": "akun1@gmail.com",
       "username": "akun1",
       "password": "$2b$12$A1CfbogXUJSNQqGcd4NKq.2wUwAT1e6WNZC4pLicRfy5yIN2xJHse",
       "createdAt": "2025-07-18T08:06:39.444Z",
       "role": "user"
+    },
+    {
+      "id": "1752826000000",
+      "fullName": "Rahmad Efendi",
+      "email": "rahmad.efendi@gmail.com",
+      "username": "rahmad efendi",
+      "password": "$2b$12$CAQtzyD/4P5KCfwcitA5BeKaRtk1d9VlhJbnXhh1hWxLkR0mkCxia",
+      "createdAt": "2025-07-20T12:00:00.000Z",
+      "role": "user"
+    },
+    {
+      "id": "1752826000001",
+      "fullName": "Mary Jane Watson",
+      "email": "mary.jane.watson@gmail.com",
+      "username": "mary jane watson",
+      "password": "$2b$12$Bqosep7m3z5sZgGqx9aLL.IslbPwTIkxWkrQaaBY4f2HcNF17I/.W",
+      "createdAt": "2025-07-20T12:01:00.000Z",
+      "role": "user"
+    },
+    {
+      "id": "1752826000002",
+      "fullName": "Muhammad Rizky Fajar Nugraha",
+      "email": "muhammad.rizky@gmail.com",
+      "username": "muhammad rizky fajar nugraha",
+      "password": "$2b$12$Bqosep7m3z5sZgGqx9aLL.IslbPwTIkxWkrQaaBY4f2HcNF17I/.W",
+      "createdAt": "2025-07-20T12:02:00.000Z",
+      "role": "user"
+    },
+    {
+      "id": "bdef",
+      "fullName": "Adi Pratama",
+      "email": "adi@pergunu.com",
+      "username": "adi",
+      "password": "$2b$12$B0zwsxaTTTakiLg65YmMveICsSqRj80mFAFBhAsEUjBpx3y08VohG",
+      "position": "Guru Bahasa",
+      "address": "Jl.Pegangsaan Timur",
+      "phone": "081234567890",
+      "status": "active",
+      "role": "user",
+      "createdAt": "2025-07-21T16:29:03.630Z"
+    },
+    {
+      "id": "c3a3",
+      "fullName": "akbar maulana",
+      "email": "akbar@gmail.com",
+      "username": "akbar",
+      "password": "$2b$12$uUkHsEycL006VwVpCcqRy.0BpWMeLpEyNk.aV8eq3GNVdWlA4Mt86",
+      "position": "Guru PJOK",
+      "address": "jl.udang keras",
+      "phone": "0823232322",
+      "status": "active",
+      "role": "user",
+      "createdAt": "2025-07-21T16:53:59.310Z"
     }
   ],
   "news": [
@@ -131,6 +166,660 @@
       "userId": 1752825999444,
       "token": "session_1752826009251",
       "expiresAt": "2025-07-19T08:06:49.251Z"
+    },
+    {
+      "id": "6c9a",
+      "userId": "2",
+      "token": "session_1752946511340",
+      "expiresAt": "2025-07-20T17:35:11.340Z"
+    },
+    {
+      "id": "09e4",
+      "userId": "1752825999444",
+      "token": "session_1752946536426",
+      "expiresAt": "2025-07-20T17:35:36.426Z"
+    },
+    {
+      "id": "59c0",
+      "userId": "2",
+      "token": "session_1752946582813",
+      "expiresAt": "2025-07-20T17:36:22.813Z"
+    },
+    {
+      "id": "3a35",
+      "userId": "1752825999444",
+      "token": "session_1752946913431",
+      "expiresAt": "2025-07-20T17:41:53.431Z"
+    },
+    {
+      "id": "44f7",
+      "userId": "1752825999444",
+      "token": "session_1752946923733",
+      "expiresAt": "2025-07-20T17:42:03.733Z"
+    },
+    {
+      "id": "4715",
+      "userId": "2",
+      "token": "session_1752947018205",
+      "expiresAt": "2025-07-20T17:43:38.205Z"
+    },
+    {
+      "id": "b0b2",
+      "userId": "2",
+      "token": "session_1752947038528",
+      "expiresAt": "2025-07-20T17:43:58.528Z"
+    },
+    {
+      "id": "c0fc",
+      "userId": "2",
+      "token": "session_1752947052379",
+      "expiresAt": "2025-07-20T17:44:12.379Z"
+    },
+    {
+      "id": "8db4",
+      "userId": "2",
+      "token": "session_1752947060058",
+      "expiresAt": "2025-07-20T17:44:20.058Z"
+    },
+    {
+      "id": "5010",
+      "userId": "2",
+      "token": "session_1752947166128",
+      "expiresAt": "2025-07-20T17:46:06.128Z"
+    },
+    {
+      "id": "c8e6",
+      "userId": "1752825999444",
+      "token": "session_1752947171440",
+      "expiresAt": "2025-07-20T17:46:11.440Z"
+    },
+    {
+      "id": "3903",
+      "userId": "2",
+      "token": "session_1752947605551",
+      "expiresAt": "2025-07-20T17:53:25.551Z"
+    },
+    {
+      "id": "6db3",
+      "userId": "2",
+      "token": "session_1752948198642",
+      "expiresAt": "2025-07-20T18:03:18.642Z"
+    },
+    {
+      "id": "7e20",
+      "userId": "1752825999444",
+      "token": "session_1752948232831",
+      "expiresAt": "2025-07-20T18:03:52.831Z"
+    },
+    {
+      "id": "bcf3",
+      "userId": "1752825999444",
+      "token": "session_1752948594808",
+      "expiresAt": "2025-07-20T18:09:54.808Z"
+    },
+    {
+      "id": "f30b",
+      "userId": "1752825999444",
+      "token": "session_1752948676259",
+      "expiresAt": "2025-07-20T18:11:16.259Z"
+    },
+    {
+      "id": "e502",
+      "userId": "1752825999444",
+      "token": "session_1752948701876",
+      "expiresAt": "2025-07-20T18:11:41.876Z"
+    },
+    {
+      "id": "4122",
+      "userId": "2",
+      "token": "session_1752948713515",
+      "expiresAt": "2025-07-20T18:11:53.515Z"
+    },
+    {
+      "id": "db79",
+      "userId": "1752825999444",
+      "token": "session_1752948739465",
+      "expiresAt": "2025-07-20T18:12:19.465Z"
+    },
+    {
+      "id": "12e5",
+      "userId": "1752825999444",
+      "token": "session_1752948758978",
+      "expiresAt": "2025-07-20T18:12:38.978Z"
+    },
+    {
+      "id": "c249",
+      "userId": "2",
+      "token": "session_1752949068606",
+      "expiresAt": "2025-07-20T18:17:48.606Z"
+    },
+    {
+      "id": "7d78",
+      "userId": "2",
+      "token": "session_1752949086182",
+      "expiresAt": "2025-07-20T18:18:06.182Z"
+    },
+    {
+      "id": "0cf9",
+      "userId": "1",
+      "token": "session_1752949112077",
+      "expiresAt": "2025-07-20T18:18:32.077Z"
+    },
+    {
+      "id": "6a0e",
+      "userId": "2",
+      "token": "session_1752949145369",
+      "expiresAt": "2025-07-20T18:19:05.369Z"
+    },
+    {
+      "id": "0b4a",
+      "userId": "1752825999444",
+      "token": "session_1752949614026",
+      "expiresAt": "2025-07-20T18:26:54.026Z"
+    },
+    {
+      "id": "c43a",
+      "userId": "1752825999444",
+      "token": "session_1752950163196",
+      "expiresAt": "2025-07-20T18:36:03.196Z"
+    },
+    {
+      "id": "70ed",
+      "userId": "2",
+      "token": "session_1752950279595",
+      "expiresAt": "2025-07-20T18:37:59.595Z"
+    },
+    {
+      "id": "2853",
+      "userId": "1",
+      "token": "session_1752950281667",
+      "expiresAt": "2025-07-20T18:38:01.667Z"
+    },
+    {
+      "id": "a48e",
+      "userId": "1752825999444",
+      "token": "session_1752950282741",
+      "expiresAt": "2025-07-20T18:38:02.741Z"
+    },
+    {
+      "id": "8a0e",
+      "userId": "1752825999444",
+      "token": "session_1752950285735",
+      "expiresAt": "2025-07-20T18:38:05.735Z"
+    },
+    {
+      "id": "fa96",
+      "userId": "1",
+      "token": "session_1752950286638",
+      "expiresAt": "2025-07-20T18:38:06.638Z"
+    },
+    {
+      "id": "ea71",
+      "userId": "2",
+      "token": "session_1752950287591",
+      "expiresAt": "2025-07-20T18:38:07.591Z"
+    },
+    {
+      "id": "96e3",
+      "userId": "2",
+      "token": "session_1752950308470",
+      "expiresAt": "2025-07-20T18:38:28.470Z"
+    },
+    {
+      "id": "2b5e",
+      "userId": "1752825999444",
+      "token": "session_1752950309588",
+      "expiresAt": "2025-07-20T18:38:29.588Z"
+    },
+    {
+      "id": "f52c",
+      "userId": "1",
+      "token": "session_1752950310576",
+      "expiresAt": "2025-07-20T18:38:30.576Z"
+    },
+    {
+      "id": "7734",
+      "userId": "1752825999444",
+      "token": "session_1752950424829",
+      "expiresAt": "2025-07-20T18:40:24.829Z"
+    },
+    {
+      "id": "f5fe",
+      "userId": "1752825999444",
+      "token": "session_1752950627054",
+      "expiresAt": "2025-07-20T18:43:47.054Z"
+    },
+    {
+      "id": "a1e9",
+      "userId": "2",
+      "token": "session_1752950867520",
+      "expiresAt": "2025-07-20T18:47:47.520Z"
+    },
+    {
+      "id": "22ae",
+      "userId": "1",
+      "token": "session_1752950868679",
+      "expiresAt": "2025-07-20T18:47:48.679Z"
+    },
+    {
+      "id": "8daf",
+      "userId": "1752825999444",
+      "token": "session_1752950869625",
+      "expiresAt": "2025-07-20T18:47:49.625Z"
+    },
+    {
+      "id": "12a5",
+      "userId": "1752825999444",
+      "token": "session_1752950870649",
+      "expiresAt": "2025-07-20T18:47:50.649Z"
+    },
+    {
+      "id": "7290",
+      "userId": "2",
+      "token": "session_1752951055136",
+      "expiresAt": "2025-07-20T18:50:55.136Z"
+    },
+    {
+      "id": "c6e2",
+      "userId": "1",
+      "token": "session_1752951055801",
+      "expiresAt": "2025-07-20T18:50:55.801Z"
+    },
+    {
+      "id": "3670",
+      "userId": "1752825999444",
+      "token": "session_1752951056492",
+      "expiresAt": "2025-07-20T18:50:56.492Z"
+    },
+    {
+      "id": "feb5",
+      "userId": "1752825999444",
+      "token": "session_1752951057363",
+      "expiresAt": "2025-07-20T18:50:57.363Z"
+    },
+    {
+      "id": "a439",
+      "userId": "1752826000000",
+      "token": "session_1752951058153",
+      "expiresAt": "2025-07-20T18:50:58.153Z"
+    },
+    {
+      "id": "f9e6",
+      "userId": "1752825999444",
+      "token": "session_1752951282145",
+      "expiresAt": "2025-07-20T18:54:42.145Z"
+    },
+    {
+      "id": "4e41",
+      "userId": "2",
+      "token": "session_1752951296568",
+      "expiresAt": "2025-07-20T18:54:56.568Z"
+    },
+    {
+      "id": "5b56",
+      "userId": "2",
+      "token": "session_1752951665076",
+      "expiresAt": "2025-07-20T19:01:05.076Z"
+    },
+    {
+      "id": "6f09",
+      "userId": "2",
+      "token": "session_1752954530810",
+      "expiresAt": "2025-07-20T19:48:50.810Z"
+    },
+    {
+      "id": "06c2",
+      "userId": "2",
+      "token": "session_1752955364650",
+      "expiresAt": "2025-07-20T20:02:44.650Z"
+    },
+    {
+      "id": "5128",
+      "userId": "1752825999444",
+      "token": "session_1752955772317",
+      "expiresAt": "2025-07-20T20:09:32.317Z"
+    },
+    {
+      "id": "3463",
+      "userId": "2",
+      "token": "session_1752955783377",
+      "expiresAt": "2025-07-20T20:09:43.377Z"
+    },
+    {
+      "id": "4e69",
+      "userId": "2",
+      "token": "session_1752955916202",
+      "expiresAt": "2025-07-20T20:11:56.202Z"
+    },
+    {
+      "id": "3ec7",
+      "userId": "2",
+      "token": "session_1752956496367",
+      "expiresAt": "2025-07-20T20:21:36.367Z"
+    },
+    {
+      "id": "65e1",
+      "userId": "2",
+      "token": "session_1752956925582",
+      "expiresAt": "2025-07-20T20:28:45.582Z"
+    },
+    {
+      "id": "d1d6",
+      "userId": "2",
+      "token": "session_1752958110315",
+      "expiresAt": "2025-07-20T20:48:30.315Z"
+    },
+    {
+      "id": "a27f",
+      "userId": "2",
+      "token": "session_1752958372992",
+      "expiresAt": "2025-07-20T20:52:52.992Z"
+    },
+    {
+      "id": "e8ce",
+      "userId": "2",
+      "token": "session_1752958457343",
+      "expiresAt": "2025-07-20T20:54:17.343Z"
+    },
+    {
+      "id": "3745",
+      "userId": "2",
+      "token": "session_1752958495206",
+      "expiresAt": "2025-07-20T20:54:55.206Z"
+    },
+    {
+      "id": "304e",
+      "userId": "2",
+      "token": "session_1752959248563",
+      "expiresAt": "2025-07-20T21:07:28.563Z"
+    },
+    {
+      "id": "5f0a",
+      "userId": "2",
+      "token": "session_1753016690194",
+      "expiresAt": "2025-07-21T13:04:50.194Z"
+    },
+    {
+      "id": "67ff",
+      "userId": "2",
+      "token": "session_1753017867554",
+      "expiresAt": "2025-07-21T13:24:27.554Z"
+    },
+    {
+      "id": "5230",
+      "userId": "2",
+      "token": "session_1753018076248",
+      "expiresAt": "2025-07-21T13:27:56.248Z"
+    },
+    {
+      "id": "481c",
+      "userId": "2",
+      "token": "session_1753018727752",
+      "expiresAt": "2025-07-21T13:38:47.752Z"
+    },
+    {
+      "id": "540e",
+      "userId": "1752825999444",
+      "token": "session_1753021522062",
+      "expiresAt": "2025-07-21T14:25:22.062Z"
+    },
+    {
+      "id": "37e8",
+      "userId": "2",
+      "token": "session_1753021528406",
+      "expiresAt": "2025-07-21T14:25:28.406Z"
+    },
+    {
+      "id": "587d",
+      "userId": "2",
+      "token": "session_1753021623967",
+      "expiresAt": "2025-07-21T14:27:03.967Z"
+    },
+    {
+      "id": "984e",
+      "userId": "2",
+      "token": "session_1753021627469",
+      "expiresAt": "2025-07-21T14:27:07.469Z"
+    },
+    {
+      "id": "f3fc",
+      "userId": "1752825999444",
+      "token": "session_1753021677583",
+      "expiresAt": "2025-07-21T14:27:57.583Z"
+    },
+    {
+      "id": "6f02",
+      "userId": "2",
+      "token": "session_1753021717211",
+      "expiresAt": "2025-07-21T14:28:37.211Z"
+    },
+    {
+      "id": "8378",
+      "userId": "2",
+      "token": "session_1753021723068",
+      "expiresAt": "2025-07-21T14:28:43.068Z"
+    },
+    {
+      "id": "d836",
+      "userId": "2",
+      "token": "session_1753021752419",
+      "expiresAt": "2025-07-21T14:29:12.419Z"
+    },
+    {
+      "id": "bb92",
+      "userId": "2",
+      "token": "session_1753021946242",
+      "expiresAt": "2025-07-21T14:32:26.242Z"
+    },
+    {
+      "id": "1652",
+      "userId": "1752825999444",
+      "token": "session_1753021994054",
+      "expiresAt": "2025-07-21T14:33:14.054Z"
+    },
+    {
+      "id": "6395",
+      "userId": "2",
+      "token": "session_1753022003910",
+      "expiresAt": "2025-07-21T14:33:23.910Z"
+    },
+    {
+      "id": "2698",
+      "userId": "1752825999444",
+      "token": "session_1753113419212",
+      "expiresAt": "2025-07-22T15:56:59.212Z"
+    },
+    {
+      "id": "e6b9",
+      "userId": "2",
+      "token": "session_1753113428652",
+      "expiresAt": "2025-07-22T15:57:08.652Z"
+    },
+    {
+      "id": "5988",
+      "userId": "2",
+      "token": "session_1753113438196",
+      "expiresAt": "2025-07-22T15:57:18.196Z"
+    },
+    {
+      "id": "9dac",
+      "userId": "2",
+      "token": "session_1753113465342",
+      "expiresAt": "2025-07-22T15:57:45.342Z"
+    },
+    {
+      "id": "fd71",
+      "userId": "2",
+      "token": "session_1753113553392",
+      "expiresAt": "2025-07-22T15:59:13.392Z"
+    },
+    {
+      "id": "ccaf",
+      "userId": "2",
+      "token": "session_1753113984848",
+      "expiresAt": "2025-07-22T16:06:24.848Z"
+    },
+    {
+      "id": "3823",
+      "userId": "2",
+      "token": "session_1753115046574",
+      "expiresAt": "2025-07-22T16:24:06.574Z"
+    },
+    {
+      "id": "523c",
+      "userId": "2",
+      "token": "session_1753115274231",
+      "expiresAt": "2025-07-22T16:27:54.231Z"
+    },
+    {
+      "id": "7009",
+      "userId": "2",
+      "token": "session_1753115497970",
+      "expiresAt": "2025-07-22T16:31:37.970Z"
+    },
+    {
+      "id": "e928",
+      "userId": null,
+      "token": "session_1753116451581",
+      "expiresAt": "2025-07-22T16:47:31.581Z"
+    },
+    {
+      "id": "e513",
+      "userId": "2",
+      "token": "session_1753116462775",
+      "expiresAt": "2025-07-22T16:47:42.775Z"
+    },
+    {
+      "id": "d26c",
+      "userId": "1752825999444",
+      "token": "session_1753116472755",
+      "expiresAt": "2025-07-22T16:47:52.755Z"
+    },
+    {
+      "id": "1427",
+      "userId": "bdef",
+      "token": "session_1753116481000",
+      "expiresAt": "2025-07-22T16:48:01.000Z"
+    },
+    {
+      "id": "82f3",
+      "userId": "bdef",
+      "token": "session_1753116730064",
+      "expiresAt": "2025-07-22T16:52:10.064Z"
+    },
+    {
+      "id": "b47f",
+      "userId": null,
+      "token": "session_1753116748410",
+      "expiresAt": "2025-07-22T16:52:28.410Z"
+    },
+    {
+      "id": "4304",
+      "userId": "2",
+      "token": "session_1753116758518",
+      "expiresAt": "2025-07-22T16:52:38.518Z"
+    },
+    {
+      "id": "7462",
+      "userId": "c3a3",
+      "token": "session_1753116851543",
+      "expiresAt": "2025-07-22T16:54:11.543Z"
+    },
+    {
+      "id": "dfc7",
+      "userId": "2",
+      "token": "session_1753116894811",
+      "expiresAt": "2025-07-22T16:54:54.811Z"
+    },
+    {
+      "id": "ff1f",
+      "userId": "2",
+      "token": "session_1753116933477",
+      "expiresAt": "2025-07-22T16:55:33.477Z"
+    },
+    {
+      "id": "4d18",
+      "userId": "bdef",
+      "token": "session_1753117372481",
+      "expiresAt": "2025-07-22T17:02:52.481Z"
+    },
+    {
+      "id": "5260",
+      "userId": "2",
+      "token": "session_1753117380156",
+      "expiresAt": "2025-07-22T17:03:00.156Z"
+    },
+    {
+      "id": "89a7",
+      "userId": null,
+      "token": "session_1753117391882",
+      "expiresAt": "2025-07-22T17:03:11.882Z"
+    },
+    {
+      "id": "6a75",
+      "userId": "2",
+      "token": "session_1753117403829",
+      "expiresAt": "2025-07-22T17:03:23.829Z"
+    },
+    {
+      "id": "b2d6",
+      "userId": "2",
+      "token": "session_1753117798610",
+      "expiresAt": "2025-07-22T17:09:58.610Z"
+    },
+    {
+      "id": "c113",
+      "userId": null,
+      "token": "session_1753117809467",
+      "expiresAt": "2025-07-22T17:10:09.467Z"
+    },
+    {
+      "id": "8941",
+      "userId": "2",
+      "token": "session_1753117817105",
+      "expiresAt": "2025-07-22T17:10:17.105Z"
+    },
+    {
+      "id": "2fa4",
+      "userId": "2",
+      "token": "session_1753117843640",
+      "expiresAt": "2025-07-22T17:10:43.640Z"
+    },
+    {
+      "id": "37db",
+      "userId": "2",
+      "token": "session_1753117929086",
+      "expiresAt": "2025-07-22T17:12:09.086Z"
+    },
+    {
+      "id": "0c09",
+      "userId": null,
+      "token": "session_1753118007907",
+      "expiresAt": "2025-07-22T17:13:27.907Z"
+    },
+    {
+      "id": "be7e",
+      "userId": "bdef",
+      "token": "session_1753118899828",
+      "expiresAt": "2025-07-22T17:28:19.828Z"
+    },
+    {
+      "id": "7bcc",
+      "userId": null,
+      "token": "session_1753119277272",
+      "expiresAt": "2025-07-22T17:34:37.272Z"
+    },
+    {
+      "id": "d3da",
+      "userId": "2",
+      "token": "session_1753119285574",
+      "expiresAt": "2025-07-22T17:34:45.574Z"
+    },
+    {
+      "id": "f405",
+      "userId": "2",
+      "token": "session_1753119337690",
+      "expiresAt": "2025-07-22T17:35:37.690Z"
     }
   ],
   "statistics": {

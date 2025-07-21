@@ -19,7 +19,7 @@ const Login = () => {
     const { name, value } = e.target;
     setLoginData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value.trim() // Automatically trim whitespace
     }));
     setApiMessage(''); // Clear message when user types
   };
@@ -29,22 +29,52 @@ const Login = () => {
     setIsLoading(true);
     setApiMessage('');
     
+    console.log('🔐 Starting login process...');
+    
     try {
       const result = await apiService.login({
         username: loginData.username,
         password: loginData.password
       });
       
-      console.log('Login successful:', result);
-      setApiMessage(`✅ Welcome back, ${result.user.fullName}!`);
+      console.log('✅ Login successful:', result.user);
       
-      // Redirect to home after 1.5 seconds
-      setTimeout(() => {
-        navigate('/');
-      }, 1500);
+      // Check if user is admin
+      if (result.user.role === 'admin') {
+        console.log('🔑 Admin login detected, redirecting to admin dashboard...');
+        
+        // Store admin session
+        localStorage.setItem('adminAuth', JSON.stringify({
+          username: result.user.username,
+          role: 'admin',
+          fullName: result.user.fullName,
+          userId: result.user.id, // Add missing userId
+          email: result.user.email,
+          loginTime: new Date().toISOString()
+        }));
+        
+        // Immediate redirect to admin dashboard
+        navigate('/admin', { replace: true });
+        
+      } else {
+        console.log('👤 User login detected, redirecting to user dashboard...');
+        
+        // Store user session
+        localStorage.setItem('userAuth', JSON.stringify({
+          username: result.user.username,
+          role: result.user.role || 'user',
+          fullName: result.user.fullName,
+          email: result.user.email,
+          userId: result.user.id,
+          loginTime: new Date().toISOString()
+        }));
+        
+        // Immediate redirect to user dashboard
+        navigate('/user-dashboard', { replace: true });
+      }
       
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error('❌ Login failed:', error);
       setApiMessage(`❌ Login failed: ${error.message}`);
     } finally {
       setIsLoading(false);
