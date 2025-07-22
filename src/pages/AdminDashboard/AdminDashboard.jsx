@@ -352,18 +352,155 @@ const AdminDashboard = () => {
   );
 
   // Handle file upload
-  const handleCertificateUpload = (userId, file) => {
-    if (file && file.type === 'application/pdf') {
+  const handleCertificateUpload = async (userId, file) => {
+    if (!file) {
+      alert('❌ Tidak ada file yang dipilih.');
+      return;
+    }
+
+    if (file.type !== 'application/pdf') {
+      alert('❌ Hanya file PDF yang diperbolehkan.');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+      alert('❌ Ukuran file terlalu besar. Maksimal 10MB.');
+      return;
+    }
+
+    const loadingAlert = alert('🔄 Mengupload sertifikat...');
+
+    try {
+      // Generate unique filename
+      const timestamp = Date.now();
+      const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const uniqueFileName = `${timestamp}_${sanitizedFileName}`;
+
+      // Read file as base64
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          // Create file data object
+          const fileData = {
+            id: timestamp,
+            fileName: file.name,
+            originalName: file.name,
+            uniqueName: uniqueFileName,
+            size: file.size,
+            uploadDate: new Date().toISOString(),
+            base64Data: e.target.result,
+            downloadCount: 0
+          };
+
+          // Get current user data
+          const userToUpdate = users.find(user => user.id === userId);
+          if (!userToUpdate) {
+            alert('❌ User tidak ditemukan!');
+            return;
+          }
+
+          // Update certificates array
+          const updatedCertificates = [...(userToUpdate.certificates || []), fileData];
+
+          const updatedUser = {
+            ...userToUpdate,
+            certificates: updatedCertificates
+          };
+
+          // Update local state
+          setUsers(prevUsers =>
+            prevUsers.map(user =>
+              user.id === userId ? updatedUser : user
+            )
+          );
+
+          // Update in JSON Server
+          const response = await fetch(`http://localhost:3001/users/${userId}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedUser)
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          console.log('✅ Certificate uploaded successfully:', fileData);
+          alert(`✅ Sertifikat "${file.name}" berhasil diupload untuk ${userToUpdate.fullName}!`);
+          
+        } catch (error) {
+          console.error('❌ Error uploading certificate:', error);
+          alert(`❌ Gagal mengupload sertifikat: ${error.message}`);
+        }
+      };
+
+      reader.onerror = () => {
+        console.error('❌ Error reading file');
+        alert('❌ Gagal membaca file. Silakan coba lagi.');
+      };
+
+      reader.readAsDataURL(file);
+      
+    } catch (error) {
+      console.error('❌ Error handling file upload:', error);
+      alert(`❌ Terjadi kesalahan: ${error.message}`);
+    }
+  };
+
+  // Handle certificate deletion
+  const handleDeleteCertificate = async (userId, certificateId) => {
+    if (!confirm('❗ Apakah Anda yakin ingin menghapus sertifikat ini?')) {
+      return;
+    }
+
+    try {
+      // Find user and update certificates
+      const userToUpdate = users.find(user => user.id === userId);
+      if (!userToUpdate) {
+        alert('❌ User tidak ditemukan!');
+        return;
+      }
+
+      // Filter out the certificate to delete
+      const updatedCertificates = userToUpdate.certificates.filter(cert => {
+        if (typeof cert === 'object') {
+          return cert.id !== certificateId;
+        }
+        return true; // Keep string certificates
+      });
+
+      const updatedUser = {
+        ...userToUpdate,
+        certificates: updatedCertificates
+      };
+
+      // Update local state
       setUsers(prevUsers =>
         prevUsers.map(user =>
-          user.id === userId
-            ? { ...user, certificates: [...user.certificates, file.name] }
-            : user
+          user.id === userId ? updatedUser : user
         )
       );
-      alert(`Certificate ${file.name} uploaded successfully for user!`);
-    } else {
-      alert('Please upload a PDF file only.');
+
+      // Update in JSON Server
+      const response = await fetch(`http://localhost:3001/users/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedUser)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      alert('✅ Sertifikat berhasil dihapus!');
+      
+    } catch (error) {
+      console.error('❌ Error deleting certificate:', error);
+      alert(`❌ Gagal menghapus sertifikat: ${error.message}`);
     }
   };
 
@@ -588,9 +725,24 @@ const AdminDashboard = () => {
                 <td>{user.position}</td>
                 <td>
                   <div className="certificates-info">
-                    <span className="cert-count">{user.certificates.length} files</span>
-                    {user.certificates.map((cert, index) => (
-                      <div key={index} className="cert-file">{cert}</div>
+                    <span className="cert-count">
+                      {user.certificates ? user.certificates.length : 0} files
+                    </span>
+                    {user.certificates && user.certificates.map((cert, index) => (
+                      <div key={index} className="cert-file">
+                        <span className="cert-name">
+                          {typeof cert === 'string' ? cert : cert.fileName || cert.originalName}
+                        </span>
+                        {typeof cert === 'object' && cert.id && (
+                          <button 
+                            className="delete-cert-btn"
+                            onClick={() => handleDeleteCertificate(user.id, cert.id)}
+                            title="Hapus sertifikat"
+                          >
+                            ❌
+                          </button>
+                        )}
+                      </div>
                     ))}
                   </div>
                 </td>

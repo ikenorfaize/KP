@@ -79,11 +79,18 @@ const UserDashboard = () => {
 
         setUser(userWithDefaults);
         
-        // Update stats
+        // Update stats - handle both string and object certificates
+        const totalDownloads = userWithDefaults.certificates.reduce((sum, cert) => {
+          if (typeof cert === 'object' && cert.downloadCount) {
+            return sum + cert.downloadCount;
+          }
+          return sum;
+        }, 0);
+
         setUserStats({
           availableCertificates: userWithDefaults.certificates.length,
-          totalDownloads: userWithDefaults.certificates.reduce((sum, cert) => sum + (cert.downloadCount || 0), 0),
-          lastLogin: new Date().toISOString().split('T')[0]
+          totalDownloads: userWithDefaults.downloads || totalDownloads,
+          lastLogin: userWithDefaults.lastDownload || new Date().toISOString().split('T')[0]
         });
 
       } catch (error) {
@@ -139,36 +146,82 @@ const UserDashboard = () => {
   };
 
   // Download certificate function
-  const handleDownloadCertificate = (certificate) => {
-    // In real app, this would download the actual file
-    console.log(`Downloading: ${certificate.fileName}`);
-    
-    // Update download count
-    setUser(prevUser => ({
-      ...prevUser,
-      certificates: prevUser.certificates.map(cert =>
-        cert.id === certificate.id
-          ? { ...cert, downloadCount: cert.downloadCount + 1 }
-          : cert
-      ),
-      downloadHistory: [
-        {
-          id: Date.now().toString(),
-          certificateTitle: certificate.title,
-          downloadDate: new Date().toLocaleString('id-ID'),
-          fileName: certificate.fileName
+  const handleDownloadCertificate = async (certificate) => {
+    try {
+      console.log(`🔄 Downloading: ${certificate.fileName || certificate.originalName}`);
+      
+      // Check if certificate has base64 data
+      if (certificate.base64Data) {
+        // Create download link for base64 data
+        const link = document.createElement('a');
+        link.href = certificate.base64Data;
+        link.download = certificate.fileName || certificate.originalName || 'certificate.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        console.log('✅ File downloaded successfully');
+      } else if (certificate.url) {
+        // If certificate has URL, download from URL
+        const link = document.createElement('a');
+        link.href = certificate.url;
+        link.download = certificate.fileName || certificate.originalName || 'certificate.pdf';
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        // Fallback for old string-based certificates
+        alert(`⚠️ File "${certificate}" tidak tersedia untuk diunduh.\nSilakan hubungi admin untuk mengupload ulang.`);
+        return;
+      }
+
+      // Update download count in user data
+      const updatedUser = {
+        ...user,
+        certificates: user.certificates.map(cert => {
+          if (typeof cert === 'object' && cert.id === certificate.id) {
+            return { ...cert, downloadCount: (cert.downloadCount || 0) + 1 };
+          }
+          return cert;
+        }),
+        downloads: (user.downloads || 0) + 1,
+        lastDownload: new Date().toLocaleString('id-ID'),
+        downloadHistory: [
+          {
+            id: Date.now().toString(),
+            certificateTitle: certificate.fileName || certificate.originalName,
+            downloadDate: new Date().toLocaleString('id-ID'),
+            fileName: certificate.fileName || certificate.originalName
+          },
+          ...(user.downloadHistory || [])
+        ]
+      };
+
+      // Update local state
+      setUser(updatedUser);
+
+      // Update in JSON Server
+      await fetch(`http://localhost:3001/users/${user.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        ...prevUser.downloadHistory
-      ]
-    }));
+        body: JSON.stringify(updatedUser)
+      });
 
-    // Update stats
-    setUserStats(prev => ({
-      ...prev,
-      totalDownloads: prev.totalDownloads + 1
-    }));
+      // Update stats
+      setUserStats(prev => ({
+        ...prev,
+        totalDownloads: prev.totalDownloads + 1
+      }));
 
-    alert(`Sertifikat "${certificate.title}" berhasil diunduh!`);
+      alert(`✅ Sertifikat "${certificate.fileName || certificate.originalName}" berhasil diunduh!`);
+      
+    } catch (error) {
+      console.error('❌ Error downloading certificate:', error);
+      alert('❌ Gagal mengunduh sertifikat. Silakan coba lagi.');
+    }
   };
 
   const renderDashboard = () => (
@@ -277,41 +330,98 @@ const UserDashboard = () => {
       </div>
 
       <div className="certificates-grid">
-        {user?.certificates.map(certificate => (
-          <div key={certificate.id} className="certificate-card">
-            <div className="certificate-badge">
-              <span className={`category-badge ${certificate.category.toLowerCase()}`}>
-                {certificate.category}
-              </span>
-            </div>
-            <div className="certificate-content">
-              <h3>{certificate.title}</h3>
-              <p>{certificate.description}</p>
-              <div className="certificate-details">
-                <div className="detail-item">
-                  <span className="label">📅 Upload:</span>
-                  <span className="value">{certificate.uploadDate}</span>
+        {user?.certificates && user.certificates.length > 0 ? (
+          user.certificates.map((certificate, index) => {
+            // Handle both old (string) and new (object) certificate formats
+            if (typeof certificate === 'string') {
+              return (
+                <div key={index} className="certificate-card">
+                  <div className="certificate-badge">
+                    <span className="category-badge default">
+                      Sertifikat
+                    </span>
+                  </div>
+                  <div className="certificate-content">
+                    <h3>{certificate}</h3>
+                    <p>Sertifikat yang diupload sebelumnya</p>
+                    <div className="certificate-details">
+                      <div className="detail-item">
+                        <span className="label">📄 File:</span>
+                        <span className="value">{certificate}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="certificate-actions">
+                    <button 
+                      className="download-btn disabled"
+                      disabled
+                      title="File tidak tersedia untuk diunduh"
+                    >
+                      ❌ Tidak Tersedia
+                    </button>
+                  </div>
                 </div>
-                <div className="detail-item">
-                  <span className="label">⬇️ Downloads:</span>
-                  <span className="value">{certificate.downloadCount}x</span>
+              );
+            } else {
+              // Handle new object format
+              return (
+                <div key={certificate.id || index} className="certificate-card">
+                  <div className="certificate-badge">
+                    <span className="category-badge success">
+                      PDF Sertifikat
+                    </span>
+                  </div>
+                  <div className="certificate-content">
+                    <h3>{certificate.originalName || certificate.fileName}</h3>
+                    <p>Sertifikat yang diupload oleh admin</p>
+                    <div className="certificate-details">
+                      <div className="detail-item">
+                        <span className="label">📅 Upload:</span>
+                        <span className="value">
+                          {certificate.uploadDate 
+                            ? new Date(certificate.uploadDate).toLocaleDateString('id-ID')
+                            : 'Tidak diketahui'}
+                        </span>
+                      </div>
+                      <div className="detail-item">
+                        <span className="label">⬇️ Downloads:</span>
+                        <span className="value">{certificate.downloadCount || 0}x</span>
+                      </div>
+                      <div className="detail-item">
+                        <span className="label">📄 File:</span>
+                        <span className="value">{certificate.originalName || certificate.fileName}</span>
+                      </div>
+                      <div className="detail-item">
+                        <span className="label">💾 Ukuran:</span>
+                        <span className="value">
+                          {certificate.size 
+                            ? `${(certificate.size / 1024 / 1024).toFixed(2)} MB`
+                            : 'Tidak diketahui'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="certificate-actions">
+                    <button 
+                      className="download-btn"
+                      onClick={() => handleDownloadCertificate(certificate)}
+                    >
+                      ⬇️ Download PDF
+                    </button>
+                  </div>
                 </div>
-                <div className="detail-item">
-                  <span className="label">📄 File:</span>
-                  <span className="value">{certificate.fileName}</span>
-                </div>
-              </div>
-            </div>
-            <div className="certificate-actions">
-              <button 
-                className="download-btn"
-                onClick={() => handleDownloadCertificate(certificate)}
-              >
-                ⬇️ Download PDF
-              </button>
+              );
+            }
+          })
+        ) : (
+          <div className="no-certificates">
+            <div className="no-certificates-content">
+              <h3>📄 Belum Ada Sertifikat</h3>
+              <p>Anda belum memiliki sertifikat yang diupload oleh admin.</p>
+              <p>Silakan hubungi admin untuk mengupload sertifikat Anda.</p>
             </div>
           </div>
-        ))}
+        )}
       </div>
     </div>
   );
