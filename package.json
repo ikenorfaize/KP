@@ -9,10 +9,15 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "api": "json-server --watch db.json --port 3001",
-    "demo": "concurrently \"npm run dev\" \"npm run api\""
+    "file-server": "node file-server.js",
+    "demo": "concurrently \"npm run dev\" \"npm run api\"",
+    "full-demo": "concurrently \"npm run dev\" \"npm run api\" \"npm run file-server\""
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "multer": "^2.0.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",

@@ -1,5 +1,5 @@
 // AdminDashboard.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import bcrypt from 'bcryptjs';
 import './AdminDashboard.css';
@@ -37,7 +37,7 @@ const AdminDashboard = () => {
   const [showEditPassword, setShowEditPassword] = useState(false);
 
   // Fetch users from JSON Server
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setIsLoadingUsers(true);
       console.log('🔄 Fetching users from JSON Server...');
@@ -87,12 +87,36 @@ const AdminDashboard = () => {
     } finally {
       setIsLoadingUsers(false);
     }
-  };
+  }, []); // useCallback dependency array
 
   // Load users on component mount
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [fetchUsers]);
+
+  // Computed values with useMemo for performance
+  const filteredUsers = useMemo(() => {
+    if (!searchTerm) return users;
+    return users.filter(user => 
+      user.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.position?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [users, searchTerm]);
+
+  const computedStats = useMemo(() => {
+    const totalUsers = users.length;
+    const certificatesUploaded = users.reduce((acc, user) => acc + (user.certificates?.length || 0), 0);
+    const totalDownloads = users.reduce((acc, user) => acc + (user.downloads || 0), 0);
+    
+    return { totalUsers, certificatesUploaded, totalDownloads };
+  }, [users]);
+
+  // Update stats when computed values change
+  useEffect(() => {
+    setStats(computedStats);
+  }, [computedStats]);
 
   // Logout function
   const handleLogout = () => {
@@ -343,13 +367,6 @@ const AdminDashboard = () => {
     
     calculateStats();
   }, [users]);
-
-  // Filter users based on search term
-  const filteredUsers = users.filter(user =>
-    user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.position.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   // Handle file upload
   const handleCertificateUpload = async (userId, file) => {
@@ -709,6 +726,9 @@ const AdminDashboard = () => {
                       src={user.profileImage} 
                       alt={user.fullName}
                       className="user-avatar"
+                      onError={(e) => {
+                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.fullName || 'User')}&background=0F7536&color=fff&size=40`;
+                      }}
                     />
                     <div>
                       <div className="user-name">{user.fullName}</div>
@@ -995,9 +1015,12 @@ const AdminDashboard = () => {
           <div className="header-actions">
             <div className="admin-profile">
               <img 
-                src="https://via.placeholder.com/32" 
+                src="https://ui-avatars.com/api/?name=Admin&background=0F7536&color=fff&size=32" 
                 alt="Admin" 
                 className="admin-avatar"
+                onError={(e) => {
+                  e.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTYiIGZpbGw9IiMwRjc1MzYiLz4KPHRleHQgeD0iNTAlIiB5PSI1NSUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkE8L3RleHQ+Cjwvc3ZnPgo=';
+                }}
               />
               <span>Admin</span>
             </div>
