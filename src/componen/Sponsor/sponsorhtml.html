@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sponsor - PERGUNU Situbondo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #FEFEFE;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid #E6E9E7;
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 64px;
+            height: 64px;
+            background: #0F7536;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        .logo-text h1 {
+            color: #0F7536;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .logo-text p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .nav {
+            display: flex;
+            gap: 32px;
+        }
+
+        .nav a {
+            color: #666;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        .nav a:hover, .nav a.active {
+            color: #0F7536;
+        }
+
+        .cta-button {
+            background: #0F7536;
+            color: white;
+            padding: 8px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .cta-button:hover {
+            background: #0F7536dd;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(to right, #77A686, #0F7536);
+            padding: 64px 0;
+            color: white;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 24px;
+            line-height: 1.2;
+        }
+
+        .hero-text p {
+            font-size: 18px;
+            margin-bottom: 32px;
+            opacity: 0.9;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #0F7536;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: #f3f3f3;
+        }
+
+        .btn-outline {
+            border: 1px solid white;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-outline:hover {
+            background: white;
+            color: #0F7536;
+        }
+
+        .hero-image {
+            display: flex;
+            justify-content: center;
+        }
+
+        .hero-image-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 32px;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 256px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        /* Benefits Section */
+        .benefits {
+            padding: 64px 0;
+            background: white;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .section-header .badge {
+            background: rgba(15, 117, 54, 0.1);
+            color: #0F7536;
+            margin-bottom: 16px;
+        }
+
+        .section-header h2 {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .section-header p {
+            color: #666;
+            max-width: 512px;
+            margin: 0 auto;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 32px;
+        }
+
+        .benefit-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s;
+        }
+
+        .benefit-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .benefit-icon {
+            width: 64px;
+            height: 64px;
+            background: #0F7536;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: white;
+            font-size: 24px;
+        }
+
+        .benefit-card h3 {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .benefit-card p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Sponsors Section */
+        .sponsors {
+            padding: 64px 0;
+            background: rgba(230, 233, 231, 0.2);
+        }
+
+        .sponsors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+        }
+
+        .sponsor-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .sponsor-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .sponsor-header {
+            background: linear-gradient(135deg, rgba(15, 117, 54, 0.05), rgba(151, 189, 162, 0.05));
+            padding: 32px;
+            text-align: center;
+            position: relative;
+        }
+
+        .sponsor-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .sponsor-type {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .sponsor-type.premium {
+            background: linear-gradient(to right, #9333ea, #7c3aed);
+            color: white;
+        }
+
+        .sponsor-type.gold {
+            background: linear-gradient(to right, #facc15, #eab308);
+            color: white;
+        }
+
+        .sponsor-type.silver {
+            background: linear-gradient(to right, #9ca3af, #6b7280);
+            color: white;
+        }
+
+        .sponsor-content {
+            padding: 24px;
+        }
+
+        .sponsor-name {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .sponsor-category {
+            display: inline-block;
+            background: rgba(15, 117, 54, 0.1);
+            color: #0F7536;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-bottom: 16px;
+        }
+
+        .sponsor-description {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .sponsor-details {
+            margin-bottom: 16px;
+        }
+
+        .sponsor-detail {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .sponsor-detail-icon {
+            color: #0F7536;
+            font-size: 16px;
+            margin-top: 2px;
+        }
+
+        .sponsor-detail-content {
+            flex: 1;
+        }
+
+        .sponsor-detail-title {
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .sponsor-detail-text {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .sponsor-website {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #0F7536;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border: 1px solid #0F7536;
+            border-radius: 8px;
+            transition: all 0.3s;
+            justify-content: center;
+        }
+
+        .sponsor-website:hover {
+            background: #0F7536;
+            color: white;
+        }
+
+        /* Partnership Packages */
+        .packages {
+            padding: 64px 0;
+            background: white;
+        }
+
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+        }
+
+        .package-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s;
+        }
+
+        .package-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .package-header {
+            padding: 24px;
+            text-align: center;
+            color: white;
+        }
+
+        .package-header.premium {
+            background: linear-gradient(to right, #9333ea, #7c3aed);
+        }
+
+        .package-header.gold {
+            background: linear-gradient(to right, #facc15, #eab308);
+        }
+
+        .package-header.silver {
+            background: linear-gradient(to right, #9ca3af, #6b7280);
+        }
+
+        .package-header.bronze {
+            background: linear-gradient(to right, #fb923c, #f97316);
+        }
+
+        .package-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .package-price {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .package-content {
+            padding: 24px;
+        }
+
+        .package-features {
+            list-style: none;
+            margin-bottom: 24px;
+        }
+
+        .package-feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .package-feature::before {
+            content: "●";
+            color: #0F7536;
+            font-weight: bold;
+            margin-top: 2px;
+        }
+
+        .package-button {
+            background: #0F7536;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            display: block;
+            text-align: center;
+            transition: background 0.3s;
+        }
+
+        .package-button:hover {
+            background: #0F7536dd;
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 64px 0;
+            background: #0F7536;
+            color: white;
+            text-align: center;
+        }
+
+        .contact h2 {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 16px;
+        }
+
+        .contact p {
+            font-size: 18px;
+            margin-bottom: 32px;
+            opacity: 0.9;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .contact-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            padding: 24px;
+        }
+
+        .contact-icon {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .contact-item h4 {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .contact-item p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .contact-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .hero-text h1 {
+                font-size: 36px;
+            }
+
+            .nav {
+                display: none;
+            }
+
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sponsors-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .packages-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo">P</div>
+                    <div class="logo-text">
+                        <h1>PERGUNU</h1>
+                        <p>Situbondo</p>
+                    </div>
+                </div>
+                
+                <nav class="nav">
+                    <a href="#" class="active">Home</a>
+                    <a href="#">Tentang</a>
+                    <a href="#">Anggota</a>
+                    <a href="#">Berita</a>
+                    <a href="#">Beasiswa</a>
+                    <a href="#">Sponsor</a>
+                    <a href="#">Hubungi Kami</a>
+                </nav>
+                
+                <a href="#" class="cta-button">Daftarkan Diri Anda</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <div class="badge">Kemitraan Strategis</div>
+                    <h1>Mitra & Sponsor PERGUNU</h1>
+                    <p>Bersama membangun ekosistem pendidikan yang berkualitas melalui kemitraan strategis dan kolaborasi berkelanjutan</p>
+                    <div class="hero-buttons">
+                        <a href="#" class="btn-primary">
+                            🤝 Jadi Mitra Kami
+                        </a>
+                        <a href="#" class="btn-outline">Download Proposal</a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <div class="hero-image-container">
+                        <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?w=500&h=400" alt="Partnership Illustration">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits">
+        <div class="container">
+            <div class="section-header">
+                <div class="badge">Manfaat Kemitraan</div>
+                <h2>Mengapa Bermitra dengan PERGUNU?</h2>
+                <p>Bergabunglah dengan jaringan mitra strategis yang berkomitmen memajukan pendidikan Indonesia</p>
+            </div>
+            
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">🎯</div>
+                    <h3>Brand Visibility</h3>
+                    <p>Eksposur brand di seluruh kegiatan dan materi komunikasi PERGUNU</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">🏢</div>
+                    <h3>Network Access</h3>
+                    <p>Akses ke jaringan guru dan pendidik NU di seluruh Indonesia</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">🏆</div>
+                    <h3>CSR Impact</h3>
+                    <p>Kontribusi nyata dalam pengembangan pendidikan nasional</p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">🤝</div>
+                    <h3>Strategic Partnership</h3>
+                    <p>Kemitraan strategis jangka panjang dalam bidang pendidikan</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sponsors Section -->
+    <section class="sponsors">
+        <div class="container">
+            <div class="section-header">
+                <h2>Mitra Terpercaya Kami</h2>
+                <p>Terima kasih kepada semua mitra yang telah mendukung misi PERGUNU dalam memajukan pendidikan</p>
+            </div>
+            
+            <div class="sponsors-grid">
+                <div class="sponsor-card">
+                    <div class="sponsor-header">
+                        <div class="sponsor-type premium">Premium</div>
+                        <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&h=200" alt="Bank Mandiri Syariah" class="sponsor-logo">
+                    </div>
+                    <div class="sponsor-content">
+                        <h3 class="sponsor-name">Bank Mandiri Syariah</h3>
+                        <div class="sponsor-category">Perbankan</div>
+                        <p class="sponsor-description">Mendukung program pendidikan dan beasiswa untuk guru-guru NU di seluruh Indonesia</p>
+                        
+                        <div class="sponsor-details">
+                            <div class="sponsor-detail">
+                                <div class="sponsor-detail-icon">🏆</div>
+                                <div class="sponsor-detail-content">
+                                    <div class="sponsor-detail-title">Kontribusi:</div>
+                                    <div class="sponsor-detail-text">Beasiswa Pendidikan & Fasilitas Keuangan</div>
+                                </div>
+                            </div>
+                            <div class="sponsor-detail">
+                                <div class="sponsor-detail-icon">🏢</div>
+                                <div class="sponsor-detail-content">
+                                    <div class="sponsor-detail-text">Bermitra sejak 2020</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <a href="#" class="sponsor-website">
+                            🔗 Kunjungi Website
+                        </a>
+                    </div>
+                </div>
+
+                <div class="sponsor-card">
+                    <div class="sponsor-header">
+                        <div class="sponsor-type premium">Premium</div>
+                        <img src="https://images.unsplash.com/photo-1541746972996-4e0b0f93e586?w=200&h=200" alt="Kementerian Pendidikan" class="sponsor-logo">
+                    </div>
+                    <div class="sponsor-content">
+                        <h3 class="sponsor-name">Kementerian Pendidikan</h3>
+                        <div class="sponsor-category">Pemerintah</div>
+                        <p class="sponsor-description">Mitra strategis dalam pengembangan kualitas pendidikan dan pelatihan guru</p>
+                        
+                        <div class="sponsor-details">
+                            <div class="sponsor-detail">
+                                <div class="sponsor-detail-icon">🏆</div>
+                                <div class="sponsor-detail-content">
+                                    <div class="sponsor-detail-title">Kontribusi:</div>
+                                    <div class="sponsor-detail-text">Dana Program & Sertifikasi Guru</div>
+                                </div>
+                            </div>
+                            <div class="sponsor-detail">
+                                <div class="sponsor-detail-icon">🏢</div>
+                                <div class="sponsor-detail-content">
+                                    <div class="sponsor-detail-text">Bermitra sejak 2018</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <a href="#" class="sponsor-website">
+                            🔗 Kunjungi Website
+                        </a>
+                    </div>
+                </div>
+
+                <div class="sponsor-card">
+                    <div class="sponsor-header">
+                        <div class="sponsor-type gold">Gold</div>
+                        <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=200&h=200" alt="Universitas Nahdlatul Ulama" class="sponsor-logo">
+                    </div>
+                    <div class="sponsor-content">
+                        <h3 class="sponsor-name">Universitas Nahdlatul Ulama</h3>
+                        <div class="sponsor-category">Pendidikan</div>
+                        <p class="sponsor-description">Kerjasama dalam program pendidikan tinggi dan penelitian pendidikan Islam</p>
+                        
+                        <div class="sponsor-details">
+                            <div class="sponsor-detail">
+                                <div class="sponsor-detail-icon">🏆</div>
+                                <div class="sponsor-detail-content">
+                                    <div class="sponsor-detail-title">Kontribusi:</div>
+                                    <div class="sponsor-detail-text">Program Magister & Riset Pendidikan</div>
+                                </div>
+                            </div>
+                            <div class="sponsor-detail">
+                                <div class="sponsor-detail-icon">🏢</div>
+                                <div class="sponsor-detail-content">
+                                    <div class="sponsor-detail-text">Bermitra sejak 2019</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <a href="#" class="sponsor-website">
+                            🔗 Kunjungi Website
+                        </a>
+                    </div>
+                </div>
+
+                <div class="sponsor-card">
+                    <div class="sponsor-header">
+                        <div class="sponsor-type gold">Gold</div>
+                        <img src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&h=200" alt="Tzu Chi Foundation" class="sponsor-logo">
+                    </div>
+                    <div class="sponsor-content">
+                        <h3 class="sponsor-name">Tzu Chi Foundation</h3>
+                        <div class="sponsor-category">Yayasan</div>
+                        <p class="sponsor-description">Mendukung program bantuan pendidikan dan pelatihan karakter untuk guru</p>
+                        
+                        <div class="sponsor-details">
+                            <div class="sponsor-detail">
+                                <div class="sponsor-detail-icon">🏆</div>
+                                <div class="sponsor-detail-content">
+                                    <div class="sponsor-detail-title">Kontribusi:</div>
+                                    <div class="sponsor-detail-text">Pelatihan Karakter & Bantuan Sosial</div>
+                                </div>
+                            </div>
+                            <div class="sponsor-detail">
+                                <div class="sponsor-detail-icon">🏢</div>
+                                <div class="sponsor-detail-content">
+                                    <div class="sponsor-detail-text">Bermitra sejak 2021</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <a href="#" class="sponsor-website">
+                            🔗 Kunjungi Website
+                        </a>
+                    </div>
+                </div>
+
+                <div class="sponsor-card">
+                    <div class="sponsor-header">
+                        <div class="sponsor-type silver">Silver</div>
+                        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=200&h=200" alt="PT Telkom Indonesia" class="sponsor-logo">
+                    </div>
+                    <div class="sponsor-content">
+                        <h3 class="sponsor-name">PT Telkom Indonesia</h3>
+                        <div class="sponsor-category">Teknologi</div>
+                        <p class="sponsor-description">Penyedia infrastruktur teknologi untuk digitalisasi pendidikan</p>
+                        
+                        <div class="sponsor-details">
+                            <div class="sponsor-detail">
+                                <div class="sponsor-detail-icon">🏆</div>
+                                <div class="sponsor-detail-content">
+                                    <div class="sponsor-detail-title">Kontribusi:</div>
+                                    <div class="sponsor-detail-text">Infrastruktur Digital & Pelatihan IT</div>
+                                </div>
+                            </div>
+                            <div class="sponsor-detail">
+                                <div class="sponsor-detail-icon">🏢</div>
+                                <div class="sponsor-detail-content">
+                                    <div class="sponsor-detail-text">Bermitra sejak 2022</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <a href="#" class="sponsor-website">
+                            🔗 Kunjungi Website
+                        </a>
+                    </div>
+                </div>
+
+                <div class="sponsor-card">
+                    <div class="sponsor-header">
+                        <div class="sponsor-type silver">Silver</div>
+                        <img src="https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=200&h=200" alt="Dompet Dhuafa" class="sponsor-logo">
+                    </div>
+                    <div class="sponsor-content">
+                        <h3 class="sponsor-name">Dompet Dhuafa</h3>
+                        <div class="sponsor-category">Sosial</div>
+                        <p class="sponsor-description">Kerjasama dalam program bantuan pendidikan untuk keluarga kurang mampu</p>
+                        
+                        <div class="sponsor-details">
+                            <div class="sponsor-detail">
+                                <div class="sponsor-detail-icon">🏆</div>
+                                <div class="sponsor-detail-content">
+                                    <div class="sponsor-detail-title">Kontribusi:</div>
+                                    <div class="sponsor-detail-text">Bantuan Pendidikan & Pemberdayaan</div>
+                                </div>
+                            </div>
+                            <div class="sponsor-detail">
+                                <div class="sponsor-detail-icon">🏢</div>
+                                <div class="sponsor-detail-content">
+                                    <div class="sponsor-detail-text">Bermitra sejak 2020</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <a href="#" class="sponsor-website">
+                            🔗 Kunjungi Website
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partnership Packages -->
+    <section class="packages">
+        <div class="container">
+            <div class="section-header">
+                <div class="badge">Paket Kemitraan</div>
+                <h2>Pilihan Paket Sponsorship</h2>
+                <p>Berbagai pilihan paket kemitraan yang dapat disesuaikan dengan kebutuhan dan kemampuan organisasi Anda</p>
+            </div>
+            
+            <div class="packages-grid">
+                <div class="package-card">
+                    <div class="package-header premium">
+                        <div class="package-title">Premium</div>
+                        <div class="package-price">100 Juta+</div>
+                    </div>
+                    <div class="package-content">
+                        <ul class="package-features">
+                            <li class="package-feature">Logo di semua materi promosi</li>
+                            <li class="package-feature">Booth eksklusif di event</li>
+                            <li class="package-feature">Speaking opportunity</li>
+                            <li class="package-feature">Media coverage khusus</li>
+                            <li class="package-feature">Laporan impact bulanan</li>
+                        </ul>
+                        <a href="#" class="package-button">Pilih Paket</a>
+                    </div>
+                </div>
+
+                <div class="package-card">
+                    <div class="package-header gold">
+                        <div class="package-title">Gold</div>
+                        <div class="package-price">50-100 Juta</div>
+                    </div>
+                    <div class="package-content">
+                        <ul class="package-features">
+                            <li class="package-feature">Logo di materi utama</li>
+                            <li class="package-feature">Booth di event tertentu</li>
+                            <li class="package-feature">Newsletter mention</li>
+                            <li class="package-feature">Social media coverage</li>
+                            <li class="package-feature">Laporan impact kuartalan</li>
+                        </ul>
+                        <a href="#" class="package-button">Pilih Paket</a>
+                    </div>
+                </div>
+
+                <div class="package-card">
+                    <div class="package-header silver">
+                        <div class="package-title">Silver</div>
+                        <div class="package-price">25-50 Juta</div>
+                    </div>
+                    <div class="package-content">
+                        <ul class="package-features">
+                            <li class="package-feature">Logo di website</li>
+                            <li class="package-feature">Media sosial mention</li>
+                            <li class="package-feature">Certificate of partnership</li>
+                            <li class="package-feature">Laporan impact semesteran</li>
+                        </ul>
+                        <a href="#" class="package-button">Pilih Paket</a>
+                    </div>
+                </div>
+
+                <div class="package-card">
+                    <div class="package-header bronze">
+                        <div class="package-title">Bronze</div>
+                        <div class="package-price">10-25 Juta</div>
+                    </div>
+                    <div class="package-content">
+                        <ul class="package-features">
+                            <li class="package-feature">Website listing</li>
+                            <li class="package-feature">Certificate of support</li>
+                            <li class="package-feature">Laporan impact tahunan</li>
+                        </ul>
+                        <a href="#" class="package-button">Pilih Paket</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact">
+        <div class="container">
+            <h2>Tertarik Bermitra dengan Kami?</h2>
+            <p>Mari bergabung dalam misi memajukan pendidikan Indonesia. Hubungi tim kemitraan kami untuk diskusi lebih lanjut.</p>
+            
+            <div class="contact-grid">
+                <div class="contact-item">
+                    <div class="contact-icon">📞</div>
+                    <h4>Telepon</h4>
+                    <p>+62 338 123456</p>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">✉️</div>
+                    <h4>Email</h4>
+                    <p>partnership@pergunu-situbondo.org</p>
+                </div>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">📍</div>
+                    <h4>Alamat</h4>
+                    <p>Jl. Pendidikan No. 123, Situbondo</p>
+                </div>
+            </div>
+            
+            <div class="contact-buttons">
+                <a href="#" class="btn-primary">📞 Hubungi Sekarang</a>
+                <a href="#" class="btn-outline">Download Proposal Kemitraan</a>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

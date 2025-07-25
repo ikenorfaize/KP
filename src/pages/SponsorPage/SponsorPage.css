@@ -1,0 +1,629 @@
+/* Sponsor Page CSS - Based on HTML Reference */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.sponsor-page {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #FEFEFE;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* Header */
+.sponsor-header {
+    background: white;
+    border-bottom: 1px solid #E6E9E7;
+    padding: 16px 0;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.logo {
+    width: 64px;
+    height: 64px;
+    background: #0F7536;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.logo-text h1 {
+    color: #0F7536;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.logo-text p {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+}
+
+.nav {
+    display: flex;
+    gap: 32px;
+}
+
+.nav a {
+    color: #666;
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s;
+}
+
+.nav a:hover, 
+.nav a.active {
+    color: #0F7536;
+}
+
+.cta-button {
+    background: #0F7536;
+    color: white;
+    padding: 8px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background 0.3s;
+}
+
+.cta-button:hover {
+    background: #0F7536dd;
+}
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(to right, #77A686, #0F7536);
+    padding: 64px 0;
+    color: white;
+}
+
+.hero-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+}
+
+.hero-text h1 {
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 24px;
+    line-height: 1.2;
+}
+
+.hero-text p {
+    font-size: 18px;
+    margin-bottom: 32px;
+    opacity: 0.9;
+}
+
+.badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 14px;
+    display: inline-block;
+    margin-bottom: 16px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.btn-primary {
+    background: white;
+    color: #0F7536;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.3s;
+}
+
+.btn-primary:hover {
+    background: #f3f3f3;
+}
+
+.btn-outline {
+    border: 1px solid white;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn-outline:hover {
+    background: white;
+    color: #0F7536;
+}
+
+.hero-image {
+    display: flex;
+    justify-content: center;
+}
+
+.hero-image-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 32px;
+}
+
+.hero-image img {
+    width: 100%;
+    height: 256px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* Section Headers */
+.section-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.section-header .badge {
+    background: rgba(15, 117, 54, 0.1);
+    color: #0F7536;
+    margin-bottom: 16px;
+}
+
+.section-header h2 {
+    font-size: 32px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 16px;
+}
+
+.section-header p {
+    color: #666;
+    max-width: 512px;
+    margin: 0 auto;
+}
+
+/* Benefits Section */
+.benefits {
+    padding: 64px 0;
+    background: white;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 32px;
+}
+
+.benefit-card {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s;
+}
+
+.benefit-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.benefit-icon {
+    width: 64px;
+    height: 64px;
+    background: #0F7536;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    color: white;
+    font-size: 24px;
+}
+
+.benefit-card h3 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 12px;
+}
+
+.benefit-card p {
+    color: #666;
+    font-size: 14px;
+}
+
+/* Sponsors Section */
+.sponsors {
+    padding: 64px 0;
+    background: rgba(230, 233, 231, 0.2);
+}
+
+.sponsors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 32px;
+}
+
+.sponsor-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+}
+
+.sponsor-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.sponsor-header {
+    background: linear-gradient(135deg, rgba(15, 117, 54, 0.05), rgba(151, 189, 162, 0.05));
+    padding: 32px;
+    text-align: center;
+    position: relative;
+}
+
+.sponsor-logo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sponsor-type {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.sponsor-type.premium {
+    background: linear-gradient(to right, #9333ea, #7c3aed);
+    color: white;
+}
+
+.sponsor-type.gold {
+    background: linear-gradient(to right, #facc15, #eab308);
+    color: white;
+}
+
+.sponsor-type.silver {
+    background: linear-gradient(to right, #9ca3af, #6b7280);
+    color: white;
+}
+
+.sponsor-content {
+    padding: 24px;
+}
+
+.sponsor-name {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.sponsor-category {
+    display: inline-block;
+    background: rgba(15, 117, 54, 0.1);
+    color: #0F7536;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    text-align: center;
+    width: 100%;
+}
+
+.sponsor-description {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.sponsor-details {
+    margin-bottom: 20px;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 16px;
+}
+
+.sponsor-detail {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding: 8px 0;
+}
+
+.sponsor-detail:last-child {
+    margin-bottom: 0;
+}
+
+.sponsor-detail-icon {
+    color: #0F7536;
+    font-size: 16px;
+    margin-top: 2px;
+    min-width: 20px;
+}
+
+.sponsor-detail-content {
+    flex: 1;
+}
+
+.sponsor-detail-title {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+    margin-bottom: 2px;
+    text-align: left;
+}
+
+.sponsor-detail-text {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.4;
+    text-align: left;
+}
+
+.sponsor-website {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #0F7536;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 16px;
+    border: 1px solid #0F7536;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    justify-content: center;
+    margin-top: 8px;
+    background: transparent;
+}
+
+.sponsor-website:hover {
+    background: #0F7536;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(15, 117, 54, 0.2);
+}
+
+/* Partnership Packages */
+.packages {
+    padding: 64px 0;
+    background: white;
+}
+
+.packages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+}
+
+.package-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s;
+}
+
+.package-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.package-header {
+    padding: 24px;
+    text-align: center;
+    color: white;
+}
+
+.package-header.premium {
+    background: linear-gradient(to right, #9333ea, #7c3aed);
+}
+
+.package-header.gold {
+    background: linear-gradient(to right, #facc15, #eab308);
+}
+
+.package-header.silver {
+    background: linear-gradient(to right, #9ca3af, #6b7280);
+}
+
+.package-header.bronze {
+    background: linear-gradient(to right, #fb923c, #f97316);
+}
+
+.package-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.package-price {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.package-content {
+    padding: 24px;
+}
+
+.package-features {
+    list-style: none;
+    margin-bottom: 24px;
+}
+
+.package-feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.package-feature::before {
+    content: "●";
+    color: #0F7536;
+    font-weight: bold;
+    margin-top: 2px;
+}
+
+.package-button {
+    background: #0F7536;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    display: block;
+    text-align: center;
+    transition: background 0.3s;
+}
+
+.package-button:hover {
+    background: #0F7536dd;
+}
+
+/* Contact Section */
+.contact {
+    padding: 64px 0;
+    background: #0F7536;
+    color: white;
+    text-align: center;
+}
+
+.contact h2 {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+
+.contact p {
+    font-size: 18px;
+    margin-bottom: 32px;
+    opacity: 0.9;
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.contact-item {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    padding: 24px;
+}
+
+.contact-icon {
+    font-size: 24px;
+    margin-bottom: 12px;
+}
+
+.contact-item h4 {
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.contact-item p {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.contact-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-content {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+
+    .hero-text h1 {
+        font-size: 36px;
+    }
+
+    .nav {
+        display: none;
+    }
+
+    .benefits-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sponsors-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .packages-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+}

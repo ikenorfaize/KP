@@ -19,6 +19,7 @@ const Navbar = () => {
             <li><a href="#anggota">Anggota</a></li>
             <li><a href="#berita">Berita</a></li>
             <li><a href="#layanan">Layanan</a></li>
+            <li><a href="#sponsor">Sponsor</a></li>
             <li><a href="#hubungi">Hubungi Kami</a></li>
             <li className="login-button-wrapper">
               <NavLink

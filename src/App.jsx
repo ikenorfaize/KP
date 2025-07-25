@@ -7,6 +7,7 @@ import Berita from "./componen/Berita/Berita";
 import StatsSection from "./componen/Stats/StatsSection";
 import Anggota from "./componen/Anggota/Anggota";
 import Layanan from "./componen/Layanan/Layanan";
+import Sponsor from "./componen/Sponsor/Sponsor";
 import Footer from "./componen/Footer/Footer";
 
 import BeritaUtama from "./pages/BeritaUtama";
@@ -17,6 +18,7 @@ import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
 import UserDashboard from "./pages/UserDashboard/UserDashboard";
+import SponsorPage from "./pages/SponsorPage/SponsorPage";
 
 import "./App.css";
 
@@ -37,6 +39,7 @@ const App = () => {
               <Anggota />
               <Berita />
               <Layanan />
+              <Sponsor />
               <Footer />
             </>
           }
@@ -45,6 +48,7 @@ const App = () => {
         <Route path="/berita-1" element={<><Navbar /><Berita1 /></>} />
         <Route path="/berita-2" element={<><Navbar /><Berita2 /></>} />
         <Route path="/berita-3" element={<><Navbar /><Berita3 /></>} />
+        <Route path="/sponsor" element={<><Navbar /><SponsorPage /><Footer /></>} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/admin" element={<AdminDashboard />} />
