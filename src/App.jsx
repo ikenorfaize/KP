@@ -1,5 +1,6 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import Navbar from "./componen/Navbar/Navbar";
 import Hero from "./componen/Hero/Hero";
 import Tentang from "./componen/Tentang/Tentang";
@@ -23,6 +24,37 @@ import SponsorPage from "./pages/SponsorPage/SponsorPage";
 import "./App.css";
 
 const App = () => {
+  const location = useLocation();
+
+  // Disable browser scroll restoration globally
+  useEffect(() => {
+    if (window.history.scrollRestoration) {
+      window.history.scrollRestoration = 'manual';
+    }
+  }, []);
+
+  // Reset scroll position on route change for specific routes
+  useEffect(() => {
+    if (location.pathname === '/sponsor' || location.pathname === '/tentang' || 
+        location.pathname === '/anggota' || location.pathname === '/berita' || 
+        location.pathname === '/layanan') {
+      window.scrollTo(0, 0);
+    }
+  }, [location.pathname]);
+
+  // Handle hash navigation for home page
+  useEffect(() => {
+    if (location.pathname === '/' && location.hash) {
+      // Wait a bit for the page to render
+      setTimeout(() => {
+        const element = document.querySelector(location.hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [location.pathname, location.hash]);
+
   return (
     <>
       <Routes>
@@ -49,6 +81,10 @@ const App = () => {
         <Route path="/berita-2" element={<><Navbar /><Berita2 /></>} />
         <Route path="/berita-3" element={<><Navbar /><Berita3 /></>} />
         <Route path="/sponsor" element={<><Navbar /><SponsorPage /><Footer /></>} />
+        <Route path="/tentang" element={<><Navbar /><Tentang /><Footer /></>} />
+        <Route path="/anggota" element={<><Navbar /><Anggota /><Footer /></>} />
+        <Route path="/berita" element={<><Navbar /><Berita /><Footer /></>} />
+        <Route path="/layanan" element={<><Navbar /><Layanan /><Footer /></>} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/admin" element={<AdminDashboard />} />

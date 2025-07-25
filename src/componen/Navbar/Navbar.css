@@ -61,6 +61,20 @@
   transform: scale(1.05);
 }
 
+.sponsor-active {
+  color: #1e7e34 !important;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.navbar-right ul li a {
+  color: #000;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
 .navbar-right li:hover {
   color: #1e7e34;
     transform: scale(1.05);

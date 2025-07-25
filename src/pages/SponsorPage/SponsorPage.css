@@ -11,6 +11,33 @@
     background-color: #FEFEFE;
     color: #333;
     line-height: 1.6;
+    min-height: 100vh;
+    position: relative;
+    padding-top: 0;
+    margin-top: 0;
+    /* Disable scroll restoration */
+    overscroll-behavior: none;
+    /* Ensure page starts at top */
+    scroll-behavior: auto;
+}
+
+/* Animation Classes */
+/* Hero section is visible immediately without animation */
+.hero {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Other sections have scroll animation */
+.benefits, .sponsors, .packages, .contact {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.8s ease;
+}
+
+.benefits.animate-in, .sponsors.animate-in, .packages.animate-in, .contact.animate-in {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .container {
@@ -19,98 +46,15 @@
     padding: 0 24px;
 }
 
-/* Header */
-.sponsor-header {
-    background: white;
-    border-bottom: 1px solid #E6E9E7;
-    padding: 16px 0;
-    position: sticky;
-    top: 0;
-    z-index: 50;
-}
-
-.header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.logo-section {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.logo-link {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-    color: inherit;
-}
-
-.logo {
-    width: 64px;
-    height: 64px;
-    background: #0F7536;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
-    font-size: 24px;
-}
-
-.logo-text h1 {
-    color: #0F7536;
-    font-size: 18px;
-    font-weight: 600;
-    margin: 0;
-}
-
-.logo-text p {
-    color: #666;
-    font-size: 14px;
-    margin: 0;
-}
-
-.nav {
-    display: flex;
-    gap: 32px;
-}
-
-.nav a {
-    color: #666;
-    text-decoration: none;
-    font-size: 16px;
-    transition: color 0.3s;
-}
-
-.nav a:hover, 
-.nav a.active {
-    color: #0F7536;
-}
-
-.cta-button {
-    background: #0F7536;
-    color: white;
-    padding: 8px 24px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: background 0.3s;
-}
-
-.cta-button:hover {
-    background: #0F7536dd;
-}
-
 /* Hero Section */
 .hero {
     background: linear-gradient(to right, #77A686, #0F7536);
     padding: 64px 0;
     color: white;
+    position: relative;
+    top: 0;
+    z-index: 1;
+    margin-top: 0;
 }
 
 .hero-content {
@@ -604,10 +548,6 @@
 
     .hero-text h1 {
         font-size: 36px;
-    }
-
-    .nav {
-        display: none;
     }
 
     .benefits-grid {

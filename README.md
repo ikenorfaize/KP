@@ -244,6 +244,14 @@ mkdir -p uploads/certificates
 - ✅ Check `db.json` tidak corrupt
 - ✅ Restart `npm run api`
 
+**5. Import error "Failed to resolve import ./pages/SponsorPage/SponsorPage"**
+```bash
+# Problem: File tidak ditemukan atau nama file salah
+# Solution: Pastikan file exists dengan nama yang tepat
+ls src/pages/SponsorPage/     # Check file exists
+npm run dev                   # Restart development server
+```
+
 #### **Debug Mode**
 ```javascript
 // Enable debug logging
@@ -317,6 +325,11 @@ npm run full-demo    # All services including file server
 ---
 
 ## 📝 **Changelog**
+
+### **v1.0.1 (January 2025)**
+- 🔧 Fixed SponsorPage import error
+- 🧹 Cleanup temporary files (SponsorPageSimple.jsx)
+- 📝 Enhanced troubleshooting documentation
 
 ### **v1.0.0 (January 2025)**
 - ✅ Initial release dengan React + Vite
