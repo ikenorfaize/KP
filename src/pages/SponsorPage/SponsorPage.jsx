@@ -13,8 +13,6 @@ const SponsorPage = () => {
 
   // Force immediate scroll to top when route changes - HIGHEST PRIORITY
   useEffect(() => {
-    console.log('SponsorPage mounted, forcing scroll to top');
-    
     // Multiple approaches to ensure scroll to top
     window.history.scrollRestoration = 'manual';
     
@@ -23,26 +21,17 @@ const SponsorPage = () => {
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
     
-    console.log('Initial scroll position:', window.scrollY);
-    
     // Additional timeout to ensure it works
     setTimeout(() => {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
-      console.log('After first timeout, scroll position:', window.scrollY);
     }, 0);
     
     // Another timeout for stubborn cases
     setTimeout(() => {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-      console.log('After second timeout, scroll position:', window.scrollY);
     }, 10);
-    
-    // Final check
-    setTimeout(() => {
-      console.log('Final scroll position:', window.scrollY);
-    }, 100);
   }, []);
 
   useEffect(() => {

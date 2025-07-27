@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import bcrypt from 'bcryptjs';
+import ApplicationManager from '../../componen/ApplicationManager/ApplicationManager';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -1006,6 +1007,10 @@ const AdminDashboard = () => {
     </div>
   );
 
+  const renderApplications = () => (
+    <ApplicationManager />
+  );
+
   return (
     <div className="admin-dashboard">
       {/* Header */}
@@ -1059,6 +1064,12 @@ const AdminDashboard = () => {
             Add User
           </button>
           <button
+            className={`nav-item ${activeTab === 'applications' ? 'active' : ''}`}
+            onClick={() => setActiveTab('applications')}
+          >
+            📝 Applications
+          </button>
+          <button
             className={`nav-item ${activeTab === 'certificates' ? 'active' : ''}`}
             onClick={() => setActiveTab('certificates')}
           >
@@ -1077,6 +1088,7 @@ const AdminDashboard = () => {
       <main className="admin-main">
         {activeTab === 'dashboard' && renderDashboard()}
         {activeTab === 'add-user' && renderAddUser()}
+        {activeTab === 'applications' && renderApplications()}
         {activeTab === 'certificates' && renderCertificates()}
         {activeTab === 'analytics' && renderAnalytics()}
       </main>

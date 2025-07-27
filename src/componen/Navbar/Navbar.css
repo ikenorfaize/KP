@@ -45,6 +45,7 @@
   transition: all 0.3s ease;
   text-transform: capitalize;
   font-weight: 400;
+  margin: 0; /* Reset margin untuk alignment yang tepat */
 }
 
 .navbar-right ul li a,
@@ -130,4 +131,73 @@
 .login-button-wrapper:hover {
   transform: none !important;
   color: inherit !important;
+}
+
+/* User Menu Styles */
+.user-menu {
+  position: relative;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-name {
+  color: #1e7e34;
+  font-weight: 600;
+  font-size: 15px; /* Samakan dengan font-size navbar lainnya */
+  margin: 0; /* Hapus margin untuk alignment yang tepat */
+  line-height: 1.2;
+}
+
+.user-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dashboard-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none !important;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.dashboard-btn.admin {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: white !important;
+}
+
+.dashboard-btn.user {
+  background: linear-gradient(135deg, #1e7e34, #0f7536);
+  color: white !important;
+}
+
+.dashboard-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  color: white !important;
+  text-decoration: none !important;
+}
+
+.logout-btn {
+  padding: 6px 12px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #374151;
+  font-weight: 500;
+}
+
+.logout-btn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  color: #1f2937;
 }

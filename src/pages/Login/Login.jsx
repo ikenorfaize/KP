@@ -149,7 +149,9 @@ const Login = () => {
           </form>
 
           <p className="create-account">
-            <Link to="/register">Create a new Account</Link>
+            <span style={{color: '#6b7280', fontSize: '0.9rem'}}>
+              Belum punya akun? Hubungi Admin untuk mendaftar
+            </span>
           </p>
         </div>
       </div>

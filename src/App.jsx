@@ -10,13 +10,14 @@ import Anggota from "./componen/Anggota/Anggota";
 import Layanan from "./componen/Layanan/Layanan";
 import Sponsor from "./componen/Sponsor/Sponsor";
 import Footer from "./componen/Footer/Footer";
+import StatusTracker from "./componen/StatusTracker/StatusTracker";
 
 import BeritaUtama from "./pages/BeritaUtama";
 import Berita1 from "./pages/Berita1";
 import Berita2 from "./pages/Berita2";
 import Berita3 from "./pages/Berita3";
 import Login from "./pages/Login/Login";
-import Register from "./pages/Register/Register";
+import RegisterForm from "./pages/RegisterForm/RegisterForm";
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
 import UserDashboard from "./pages/UserDashboard/UserDashboard";
 import SponsorPage from "./pages/SponsorPage/SponsorPage";
@@ -71,6 +72,9 @@ const App = () => {
               <Anggota />
               <Berita />
               <Layanan />
+              <div id="status-tracker">
+                <StatusTracker />
+              </div>
               <Sponsor />
               <Footer />
             </>
@@ -86,7 +90,7 @@ const App = () => {
         <Route path="/berita" element={<><Navbar /><Berita /><Footer /></>} />
         <Route path="/layanan" element={<><Navbar /><Layanan /><Footer /></>} />
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/daftar" element={<RegisterForm />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/user-dashboard" element={<UserDashboard />} />
       </Routes>

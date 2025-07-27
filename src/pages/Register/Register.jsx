@@ -33,8 +33,6 @@ const Register = () => {
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     
-    console.log('Input changed:', { name, value, type, checked }); // Debug log
-    
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : (value?.trim() || '') // Trim text inputs
@@ -42,7 +40,6 @@ const Register = () => {
     
     // Clear terms error when checkbox is checked
     if (name === 'agreeTerms' && checked) {
-      console.log('Clearing terms error'); // Debug log
       setTermsError(false);
     }
     
@@ -55,16 +52,10 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    console.log('Form submitted!'); // Debug log
-    console.log('agreeTerms:', formData.agreeTerms); // Debug log
-    console.log('password:', formData.password); // Debug log
-    console.log('confirmPassword:', formData.confirmPassword); // Debug log
-    
     let hasError = false;
     
     // Validate password matching
     if (formData.password !== formData.confirmPassword) {
-      console.log('Passwords do not match - showing error'); // Debug log
       setPasswordError(true);
       hasError = true;
     } else {
@@ -73,7 +64,6 @@ const Register = () => {
     
     // Validate terms and conditions
     if (!formData.agreeTerms) {
-      console.log('Terms not agreed - showing error'); // Debug log
       setTermsError(true);
       hasError = true;
     } else {

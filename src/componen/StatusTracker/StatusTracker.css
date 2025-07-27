@@ -1,0 +1,136 @@
+/* StatusTracker.css */
+.status-tracker {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tracker-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.tracker-header h2 {
+  color: #1e7e34;
+  margin-bottom: 0.5rem;
+}
+
+.tracker-header p {
+  color: #6b7280;
+}
+
+.tracker-form {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.email-input {
+  flex: 1;
+  padding: 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.check-btn {
+  padding: 12px 24px;
+  background: #1e7e34;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.check-btn:hover:not(:disabled) {
+  background: #0f7536;
+  transform: translateY(-1px);
+}
+
+.check-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.status-result {
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid;
+}
+
+.status-result.pending {
+  background: #fef3c7;
+  border-left-color: #f59e0b;
+}
+
+.status-result.approved {
+  background: #d1fae5;
+  border-left-color: #10b981;
+}
+
+.status-result.rejected {
+  background: #fee2e2;
+  border-left-color: #ef4444;
+}
+
+.status-result.not_found {
+  background: #f3f4f6;
+  border-left-color: #6b7280;
+}
+
+.status-result.error {
+  background: #fef2f2;
+  border-left-color: #dc2626;
+}
+
+.status-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.status-icon {
+  font-size: 1.5rem;
+}
+
+.status-details p {
+  margin: 0.5rem 0;
+}
+
+.next-steps {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 6px;
+}
+
+.next-steps ul {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.next-steps li {
+  margin: 0.25rem 0;
+}
+
+.login-link {
+  display: inline-block;
+  background: #1e7e34;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.login-link:hover {
+  background: #0f7536;
+  transform: translateY(-1px);
+}
