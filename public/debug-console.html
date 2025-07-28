@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PERGUNU Debug Console</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e1e;
+            color: #00ff00;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 { 
+            color: #00ff41; 
+            text-align: center; 
+            margin-bottom: 30px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #0F7536;
+        }
+        button {
+            background: #0F7536;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover { background: #0d6530; }
+        button.danger { background: #dc3545; }
+        button.danger:hover { background: #c82333; }
+        #console { 
+            background: #000; 
+            color: #00ff00; 
+            padding: 15px; 
+            border-radius: 5px; 
+            height: 400px; 
+            overflow-y: auto; 
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            border: 1px solid #0F7536;
+        }
+        .config {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #0F7536;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status.ok { background: #28a745; color: white; }
+        .status.error { background: #dc3545; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 PERGUNU Debug Console</h1>
+        
+        <div class="config">
+            <h3 style="margin-top: 0; color: #00ff41;">📧 EmailJS Configuration</h3>
+            <div>
+                <strong>Target:</strong> fairuzo1dyck@gmail.com<br>
+                <strong>Service:</strong> service_ublbpnp<br>
+                <strong>Template:</strong> template_qnuud6d<br>
+                <strong>Public Key:</strong> AIgbwO-ayq2i-I0ou<br>
+                <strong>EmailJS Status:</strong> <span id="emailjs-status" class="status">⏳ Checking...</span>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <div class="card">
+                <h3 style="margin-top: 0;">⚡ Quick Actions</h3>
+                <button onclick="testEmailJS()">📧 Test EmailJS</button>
+                <button onclick="checkStoredErrors()">🔍 Check Stored Errors</button>
+                <button onclick="clearAllDebugData()" class="danger">🧹 Clear All Data</button>
+                <button onclick="window.open('/daftar', '_blank')">📝 Open Register Form</button>
+            </div>
+            
+            <div class="card">
+                <h3 style="margin-top: 0;">📊 System Status</h3>
+                <div>
+                    <strong>LocalStorage:</strong> <span id="storage-status">⏳ Checking...</span><br>
+                    <strong>Network:</strong> <span id="network-status">⏳ Checking...</span><br>
+                    <strong>Console:</strong> <span id="console-status">✅ Active</span><br>
+                    <strong>Time:</strong> <span id="current-time"></span>
+                </div>
+            </div>
+        </div>
+        
+        <div id="console"></div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+            <button onclick="clearConsole()" class="danger">🧹 Clear Console</button>
+            <button onclick="copyConsole()">📋 Copy Console</button>
+        </div>
+    </div>
+
+    <script>
+        const consoleDiv = document.getElementById('console');
+        let consoleBuffer = '';
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                info: '#00ff00',
+                success: '#00ff41',
+                error: '#ff6b6b',
+                warn: '#ffd93d'
+            };
+            const color = colors[type] || '#00ff00';
+            
+            const line = `[${timestamp}] ${message}\n`;
+            consoleBuffer += line;
+            consoleDiv.innerHTML += `<span style="color: ${color}">${line}</span>`;
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+        
+        function clearConsole() {
+            consoleDiv.innerHTML = '';
+            consoleBuffer = '';
+            log('🧹 Console cleared', 'info');
+        }
+        
+        function copyConsole() {
+            navigator.clipboard.writeText(consoleBuffer).then(() => {
+                log('📋 Console copied to clipboard', 'success');
+            });
+        }
+        
+        // EmailJS Test
+        async function testEmailJS() {
+            log('📧 === TESTING EMAILJS ===', 'info');
+            
+            try {
+                // Initialize EmailJS
+                if (!window.emailjs) {
+                    throw new Error('EmailJS not loaded');
+                }
+                
+                window.emailjs.init('AIgbwO-ayq2i-I0ou');
+                log('✅ EmailJS initialized', 'success');
+                
+                // Send test email
+                const result = await window.emailjs.send(
+                    'service_ublbpnp',
+                    'template_qnuud6d',
+                    {
+                        to_email: 'fairuzo1dyck@gmail.com',
+                        name: 'Admin PERGUNU',
+                        applicant_name: 'Debug Console Test',
+                        applicant_email: 'debug@console.test',
+                        applicant_phone: '08123456789',
+                        applicant_position: 'Debug Tester',
+                        application_date: new Date().toLocaleDateString('id-ID')
+                    }
+                );
+                
+                log(`✅ Email sent successfully! Status: ${result.status}`, 'success');
+                log(`📧 Response: ${JSON.stringify(result, null, 2)}`, 'info');
+                
+            } catch (error) {
+                log(`❌ EmailJS test failed: ${error.message}`, 'error');
+                log(`📊 Error details: ${JSON.stringify(error, null, 2)}`, 'error');
+            }
+        }
+        
+        // Check stored errors
+        function checkStoredErrors() {
+            log('🔍 === CHECKING STORED ERRORS ===', 'info');
+            
+            const errors = [
+                'last_form_error',
+                'last_promise_error', 
+                'pergunu_form_debug'
+            ];
+            
+            let foundErrors = false;
+            
+            errors.forEach(key => {
+                const data = localStorage.getItem(key);
+                if (data) {
+                    foundErrors = true;
+                    log(`📋 Found ${key}:`, 'warn');
+                    try {
+                        const parsed = JSON.parse(data);
+                        log(JSON.stringify(parsed, null, 2), 'warn');
+                    } catch {
+                        log(data, 'warn');
+                    }
+                }
+            });
+            
+            if (!foundErrors) {
+                log('✅ No stored errors found', 'success');
+            }
+        }
+        
+        // Clear all debug data
+        function clearAllDebugData() {
+            log('🧹 === CLEARING ALL DEBUG DATA ===', 'info');
+            
+            const keys = [
+                'last_form_error',
+                'last_promise_error',
+                'pergunu_form_debug',
+                'pergunu_debug_active',
+                'pergunu_debug_timestamp'
+            ];
+            
+            keys.forEach(key => {
+                if (localStorage.getItem(key)) {
+                    localStorage.removeItem(key);
+                    log(`🗑️ Removed: ${key}`, 'info');
+                }
+            });
+            
+            log('✅ All debug data cleared', 'success');
+            updateStatus();
+        }
+        
+        // Update status indicators
+        function updateStatus() {
+            // EmailJS status
+            document.getElementById('emailjs-status').textContent = window.emailjs ? '✅ Loaded' : '❌ Not Loaded';
+            document.getElementById('emailjs-status').className = 'status ' + (window.emailjs ? 'ok' : 'error');
+            
+            // Storage status
+            const hasDebugData = ['last_form_error', 'pergunu_form_debug'].some(key => localStorage.getItem(key));
+            document.getElementById('storage-status').textContent = hasDebugData ? '⚠️ Has Debug Data' : '✅ Clean';
+            
+            // Network status (simple check)
+            document.getElementById('network-status').textContent = navigator.onLine ? '✅ Online' : '❌ Offline';
+            
+            // Current time
+            document.getElementById('current-time').textContent = new Date().toLocaleString();
+        }
+        
+        // Auto-start
+        window.addEventListener('load', () => {
+            log('🔧 PERGUNU Debug Console Ready', 'success');
+            log('💡 Click buttons above to start debugging', 'info');
+            updateStatus();
+            
+            // Update time every second
+            setInterval(() => {
+                document.getElementById('current-time').textContent = new Date().toLocaleString();
+            }, 1000);
+        });
+        
+        // Monitor errors
+        window.onerror = (msg, url, line, col, error) => {
+            log(`🚨 Global Error: ${msg} at ${url}:${line}:${col}`, 'error');
+            if (error) log(`Stack: ${error.stack}`, 'error');
+        };
+        
+        window.addEventListener('unhandledrejection', event => {
+            log(`🚨 Unhandled Promise Rejection: ${event.reason}`, 'error');
+        });
+    </script>
+</body>
+</html>

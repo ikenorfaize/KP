@@ -3,86 +3,123 @@ import emailTemplates from './EmailTemplates.js';
 
 class EmailService {
   constructor() {
-    // Konfigurasi email EmailJS - Production Ready
+    // Enhanced EmailJS Configuration - PASTIKAN SESUAI DASHBOARD ANDA
     this.emailConfig = {
-      serviceId: 'service_ublbpnp', // ✅ Sudah benar dari EmailJS Anda
-      templateId: 'template_qnuud6d', // Ganti dengan Template ID untuk admin notification
-      publicKey: 'AIgbwO-ayq2i-I0ou', // Ganti dengan Public Key dari dashboard
-      adminEmail: 'fairuzo1dyck@gmail.com', // ✅ Email admin yang baru
-      isDemoMode: false // Set ke production untuk real email
+      serviceId: 'service_ublbpnp', // ✅ Service ID dari EmailJS dashboard
+      templateId: 'template_qnuud6d', // ⚠️ PASTIKAN template ini ada dan aktif
+      publicKey: 'AIgbwO-ayq2i-I0ou', // ✅ Public key dari EmailJS dashboard
+      adminEmail: 'fairuzo1dyck@gmail.com', // ✅ Target email yang benar
+      isDemoMode: false // Set false untuk production
     };
+    
+    // Add retry configuration
+    this.retryConfig = {
+      maxRetries: 3,
+      retryDelay: 2000,
+      timeoutMs: 30000
+    };
+    
+    // Add debug flag
+    this.debugMode = true;
   }
 
-  // Initialize EmailJS (atau service email lainnya)
+  // Enhanced EmailJS initialization dengan better error handling
   async initEmailService() {
+    console.log('🔧 === EMAILJS INITIALIZATION DEBUG ===');
+    console.log('🔧 Config being used:', {
+      serviceId: this.emailConfig.serviceId,
+      templateId: this.emailConfig.templateId,
+      publicKey: this.emailConfig.publicKey?.substring(0, 8) + '...',
+      adminEmail: this.emailConfig.adminEmail
+    });
+    
     try {
       if (this.emailConfig.isDemoMode) {
-        console.log('📧 Demo Mode: Email service simulation enabled');
-        return {
-          send: this.mockEmailSend.bind(this),
-          init: () => console.log('📧 Mock EmailJS initialized')
-        };
+        console.log('📧 Demo Mode Active - Using mock email service');
+        return { send: this.mockEmailSend.bind(this) };
       }
       
-      // Cek apakah EmailJS sudah tersedia di window (dari CDN)
-      if (window.emailjs) {
-        console.log('✅ Using EmailJS from window (CDN)');
+      // Check for EmailJS in window (CDN)
+      if (typeof window !== 'undefined' && window.emailjs) {
+        console.log('✅ EmailJS found in window (CDN)');
+        console.log('📦 EmailJS methods available:', Object.keys(window.emailjs));
         
-        // ALWAYS re-initialize untuk memastikan public key ter-set
+        // Verify all required configuration
+        const missingConfig = [];
+        if (!this.emailConfig.publicKey) missingConfig.push('publicKey');
+        if (!this.emailConfig.serviceId) missingConfig.push('serviceId');
+        if (!this.emailConfig.templateId) missingConfig.push('templateId');
+        if (!this.emailConfig.adminEmail) missingConfig.push('adminEmail');
+        
+        if (missingConfig.length > 0) {
+          throw new Error(`Missing EmailJS configuration: ${missingConfig.join(', ')}`);
+        }
+        
+        // Initialize EmailJS with public key
+        console.log('🔧 Initializing EmailJS with public key...');
+        console.log('🔑 Public key:', this.emailConfig.publicKey);
+        
         window.emailjs.init(this.emailConfig.publicKey);
-        console.log('🔧 EmailJS re-initialized dengan public key');
         
-        // Tambah delay kecil untuk memastikan init selesai
+        // Wait a moment for initialization
         await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Test EmailJS availability
+        if (typeof window.emailjs.send !== 'function') {
+          throw new Error('EmailJS send method not available after initialization');
+        }
+        
+        console.log('✅ EmailJS initialized successfully');
+        console.log('📧 Send method type:', typeof window.emailjs.send);
         
         return window.emailjs;
       }
       
-      // Fallback: coba import EmailJS
-      try {
-        const emailjs = await import('@emailjs/browser');
-        emailjs.init(this.emailConfig.publicKey);
-        console.log('✅ Using EmailJS from import');
-        
-        // Tambah delay kecil untuk memastikan init selesai
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        return emailjs;
-      } catch (importError) {
-        console.warn('⚠️ Failed to import EmailJS:', importError.message);
-        console.log('📧 Falling back to demo mode');
-        return {
-          send: this.mockEmailSend.bind(this),
-          init: () => console.log('📧 Mock EmailJS initialized (fallback)')
-        };
+      // Fallback: Try importing EmailJS
+      console.log('📦 EmailJS not in window, attempting import...');
+      const emailjs = await import('@emailjs/browser');
+      
+      if (!emailjs || !emailjs.send) {
+        throw new Error('EmailJS import failed or send method not available');
       }
       
+      emailjs.init(this.emailConfig.publicKey);
+      console.log('✅ EmailJS imported and initialized');
+      return emailjs;
+      
     } catch (error) {
-      console.error('❌ Failed to initialize email service:', error);
-      console.log('📧 Falling back to demo mode');
-      return {
+      console.error('❌ EmailJS initialization failed:', error);
+      
+      // Return mock service as fallback
+      console.log('📧 Falling back to demo mode due to initialization failure');
+      return { 
         send: this.mockEmailSend.bind(this),
-        init: () => console.log('📧 Mock EmailJS initialized (fallback)')
+        isFallback: true,
+        initError: error.message
       };
     }
   }
 
-  // Mock email send untuk demo
+  // Enhanced mock email dengan realistic behavior
   async mockEmailSend(serviceId, templateId, emailParams) {
-    console.log('📧 DEMO EMAIL SENT:');
-    console.log('-------------------');
-    console.log('📤 To:', emailParams.to_email);
-    console.log('📧 Subject:', emailParams.subject);
-    console.log('👤 To Name:', emailParams.to_name);
-    console.log('📄 Template ID:', templateId);
-    console.log('-------------------');
+    console.log('📧 === MOCK EMAIL SERVICE (DEMO MODE) ===');
+    console.log('🎯 To:', emailParams.to_email);
+    console.log('📧 Subject: New PERGUNU Registration');
+    console.log('👤 Applicant:', emailParams.applicant_name);
+    console.log('📱 Email:', emailParams.applicant_email);
+    console.log('📞 Phone:', emailParams.applicant_phone);
+    console.log('🏫 School:', emailParams.applicant_school);
+    console.log('📋 Template ID:', templateId);
+    console.log('🔧 Service ID:', serviceId);
+    console.log('⚠️ NOTE: This is MOCK mode - no real email sent!');
     
-    // Simulate email sending delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Simulate realistic email delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
     
     return {
       status: 200,
-      text: 'Demo email sent successfully'
+      text: 'Mock email sent successfully - CHECK YOUR EMAILJS CONFIG!',
+      timestamp: new Date().toISOString()
     };
   }
 
@@ -147,34 +184,50 @@ class EmailService {
 
   // Kirim notifikasi ke admin untuk pendaftaran baru
   async sendAdminNotification(userData) {
-    console.log('🔄 Starting sendAdminNotification for:', userData.fullName);
-    console.log('🔄 Full userData received:', userData);
+    console.log('📧 === ENHANCED ADMIN NOTIFICATION DEBUG ===');
+    console.log('🎯 Target email:', this.emailConfig.adminEmail);
+    console.log('👤 Applicant:', userData.fullName);
+    console.log('📧 EmailJS Config Check:');
+    console.log('   Service ID:', this.emailConfig.serviceId);
+    console.log('   Template ID:', this.emailConfig.templateId);
+    console.log('   Public Key:', this.emailConfig.publicKey?.substring(0, 12) + '...');
+    console.log('   Demo Mode:', this.emailConfig.isDemoMode);
+    
+    const startTime = Date.now();
     
     try {
-      // 1. Validasi data penting
-      if (!userData.fullName || !userData.email) {
-        throw new Error('❌ Data user tidak lengkap: fullName atau email kosong');
+      // Validate input data
+      if (!userData.fullName?.trim() || !userData.email?.trim()) {
+        throw new Error('Required user data missing (fullName or email)');
       }
-
-      // 2. Validasi konfigurasi email
-      console.log('🔧 Admin email target:', this.emailConfig.adminEmail);
-      if (!this.emailConfig.adminEmail || this.emailConfig.adminEmail === '') {
-        throw new Error('❌ Admin email tidak dikonfigurasi!');
+      
+      // Validate email configuration
+      if (!this.emailConfig.adminEmail) {
+        throw new Error('Admin email not configured');
       }
-
+      
+      // Initialize EmailJS
+      console.log('🔧 Initializing EmailJS service...');
       const emailjs = await this.initEmailService();
-      console.log('✅ EmailJS service initialized');
       
-      const template = emailTemplates.adminNotification(userData);
-      console.log('✅ Email template generated');
-      console.log('📧 Template subject:', template.subject);
-      console.log('📧 Template HTML length:', template.html ? template.html.length : 0);
+      if (emailjs.isFallback) {
+        console.log('⚠️ Using fallback mock service due to:', emailjs.initError);
+        console.log('❌ REAL EMAIL WILL NOT BE SENT!');
+      } else {
+        console.log('✅ EmailJS service initialized for REAL email sending');
+      }
       
+      // Prepare comprehensive email parameters
       const emailParams = {
+        // REQUIRED: Template variables untuk EmailJS
         to_email: this.emailConfig.adminEmail,
-        name: 'Admin PERGUNU',
-        applicant_name: userData.fullName,
-        applicant_email: userData.email,
+        to_name: 'Admin PERGUNU',
+        from_name: 'PERGUNU Registration System',
+        reply_to: userData.email,
+        
+        // Applicant data dengan fallback
+        applicant_name: userData.fullName || 'Tidak diisi',
+        applicant_email: userData.email || 'Tidak diisi',
         applicant_phone: userData.phone || 'Tidak diisi',
         applicant_position: userData.position || 'Tidak diisi',
         applicant_school: userData.school || 'Tidak diisi',
@@ -182,48 +235,185 @@ class EmailService {
         applicant_pc: userData.pc || 'Tidak diisi',
         applicant_education: userData.education || 'Tidak diisi',
         applicant_experience: userData.experience || 'Tidak diisi',
-        application_date: new Date().toLocaleDateString('id-ID'),
-        reply_to: userData.email
+        
+        // System data
+        application_date: new Date().toLocaleDateString('id-ID', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        submission_time: new Date().toISOString(),
+        
+        // Message content
+        subject: `🔔 Pendaftaran Baru PERGUNU - ${userData.fullName}`,
+        message: `Pendaftaran baru dari ${userData.fullName} (${userData.email}) memerlukan review Anda.`,
+        
+        // Additional debugging info
+        debug_info: `Sent via EmailJS at ${new Date().toISOString()}`,
+        system_info: 'PERGUNU Registration System v1.0'
       };
-
-      // 3. Logging detail untuk debugging
-      console.log('📧 === EMAIL SENDING DETAILS ===');
-      console.log('🎯 Target Email:', emailParams.to_email);
-      console.log('🔧 Service ID:', this.emailConfig.serviceId);
-      console.log('🔧 Template ID:', this.emailConfig.templateId);
-      console.log('🔧 Public Key:', this.emailConfig.publicKey.substring(0, 10) + '...');
-      console.log('📧 Subject:', emailParams.subject);
-      console.log('📧 Has message_html:', !!emailParams.message_html);
-      console.log('📧 Reply to:', emailParams.reply_to);
-
-      // 4. Kirim email
-      console.log('📤 Sending email to EmailJS...');
-      const result = await emailjs.send(
-        this.emailConfig.serviceId,
-        this.emailConfig.templateId,
-        emailParams
-      );
-
-      console.log('✅ === EMAIL SENT SUCCESSFULLY ===');
-      console.log('📧 EmailJS Response:', result);
-      console.log('📧 Status:', result.status);
-      console.log('📧 Response Text:', result.text);
-      console.log('🎯 Email should arrive at:', emailParams.to_email);
       
-      return { success: true, result, targetEmail: emailParams.to_email };
+      console.log('📧 === EMAIL PARAMETERS PREPARED ===');
+      console.log('📤 Parameters count:', Object.keys(emailParams).length);
+      console.log('📧 Key parameters:');
+      console.log('   To Email:', emailParams.to_email);
+      console.log('   Applicant Name:', emailParams.applicant_name);
+      console.log('   Applicant Email:', emailParams.applicant_email);
+      console.log('   Subject:', emailParams.subject);
+      
+      // Send email with retry mechanism
+      let lastError;
+      for (let attempt = 1; attempt <= this.retryConfig.maxRetries; attempt++) {
+        console.log(`📤 === EMAIL SEND ATTEMPT ${attempt}/${this.retryConfig.maxRetries} ===`);
+        
+        try {
+          // Create timeout promise
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error(`EmailJS timeout after ${this.retryConfig.timeoutMs}ms`)), 
+              this.retryConfig.timeoutMs)
+          );
+          
+          // Create send promise dengan debugging
+          console.log('📤 Calling emailjs.send with:');
+          console.log('   Service ID:', this.emailConfig.serviceId);
+          console.log('   Template ID:', this.emailConfig.templateId);
+          console.log('   Parameters keys:', Object.keys(emailParams));
+          
+          const sendPromise = emailjs.send(
+            this.emailConfig.serviceId,
+            this.emailConfig.templateId,
+            emailParams
+          );
+          
+          // Race between send and timeout
+          const result = await Promise.race([sendPromise, timeoutPromise]);
+          
+          const duration = Date.now() - startTime;
+          
+          console.log('✅ === EMAIL SENT SUCCESSFULLY ===');
+          console.log('📧 EmailJS Response:');
+          console.log('   Status:', result.status);
+          console.log('   Text:', result.text);
+          console.log('   Duration:', duration + 'ms');
+          console.log('   Attempt:', attempt);
+          console.log('🎯 Email details:');
+          console.log('   Sent to:', this.emailConfig.adminEmail);
+          console.log('   About:', userData.fullName);
+          console.log('   Service used:', this.emailConfig.serviceId);
+          console.log('   Template used:', this.emailConfig.templateId);
+          
+          return {
+            success: true,
+            result: result,
+            targetEmail: this.emailConfig.adminEmail,
+            applicantName: userData.fullName,
+            attempt: attempt,
+            duration: duration,
+            timestamp: new Date().toISOString(),
+            emailParams: emailParams,
+            serviceId: this.emailConfig.serviceId,
+            templateId: this.emailConfig.templateId
+          };
+          
+        } catch (attemptError) {
+          console.error(`❌ Attempt ${attempt} failed:`, attemptError);
+          console.error('❌ Error details:');
+          console.error('   Name:', attemptError.name);
+          console.error('   Message:', attemptError.message);
+          console.error('   Status:', attemptError.status);
+          console.error('   Text:', attemptError.text);
+          
+          lastError = attemptError;
+          
+          if (attempt < this.retryConfig.maxRetries) {
+            const delay = this.retryConfig.retryDelay * attempt;
+            console.log(`⏳ Waiting ${delay}ms before retry...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+          }
+        }
+      }
+      
+      // All attempts failed
+      throw lastError;
       
     } catch (error) {
-      console.error('❌ === EMAIL SENDING FAILED ===');
-      console.error('❌ Error type:', error.name);
-      console.error('❌ Error message:', error.message);
-      console.error('❌ Error details:', error.text || 'No additional details');
-      console.error('❌ Full error object:', error);
+      const duration = Date.now() - startTime;
       
-      return { 
-        success: false, 
+      console.error('❌ === EMAIL SENDING COMPLETELY FAILED ===');
+      console.error('❌ Final error details:');
+      console.error('   Type:', error.name);
+      console.error('   Message:', error.message);
+      console.error('   Duration:', duration + 'ms');
+      console.error('   Stack:', error.stack);
+      
+      // Classify error for better debugging
+      let errorCategory = 'unknown';
+      let troubleshootTips = [];
+      
+      if (error.message.includes('timeout')) {
+        errorCategory = 'timeout';
+        troubleshootTips = [
+          'Check your internet connection',
+          'EmailJS service might be slow',
+          'Try increasing timeout value'
+        ];
+      } else if (error.message.includes('network') || error.message.includes('fetch')) {
+        errorCategory = 'network';
+        troubleshootTips = [
+          'Check internet connection',
+          'Verify firewall/antivirus settings',
+          'Check if EmailJS domain is blocked'
+        ];
+      } else if (error.status === 400) {
+        errorCategory = 'bad_request';
+        troubleshootTips = [
+          'Check template parameters',
+          'Verify template exists and is published',
+          'Check service configuration'
+        ];
+      } else if (error.status === 401 || error.status === 403) {
+        errorCategory = 'authentication';
+        troubleshootTips = [
+          'Verify public key is correct',
+          'Check service ID is correct',
+          'Ensure service is active in EmailJS dashboard'
+        ];
+      } else if (error.status === 429) {
+        errorCategory = 'rate_limit';
+        troubleshootTips = [
+          'Too many emails sent',
+          'Wait before sending again',
+          'Check EmailJS usage limits'
+        ];
+      }
+      
+      console.error('📋 Troubleshooting tips:', troubleshootTips);
+      
+      return {
+        success: false,
         error: error.message,
         errorType: error.name,
-        fullError: error
+        errorCategory: errorCategory,
+        errorStatus: error.status,
+        duration: duration,
+        timestamp: new Date().toISOString(),
+        troubleshootTips: troubleshootTips,
+        configUsed: {
+          serviceId: this.emailConfig.serviceId,
+          templateId: this.emailConfig.templateId,
+          adminEmail: this.emailConfig.adminEmail,
+          publicKey: this.emailConfig.publicKey?.substring(0, 8) + '...'
+        },
+        fullError: {
+          name: error.name,
+          message: error.message,
+          stack: error.stack,
+          status: error.status,
+          text: error.text
+        }
       };
     }
   }

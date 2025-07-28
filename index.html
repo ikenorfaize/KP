@@ -14,7 +14,28 @@
     <meta name="description" content="Website Resmi Persatuan Guru Nahdlatul Ulama Situbondo" />
     
     <!-- EmailJS CDN untuk email service -->
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+      // Verify EmailJS loading
+      (function() {
+        console.log('📧 === EMAILJS CDN STATUS CHECK ===');
+        
+        // Wait a moment for EmailJS to load
+        setTimeout(() => {
+          if (typeof emailjs !== 'undefined') {
+            console.log('✅ EmailJS CDN loaded successfully');
+            console.log('📦 EmailJS version:', emailjs.version || 'Unknown');
+            console.log('🔧 EmailJS methods:', Object.keys(emailjs));
+            
+            // Make it available as window.emailjs for consistency
+            window.emailjs = emailjs;
+          } else {
+            console.error('❌ EmailJS CDN failed to load!');
+            console.error('🔍 Check network connection and CDN availability');
+          }
+        }, 500);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
