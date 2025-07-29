@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Email Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+    <h1>Quick Email Test</h1>
+    <button onclick="testEmail()">Test Email ke fairuzo1dyck@gmail.com</button>
+    <div id="result"></div>
+
+    <script>
+        async function testEmail() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '⏳ Testing email...';
+            
+            try {
+                // Initialize EmailJS
+                window.emailjs.init('AIgbwO-ayq2i-I0ou');
+                
+                const testParams = {
+                    to_email: 'fairuzo1dyck@gmail.com',
+                    to_name: 'Admin PERGUNU',
+                    subject: '🔔 Pendaftaran Baru PERGUNU - Test User',
+                    message_html: `
+                        <h1>Test Email</h1>
+                        <p>This is a simple test email from registration form.</p>
+                        <p>Time: ${new Date().toLocaleString()}</p>
+                    `,
+                    applicant_name: 'Test User',
+                    applicant_email: 'test@example.com',
+                    reply_to: 'test@example.com'
+                };
+                
+                console.log('📧 Sending test email...');
+                console.log('Parameters:', testParams);
+                
+                const result = await window.emailjs.send(
+                    'service_ublbpnp',
+                    'template_qnuud6d',
+                    testParams
+                );
+                
+                console.log('✅ Email sent successfully:', result);
+                resultDiv.innerHTML = `
+                    <div style="color: green;">
+                        ✅ Email sent successfully!<br>
+                        Status: ${result.status}<br>
+                        Response: ${result.text}<br>
+                        Check Gmail: fairuzo1dyck@gmail.com
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('❌ Email failed:', error);
+                resultDiv.innerHTML = `
+                    <div style="color: red;">
+                        ❌ Email failed!<br>
+                        Error: ${error.message}<br>
+                        Type: ${error.name}
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
