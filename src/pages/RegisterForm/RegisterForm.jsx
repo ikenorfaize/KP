@@ -18,10 +18,9 @@ const RegisterForm = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
-  const [lastError, setLastError] = useState(null);
   const [alertData, setAlertData] = useState(null);
 
-  // Custom Modal Alert System - Beautiful centered modal
+  // Custom Modal Alert System
   const showCustomAlert = (type, title, message, dbId = null) => {
     setAlertData({
       type,
@@ -32,47 +31,10 @@ const RegisterForm = () => {
     });
   };
 
-  // Improved error handling and debug system
+  // Simple protection
   useEffect(() => {
-    console.log('🛡️ === REGISTRATION SYSTEM ACTIVE ===');
-    
-    // Enhanced global error handler
-    const originalConsoleError = console.error;
-    console.error = (...args) => {
-      originalConsoleError.apply(console, args);
-      
-      const errorLog = {
-        timestamp: new Date().toISOString(),
-        type: 'console_error',
-        args: args.map(arg => 
-          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-        ),
-        url: window.location.href
-      };
-      
-      setLastError(errorLog);
-    };
-
-    // Enhanced unhandled promise rejection handler
-    const handleUnhandledRejection = (event) => {
-      const errorLog = {
-        timestamp: new Date().toISOString(),
-        type: 'unhandled_promise_rejection',
-        reason: String(event.reason),
-        stack: event.reason?.stack,
-        url: window.location.href
-      };
-      
-      console.error('🚨 Unhandled Promise Rejection:', errorLog);
-      setLastError(errorLog);
-    };
-
-    window.addEventListener('unhandledrejection', handleUnhandledRejection);
-    
-    // Simple beforeunload - standard browser dialog saat form sedang submit
     const handleBeforeUnload = (e) => {
       if (isSubmitting) {
-        console.log('⚠️ PREVENTING REFRESH: Form submission in progress');
         e.preventDefault();
         e.returnValue = 'Form sedang diproses. Yakin mau keluar?';
         return e.returnValue;
@@ -80,13 +42,7 @@ const RegisterForm = () => {
     };
     
     window.addEventListener('beforeunload', handleBeforeUnload);
-    
-    // Cleanup function
-    return () => {
-      console.error = originalConsoleError;
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
-    };
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isSubmitting]);
 
   const handleChange = (e) => {
@@ -100,15 +56,10 @@ const RegisterForm = () => {
     e.preventDefault();
     
     console.log('🚀 === FORM SUBMISSION STARTED ===');
-    console.log('📋 Form data:', formData);
-    
-    // Set submitting state FIRST to activate anti-refresh
     setIsSubmitting(true);
     
     try {
-      // Enhanced validation
-      console.log('🔍 === VALIDATION STEP ===');
-      
+      // Validation
       if (!formData.fullName?.trim()) {
         throw new Error('Nama Lengkap wajib diisi');
       }
@@ -117,7 +68,6 @@ const RegisterForm = () => {
         throw new Error('Email wajib diisi');
       }
       
-      // Basic email validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(formData.email.trim())) {
         throw new Error('Format email tidak valid');
@@ -125,7 +75,7 @@ const RegisterForm = () => {
       
       console.log('✅ Validation passed');
       
-      // Database save with enhanced error handling
+      // Database save
       console.log('📡 === DATABASE SAVE STEP ===');
       
       const applicationData = {
@@ -137,8 +87,6 @@ const RegisterForm = () => {
         credentials: null
       };
 
-      console.log('📤 Saving to database...');
-      
       const dbResponse = await fetch('http://localhost:3001/applications', {
         method: 'POST',
         headers: {
@@ -155,7 +103,7 @@ const RegisterForm = () => {
       const dbResult = await dbResponse.json();
       console.log('✅ Database save successful, ID:', dbResult.id);
       
-      // Email sending with comprehensive error handling
+      // Email sending
       console.log('📧 === EMAIL SENDING STEP ===');
       
       let emailResult = { success: false, error: 'Not attempted' };
@@ -163,50 +111,37 @@ const RegisterForm = () => {
       try {
         console.log('📤 Attempting to send admin notification...');
         console.log('📧 EmailService config check:', emailService.emailConfig);
-        console.log('📋 Form data being sent:', formData);
         
-        // Add timeout to email sending
+        // Send email with timeout
         const emailPromise = emailService.sendAdminNotification(formData);
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Email timeout after 45 seconds')), 45000)
+          setTimeout(() => reject(new Error('Email timeout after 30 seconds')), 30000)
         );
         
-        console.log('⏳ Racing email promise vs timeout...');
         emailResult = await Promise.race([emailPromise, timeoutPromise]);
-        
-        console.log('📧 Email result received:', emailResult);
-        console.log('📧 Email success:', emailResult.success);
-        if (!emailResult.success) {
-          console.log('📧 Email error details:', emailResult.error);
-          console.log('📧 Email error type:', emailResult.errorType);
-        }
+        console.log('📧 Email result:', emailResult);
         
       } catch (emailError) {
         console.error('❌ Email sending failed:', emailError);
         emailResult = {
           success: false,
           error: emailError.message,
-          errorType: emailError.name,
-          stack: emailError.stack
+          errorType: emailError.name
         };
       }
       
-      // Final success handling
+      // Show result
       console.log('🎉 === SUBMISSION COMPLETED ===');
       console.log('💾 Database saved:', dbResult.id);
       console.log('📧 Email result:', emailResult.success ? 'Success' : `Failed: ${emailResult.error}`);
       
-      // Show comprehensive result with beautiful Indonesian alerts
       if (emailResult.success) {
-        // Show success alert with DB ID
         showCustomAlert('success', 'Pendaftaran Berhasil!', `✅ Data berhasil tersimpan dengan ID: ${dbResult.id}
 📧 Notifikasi email telah dikirim ke admin
 
 Admin akan segera memproses pendaftaran Anda dalam 1-2 hari kerja.
 Terima kasih telah bergabung dengan PERGUNU!`, dbResult.id);
-        
       } else {
-        // Show warning alert with DB ID
         showCustomAlert('warning', 'Pendaftaran Tersimpan', `✅ Data Anda berhasil tersimpan dengan ID: ${dbResult.id}
 ⚠️ Notifikasi email gagal dikirim ke admin
 
@@ -218,16 +153,6 @@ Admin akan memproses secara manual.`, dbResult.id);
       
     } catch (mainError) {
       console.error('❌ === MAIN SUBMISSION ERROR ===', mainError);
-      
-      setLastError({
-        timestamp: new Date().toISOString(),
-        type: 'main_submission_error',
-        name: mainError.name,
-        message: mainError.message,
-        stack: mainError.stack,
-        formData: formData
-      });
-      
       showCustomAlert('error', 'Pendaftaran Gagal!', `❌ Terjadi kesalahan saat memproses pendaftaran Anda.
 
 Error: ${mainError.message}
@@ -235,20 +160,9 @@ Error: ${mainError.message}
 Silakan coba lagi atau hubungi admin jika masalah berlanjut.`);
       
     } finally {
-      // Keep console log persistent
-      console.log('🏁 === FORM SUBMISSION COMPLETE ===');
-      console.log('📊 Final status:', {
-        isSubmitting: true, // Still true at this point
-        alertShown: 'beautiful-modal-alert',
-        hasModalData: !!alertData,
-        timestamp: new Date().toISOString()
-      });
-      
-      // Delay before releasing submit state untuk memastikan proses selesai
       setTimeout(() => {
         setIsSubmitting(false);
-        console.log('✅ Form submission state released - Ready for next submission');
-      }, 3000); // Increased delay to see console logs
+      }, 2000);
     }
   };
 
@@ -511,7 +425,6 @@ Silakan coba lagi atau hubungi admin jika masalah berlanjut.`);
             padding: '20px'
           }}
           onClick={(e) => {
-            // Close modal when clicking backdrop
             if (e.target === e.currentTarget) {
               setAlertData(null);
               if (alertData.type === 'success' || alertData.type === 'warning') {
