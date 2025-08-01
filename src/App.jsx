@@ -12,10 +12,10 @@ import Sponsor from "./componen/Sponsor/Sponsor";
 import Footer from "./componen/Footer/Footer";
 import StatusTracker from "./componen/StatusTracker/StatusTracker";
 
-import BeritaUtama from "./pages/BeritaUtama";
-import Berita1 from "./pages/Berita1";
-import Berita2 from "./pages/Berita2";
-import Berita3 from "./pages/Berita3";
+import BeritaUtama from "./pages/Berita/BeritaUtama";
+import Berita1 from "./pages/Berita/Berita1";
+import Berita2 from "./pages/Berita/Berita2";
+import Berita3 from "./pages/Berita/Berita3";
 import Login from "./pages/Login/Login";
 import RegisterForm from "./pages/RegisterForm/RegisterForm";
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";

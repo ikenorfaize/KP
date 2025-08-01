@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Berita - PERGUNU Situbondo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #FEFEFE;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid #E6E9E7;
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 64px;
+            height: 64px;
+            background: #0F7536;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        .logo-text h1 {
+            color: #0F7536;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .logo-text p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .nav {
+            display: flex;
+            gap: 32px;
+        }
+
+        .nav a {
+            color: #666;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s;
+            padding-bottom: 4px;
+        }
+
+        .nav a:hover, .nav a.active {
+            color: #0F7536;
+            border-bottom: 2px solid #0F7536;
+        }
+
+        .cta-button {
+            background: #0F7536;
+            color: white;
+            padding: 8px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .cta-button:hover {
+            background: #0F7536dd;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(to right, #0F7536, #77A686);
+            padding: 64px 0;
+            color: white;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 24px;
+            line-height: 1.2;
+        }
+
+        .hero-text p {
+            font-size: 18px;
+            margin-bottom: 32px;
+            opacity: 0.9;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+
+        .badge.category {
+            background: rgba(15, 117, 54, 0.1);
+            color: #0F7536;
+        }
+
+        .hero-image {
+            display: flex;
+            justify-content: center;
+        }
+
+        .hero-image-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 32px;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 256px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        /* Category Filter */
+        .filter-section {
+            padding: 32px 0;
+            background: white;
+            border-bottom: 1px solid #E6E9E7;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 24px;
+            border-radius: 24px;
+            border: none;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .filter-btn.active {
+            background: #0F7536;
+            color: white;
+            box-shadow: 0 4px 12px rgba(15, 117, 54, 0.3);
+        }
+
+        .filter-btn:not(.active) {
+            background: #E6E9E7;
+            color: #666;
+        }
+
+        .filter-btn:not(.active):hover {
+            background: rgba(15, 117, 54, 0.1);
+            color: #0F7536;
+        }
+
+        /* Featured News */
+        .featured-news {
+            padding: 64px 0;
+            background: white;
+        }
+
+        .section-header {
+            margin-bottom: 48px;
+        }
+
+        .section-header h2 {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .section-divider {
+            width: 80px;
+            height: 4px;
+            background: #0F7536;
+            border-radius: 2px;
+        }
+
+        .featured-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 400px;
+        }
+
+        .featured-image {
+            position: relative;
+        }
+
+        .featured-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: #0F7536;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .featured-content {
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .featured-meta {
+            display: flex;
+            gap: 16px;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .featured-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 16px;
+            line-height: 1.3;
+        }
+
+        .featured-excerpt {
+            color: #666;
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .btn-read {
+            background: #0F7536;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            width: fit-content;
+            transition: all 0.3s;
+        }
+
+        .btn-read:hover {
+            background: #0F7536dd;
+            transform: translateY(-1px);
+        }
+
+        /* News Grid */
+        .news-grid-section {
+            padding: 64px 0;
+            background: rgba(230, 233, 231, 0.2);
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 32px;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .news-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .news-image {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .news-image img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .news-card:hover .news-image img {
+            transform: scale(1.05);
+        }
+
+        .news-content {
+            padding: 24px;
+        }
+
+        .news-meta {
+            display: flex;
+            gap: 12px;
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        .news-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .news-excerpt {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 16px;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .news-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .news-author {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .btn-read-small {
+            color: #0F7536;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.3s;
+        }
+
+        .btn-read-small:hover {
+            color: #0F7536dd;
+        }
+
+        /* Newsletter */
+        .newsletter {
+            background: #0F7536;
+            padding: 64px 0;
+            color: white;
+            text-align: center;
+        }
+
+        .newsletter h2 {
+            font-size: 32px;
+            margin-bottom: 16px;
+        }
+
+        .newsletter p {
+            opacity: 0.9;
+            margin-bottom: 32px;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: 16px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .newsletter-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .newsletter-btn {
+            background: white;
+            color: #0F7536;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .newsletter-btn:hover {
+            background: #f3f3f3;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .hero-text h1 {
+                font-size: 36px;
+            }
+
+            .nav {
+                display: none;
+            }
+
+            .featured-card {
+                grid-template-columns: 1fr;
+            }
+
+            .featured-content {
+                padding: 24px;
+            }
+
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .newsletter-form {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo">P</div>
+                    <div class="logo-text">
+                        <h1>PERGUNU</h1>
+                        <p>Situbondo</p>
+                    </div>
+                </div>
+                
+                <nav class="nav">
+                    <a href="#">Home</a>
+                    <a href="#">Tentang</a>
+                    <a href="#">Anggota</a>
+                    <a href="#" class="active">Berita</a>
+                    <a href="#">Beasiswa</a>
+                    <a href="#">Sponsor</a>
+                    <a href="#">Hubungi Kami</a>
+                </nav>
+                
+                <a href="#" class="cta-button">Daftarkan Diri Anda</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <div class="badge">Berita</div>
+                    <h1>Berita Terkini PERGUNU</h1>
+                    <p>Informasi terbaru seputar kegiatan, program, dan perkembangan PERGUNU Situbondo</p>
+                </div>
+                <div class="hero-image">
+                    <div class="hero-image-container">
+                        <img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=500&h=400" alt="News Illustration">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Category Filter -->
+    <section class="filter-section">
+        <div class="container">
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterNews('All')">Semua</button>
+                <button class="filter-btn" onclick="filterNews('Pendidikan')">Pendidikan</button>
+                <button class="filter-btn" onclick="filterNews('Sosial')">Sosial</button>
+                <button class="filter-btn" onclick="filterNews('Pelatihan')">Pelatihan</button>
+                <button class="filter-btn" onclick="filterNews('Pemerintahan')">Pemerintahan</button>
+                <button class="filter-btn" onclick="filterNews('Seminar')">Seminar</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured News -->
+    <section class="featured-news">
+        <div class="container">
+            <div class="section-header">
+                <h2>Berita Utama</h2>
+                <div class="section-divider"></div>
+            </div>
+            
+            <div class="featured-card">
+                <div class="featured-image">
+                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&h=500" alt="RUU Sistem Pendidikan Nasional">
+                    <div class="image-badge">Pendidikan</div>
+                </div>
+                
+                <div class="featured-content">
+                    <div class="featured-meta">
+                        <div class="meta-item">
+                            <span>📅</span>
+                            <span>20 Januari 2024</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>⏱️</span>
+                            <span>5 min</span>
+                        </div>
+                        <div class="meta-item">
+                            <span>👤</span>
+                            <span>Tim Redaksi PERGUNU</span>
+                        </div>
+                    </div>
+                    
+                    <h3 class="featured-title">RUU Sistem Pendidikan Nasional 'Kontribusi, Aspirasi dan Inspirasi Perguruan Tinggi, PAI, PJJ, Madrasah dan Pondok Pesantren'</h3>
+                    
+                    <p class="featured-excerpt">
+                        Diskusi mengenai Rancangan Undang-Undang Sistem Pendidikan Nasional (RUU Sisdiknas) yang menyoroti kontribusi, aspirasi, dan inspirasi dari berbagai elemen pendidikan seperti perguruan tinggi, Pendidikan Agama Islam (PAI), Pendidikan Jarak Jauh (PJJ), madrasah, dan pondok pesantren.
+                    </p>
+                    
+                    <a href="berita-detail.html?id=1" class="btn-read">
+                        Baca Selengkapnya
+                        <span>→</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- News Grid -->
+    <section class="news-grid-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Berita Lainnya</h2>
+                <div class="section-divider" style="background: #77A686;"></div>
+            </div>
+            
+            <div class="news-grid">
+                <!-- News Card 1 -->
+                <article class="news-card" data-category="Sosial">
+                    <div class="news-image">
+                        <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600&h=400" alt="Sertifikat SeHAT">
+                        <div class="image-badge" style="background: #77A686;">Sosial</div>
+                    </div>
+                    
+                    <div class="news-content">
+                        <div class="news-meta">
+                            <div class="meta-item">
+                                <span>📅</span>
+                                <span>18 Januari 2024</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>⏱️</span>
+                                <span>3 min</span>
+                            </div>
+                        </div>
+                        
+                        <h3 class="news-title">Penyerahan Simbolis Sertifikat Hak Atas Tanah (SeHAT) Nelayan</h3>
+                        
+                        <p class="news-excerpt">
+                            Program pemerintah untuk memberikan kepastian hukum kepada nelayan melalui sertifikat hak atas tanah yang dilaksanakan oleh Dinas Perikanan Kabupaten Situbondo.
+                        </p>
+                        
+                        <div class="news-footer">
+                            <div class="news-author">
+                                <span>👤</span>
+                                <span>Dinas Perikanan Situbondo</span>
+                            </div>
+                            <a href="berita-detail.html?id=2" class="btn-read-small">
+                                Baca
+                                <span>→</span>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- News Card 2 -->
+                <article class="news-card" data-category="Pelatihan">
+                    <div class="news-image">
+                        <img src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&h=400" alt="Pelatihan Teknologi">
+                        <div class="image-badge" style="background: #97BDA2;">Pelatihan</div>
+                    </div>
+                    
+                    <div class="news-content">
+                        <div class="news-meta">
+                            <div class="meta-item">
+                                <span>📅</span>
+                                <span>15 Januari 2024</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>⏱️</span>
+                                <span>4 min</span>
+                            </div>
+                        </div>
+                        
+                        <h3 class="news-title">Pelatihan Teknologi Penangkapan Ikan oleh Dinas Perikanan</h3>
+                        
+                        <p class="news-excerpt">
+                            Program pelatihan untuk meningkatkan kemampuan teknologi penangkapan ikan bagi nelayan lokal dengan teknik ramah lingkungan dan teknologi modern.
+                        </p>
+                        
+                        <div class="news-footer">
+                            <div class="news-author">
+                                <span>👤</span>
+                                <span>Dinas Perikanan Situbondo</span>
+                            </div>
+                            <a href="berita-detail.html?id=3" class="btn-read-small">
+                                Baca
+                                <span>→</span>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- News Card 3 -->
+                <article class="news-card" data-category="Pemerintahan">
+                    <div class="news-image">
+                        <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=600&h=400" alt="Kunjungan Bupati">
+                        <div class="image-badge" style="background: #0F7536;">Pemerintahan</div>
+                    </div>
+                    
+                    <div class="news-content">
+                        <div class="news-meta">
+                            <div class="meta-item">
+                                <span>📅</span>
+                                <span>12 Januari 2024</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>⏱️</span>
+                                <span>6 min</span>
+                            </div>
+                        </div>
+                        
+                        <h3 class="news-title">Bupati dan Wakil Bupati Situbondo Bersama Dinas Perikanan</h3>
+                        
+                        <p class="news-excerpt">
+                            Kunjungan kerja untuk meninjau program-program pemberdayaan masyarakat pesisir dan memastikan program berjalan sesuai target yang ditetapkan.
+                        </p>
+                        
+                        <div class="news-footer">
+                            <div class="news-author">
+                                <span>👤</span>
+                                <span>Humas Pemkab Situbondo</span>
+                            </div>
+                            <a href="berita-detail.html?id=4" class="btn-read-small">
+                                Baca
+                                <span>→</span>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- News Card 4 -->
+                <article class="news-card" data-category="Pendidikan">
+                    <div class="news-image">
+                        <img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&h=400" alt="Workshop Kurikulum">
+                        <div class="image-badge" style="background: #0F7536;">Pendidikan</div>
+                    </div>
+                    
+                    <div class="news-content">
+                        <div class="news-meta">
+                            <div class="meta-item">
+                                <span>📅</span>
+                                <span>10 Januari 2024</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>⏱️</span>
+                                <span>4 min</span>
+                            </div>
+                        </div>
+                        
+                        <h3 class="news-title">Workshop Pengembangan Kurikulum Berbasis Karakter</h3>
+                        
+                        <p class="news-excerpt">
+                            Kegiatan workshop untuk mengembangkan kurikulum pendidikan yang berbasis pembentukan karakter siswa yang diselenggarakan PERGUNU Situbondo.
+                        </p>
+                        
+                        <div class="news-footer">
+                            <div class="news-author">
+                                <span>👤</span>
+                                <span>PERGUNU Situbondo</span>
+                            </div>
+                            <a href="berita-detail.html?id=5" class="btn-read-small">
+                                Baca
+                                <span>→</span>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- News Card 5 -->
+                <article class="news-card" data-category="Seminar">
+                    <div class="news-image">
+                        <img src="https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=600&h=400" alt="Seminar Nasional">
+                        <div class="image-badge" style="background: #97BDA2;">Seminar</div>
+                    </div>
+                    
+                    <div class="news-content">
+                        <div class="news-meta">
+                            <div class="meta-item">
+                                <span>📅</span>
+                                <span>8 Januari 2024</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>⏱️</span>
+                                <span>5 min</span>
+                            </div>
+                        </div>
+                        
+                        <h3 class="news-title">Seminar Nasional Pendidikan Islam Kontemporer</h3>
+                        
+                        <p class="news-excerpt">
+                            Event seminar nasional yang membahas perkembangan pendidikan Islam di era modern dengan menghadirkan para pakar dari berbagai perguruan tinggi.
+                        </p>
+                        
+                        <div class="news-footer">
+                            <div class="news-author">
+                                <span>👤</span>
+                                <span>Panitia Seminar Nasional</span>
+                            </div>
+                            <a href="berita-detail.html?id=6" class="btn-read-small">
+                                Baca
+                                <span>→</span>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- News Card 6 -->
+                <article class="news-card" data-category="Pendidikan">
+                    <div class="news-image">
+                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&h=400" alt="Pelatihan Guru">
+                        <div class="image-badge" style="background: #0F7536;">Pendidikan</div>
+                    </div>
+                    
+                    <div class="news-content">
+                        <div class="news-meta">
+                            <div class="meta-item">
+                                <span>📅</span>
+                                <span>5 Januari 2024</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>⏱️</span>
+                                <span>3 min</span>
+                            </div>
+                        </div>
+                        
+                        <h3 class="news-title">Program Sertifikasi Guru Digital PERGUNU 2024</h3>
+                        
+                        <p class="news-excerpt">
+                            Program sertifikasi untuk meningkatkan kompetensi digital guru-guru anggota PERGUNU dalam menghadapi tantangan pembelajaran modern.
+                        </p>
+                        
+                        <div class="news-footer">
+                            <div class="news-author">
+                                <span>👤</span>
+                                <span>PERGUNU Situbondo</span>
+                            </div>
+                            <a href="berita-detail.html?id=7" class="btn-read-small">
+                                Baca
+                                <span>→</span>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="newsletter">
+        <div class="container">
+            <h2>Dapatkan Berita Terbaru</h2>
+            <p>Berlangganan newsletter kami untuk mendapatkan informasi terkini seputar PERGUNU Situbondo</p>
+            
+            <form class="newsletter-form">
+                <input type="email" class="newsletter-input" placeholder="Masukkan email Anda" required>
+                <button type="submit" class="newsletter-btn">Berlangganan</button>
+            </form>
+        </div>
+    </section>
+
+    <script>
+        // Filter functionality
+        function filterNews(category) {
+            const cards = document.querySelectorAll('.news-card');
+            const buttons = document.querySelectorAll('.filter-btn');
+            
+            // Update active button
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Filter cards
+            cards.forEach(card => {
+                if (category === 'All' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                    setTimeout(() => card.style.opacity = '1', 10);
+                } else {
+                    card.style.opacity = '0';
+                    setTimeout(() => card.style.display = 'none', 300);
+                }
+            });
+        }
+
+        // Newsletter form
+        document.querySelector('.newsletter-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = this.querySelector('.newsletter-input').value;
+            alert('Terima kasih! Email ' + email + ' telah didaftarkan untuk newsletter.');
+            this.reset();
+        });
+
+        // Smooth animations on scroll
+        window.addEventListener('scroll', function() {
+            const cards = document.querySelectorAll('.news-card');
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                if (rect.top < window.innerHeight && rect.bottom > 0) {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
