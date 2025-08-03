@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./BeritaUtama.css"; // Using shared styles
+import Berita1Img from "../../assets/Berita1.png";
+import BeritaUtamaImg from "../../assets/BeritaUtama.png";
+import Berita2Img from "../../assets/Berita2.png";
+import Berita3Img from "../../assets/Berita3.png";
 
 const Berita1 = () => {
   const navigate = useNavigate();
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   return (
     <div className="berita-detail-container">
@@ -45,11 +50,18 @@ const Berita1 = () => {
       {/* Featured Image */}
       <section className="berita-featured-image">
         <div className="container">
-          <img 
-            src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&h=600" 
-            alt="Penyerahan Sertifikat SeHAT Nelayan" 
-            className="featured-img"
-          />
+          <div className="image-container">
+            <img 
+              src={Berita1Img} 
+              alt="Penyerahan Sertifikat SeHAT Nelayan" 
+              className="featured-img interactive-img"
+              onClick={() => setIsImageModalOpen(true)}
+            />
+            <div className="image-overlay">
+              <div className="zoom-icon">🔍</div>
+              <span className="zoom-text">Klik untuk memperbesar</span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -128,7 +140,7 @@ const Berita1 = () => {
                 <h4>Berita Terkait</h4>
                 <div className="related-news">
                   <div className="related-item" onClick={() => navigate('/berita-utama')}>
-                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=100&h=60" alt="Related news" />
+                    <img src={BeritaUtamaImg} alt="Related news" />
                     <div className="related-content">
                       <h5>RUU Sistem Pendidikan Nasional</h5>
                       <span className="related-date">20 Jan 2024</span>
@@ -136,7 +148,7 @@ const Berita1 = () => {
                   </div>
                   
                   <div className="related-item" onClick={() => navigate('/berita-2')}>
-                    <img src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=100&h=60" alt="Related news" />
+                    <img src={Berita2Img} alt="Related news" />
                     <div className="related-content">
                       <h5>Pelatihan Teknologi Penangkapan Ikan</h5>
                       <span className="related-date">15 Jan 2024</span>
@@ -144,7 +156,7 @@ const Berita1 = () => {
                   </div>
                   
                   <div className="related-item" onClick={() => navigate('/berita-3')}>
-                    <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=100&h=60" alt="Related news" />
+                    <img src={Berita3Img} alt="Related news" />
                     <div className="related-content">
                       <h5>Kunjungan Bupati dan Wakil Bupati</h5>
                       <span className="related-date">12 Jan 2024</span>
@@ -174,6 +186,26 @@ const Berita1 = () => {
           </form>
         </div>
       </section>
+
+      {/* Image Modal */}
+      {isImageModalOpen && (
+        <div className="image-modal" onClick={() => setIsImageModalOpen(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setIsImageModalOpen(false)}>
+              ✕
+            </button>
+            <img 
+              src={Berita1Img} 
+              alt="Penyerahan Sertifikat SeHAT Nelayan" 
+              className="modal-image"
+            />
+            <div className="modal-caption">
+              <h4>Penyerahan Sertifikat Hak Atas Tanah (SeHAT) Nelayan</h4>
+              <p>Penyerahan sertifikat hak atas tanah kepada nelayan dalam upaya memberikan kepastian hukum dan meningkatkan kesejahteraan masyarakat pesisir.</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

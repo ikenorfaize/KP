@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./BeritaUtama.css";
+import BeritaUtamaImg from "../../assets/BeritaUtama.png";
+import Berita1Img from "../../assets/Berita1.png";
+import Berita2Img from "../../assets/Berita2.png";
+import Berita3Img from "../../assets/Berita3.png";
 
 const BeritaUtama = () => {
   const navigate = useNavigate();
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   return (
     <div className="berita-detail-container">
@@ -45,11 +50,18 @@ const BeritaUtama = () => {
       {/* Featured Image */}
       <section className="berita-featured-image">
         <div className="container">
-          <img 
-            src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&h=600" 
-            alt="RUU Sistem Pendidikan Nasional" 
-            className="featured-img"
-          />
+          <div className="image-container">
+            <img 
+              src={BeritaUtamaImg} 
+              alt="RUU Sistem Pendidikan Nasional" 
+              className="featured-img interactive-img"
+              onClick={() => setIsImageModalOpen(true)}
+            />
+            <div className="image-overlay">
+              <div className="zoom-icon">🔍</div>
+              <span className="zoom-text">Klik untuk memperbesar</span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -121,7 +133,7 @@ const BeritaUtama = () => {
                 <h4>Berita Terkait</h4>
                 <div className="related-news">
                   <div className="related-item" onClick={() => navigate('/berita-1')}>
-                    <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=100&h=60" alt="Related news" />
+                    <img src={Berita1Img} alt="Related news" />
                     <div className="related-content">
                       <h5>Penyerahan Sertifikat Hak Atas Tanah (SeHAT) Nelayan</h5>
                       <span className="related-date">18 Jan 2024</span>
@@ -129,7 +141,7 @@ const BeritaUtama = () => {
                   </div>
                   
                   <div className="related-item" onClick={() => navigate('/berita-2')}>
-                    <img src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=100&h=60" alt="Related news" />
+                    <img src={Berita2Img} alt="Related news" />
                     <div className="related-content">
                       <h5>Pelatihan Teknologi Penangkapan Ikan</h5>
                       <span className="related-date">15 Jan 2024</span>
@@ -137,7 +149,7 @@ const BeritaUtama = () => {
                   </div>
                   
                   <div className="related-item" onClick={() => navigate('/berita-3')}>
-                    <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=100&h=60" alt="Related news" />
+                    <img src={Berita3Img} alt="Related news" />
                     <div className="related-content">
                       <h5>Kunjungan Bupati dan Wakil Bupati</h5>
                       <span className="related-date">12 Jan 2024</span>
@@ -167,6 +179,26 @@ const BeritaUtama = () => {
           </form>
         </div>
       </section>
+
+      {/* Image Modal */}
+      {isImageModalOpen && (
+        <div className="image-modal" onClick={() => setIsImageModalOpen(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setIsImageModalOpen(false)}>
+              ✕
+            </button>
+            <img 
+              src={BeritaUtamaImg} 
+              alt="RUU Sistem Pendidikan Nasional" 
+              className="modal-image"
+            />
+            <div className="modal-caption">
+              <h4>RUU Sistem Pendidikan Nasional</h4>
+              <p>Kontribusi, Aspirasi dan Inspirasi Perguruan Tinggi, PAI, PJJ, Madrasah dan Pondok Pesantren dalam pembentukan sistem pendidikan nasional.</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -156,6 +156,9 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  /* Ensure proper stacking context */
+  position: relative;
+  z-index: 10;
 }
 
 .dashboard-btn {
@@ -165,6 +168,11 @@
   font-size: 0.8rem;
   font-weight: 500;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 90px;
+  justify-content: center;
 }
 
 .dashboard-btn.admin {
@@ -178,26 +186,59 @@
 }
 
 .dashboard-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transform: translateY(-1px) scale(1.05) !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
   color: white !important;
   text-decoration: none !important;
+  border-color: transparent !important;
 }
 
-.logout-btn {
-  padding: 6px 12px;
-  background: #ffffff;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: #374151;
+.navbar-logout-btn {
+  display: flex !important;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 8px 16px !important;
+  background: linear-gradient(135deg, #d4183d, #b91c1c) !important;
+  border: none !important;
+  border-radius: 6px !important;
+  color: white !important;
+  font-size: 0.8rem !important;
   font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease !important;
+  /* Match dashboard button dimensions */
+  min-width: 90px;
+  justify-content: center;
+  /* Ensure visibility */
+  opacity: 1;
+  visibility: visible;
+  position: relative;
+  z-index: 20;
+  /* Prevent text selection */
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
-.logout-btn:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
-  color: #1f2937;
+.navbar-logout-btn:hover {
+  background: linear-gradient(135deg, #b91c1c, #991b1b) !important;
+  transform: translateY(-1px) scale(1.05) !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+  border-color: transparent !important;
+}
+
+.navbar-logout-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.3);
+}
+
+.navbar-logout-btn:focus {
+  outline: 2px solid #dc2626;
+  outline-offset: 2px;
+}
+
+.navbar-logout-btn span {
+  font-size: 0.8rem;
+  display: inline-block;
 }
