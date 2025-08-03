@@ -9,6 +9,7 @@ import StatsSection from "./componen/Stats/StatsSection";
 import Anggota from "./componen/Anggota/Anggota";
 import Layanan from "./componen/Layanan/Layanan";
 import Sponsor from "./componen/Sponsor/Sponsor";
+import BeasiswaCard from "./componen/Beasiswa/Beasiswa";
 import Footer from "./componen/Footer/Footer";
 import StatusTracker from "./componen/StatusTracker/StatusTracker";
 
@@ -21,6 +22,7 @@ import RegisterForm from "./pages/RegisterForm/RegisterForm";
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
 import UserDashboard from "./pages/UserDashboard/UserDashboard";
 import SponsorPage from "./pages/SponsorPage/SponsorPage";
+import Beasiswa from "./pages/Beasiswa/Beasiswa";
 
 import "./App.css";
 
@@ -38,7 +40,7 @@ const App = () => {
   useEffect(() => {
     if (location.pathname === '/sponsor' || location.pathname === '/tentang' || 
         location.pathname === '/anggota' || location.pathname === '/berita' || 
-        location.pathname === '/layanan') {
+        location.pathname === '/layanan' || location.pathname === '/beasiswa') {
       window.scrollTo(0, 0);
     }
   }, [location.pathname]);
@@ -71,6 +73,7 @@ const App = () => {
               <StatsSection />
               <Anggota />
               <Berita />
+              <BeasiswaCard />
               <Layanan />
               <div id="status-tracker">
                 <StatusTracker />
@@ -89,6 +92,7 @@ const App = () => {
         <Route path="/anggota" element={<><Navbar /><Anggota /><Footer /></>} />
         <Route path="/berita" element={<><Navbar /><Berita /><Footer /></>} />
         <Route path="/layanan" element={<><Navbar /><Layanan /><Footer /></>} />
+        <Route path="/beasiswa" element={<><Navbar /><Beasiswa /><Footer /></>} />
         <Route path="/login" element={<Login />} />
         <Route path="/daftar" element={<RegisterForm />} />
         <Route path="/admin" element={<AdminDashboard />} />

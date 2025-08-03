@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beranda - PERGUNU Situbondo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #FEFEFE;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid #E6E9E7;
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 64px;
+            height: 64px;
+            background: #0F7536;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        .logo-text h1 {
+            color: #0F7536;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .logo-text p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .nav {
+            display: flex;
+            gap: 32px;
+        }
+
+        .nav a {
+            color: #666;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s;
+            padding-bottom: 4px;
+        }
+
+        .nav a:hover, .nav a.active {
+            color: #0F7536;
+            border-bottom: 2px solid #0F7536;
+        }
+
+        .cta-button {
+            background: #0F7536;
+            color: white;
+            padding: 8px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .cta-button:hover {
+            background: #0F7536dd;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #0F7536, #77A686, #97BDA2);
+            padding: 80px 0;
+            color: white;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: 56px;
+            font-weight: bold;
+            margin-bottom: 24px;
+            line-height: 1.2;
+        }
+
+        .hero-text p {
+            font-size: 20px;
+            margin-bottom: 32px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            display: inline-block;
+            margin-bottom: 24px;
+        }
+
+        .badge.green {
+            background: rgba(15, 117, 54, 0.1);
+            color: #0F7536;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #0F7536;
+            padding: 16px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            font-size: 18px;
+        }
+
+        .btn-primary:hover {
+            background: #f3f3f3;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            border: 2px solid white;
+            color: white;
+            padding: 16px 32px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-size: 18px;
+        }
+
+        .btn-outline:hover {
+            background: white;
+            color: #0F7536;
+        }
+
+        .hero-image {
+            position: relative;
+        }
+
+        .hero-image-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 32px;
+            position: relative;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-stat {
+            position: absolute;
+            bottom: -16px;
+            right: -16px;
+            background: #0F7536;
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hero-stat-icon {
+            font-size: 24px;
+        }
+
+        .hero-stat-number {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .hero-stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Statistics Section */
+        .statistics {
+            padding: 64px 0;
+            background: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 32px;
+        }
+
+        .stat-card {
+            text-align: center;
+        }
+
+        .stat-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: white;
+            font-size: 32px;
+        }
+
+        .stat-icon.users { background: #0F7536; }
+        .stat-icon.graduation { background: #77A686; }
+        .stat-icon.book { background: #97BDA2; }
+        .stat-icon.award { background: #0F7536; }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #0F7536;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* Beasiswa Section */
+        .beasiswa-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, rgba(230, 233, 231, 0.5), white);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .section-header h2 {
+            font-size: 48px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 24px;
+        }
+
+        .section-header p {
+            font-size: 20px;
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .beasiswa-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            align-items: center;
+            margin-bottom: 64px;
+        }
+
+        .beasiswa-text h3 {
+            font-size: 36px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 24px;
+        }
+
+        .beasiswa-text > p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-bottom: 32px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .feature-icon {
+            color: #0F7536;
+            font-size: 24px;
+            margin-top: 2px;
+        }
+
+        .feature-content h4 {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .feature-content p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .beasiswa-image {
+            position: relative;
+        }
+
+        .beasiswa-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .beasiswa-card img {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+        }
+
+        .beasiswa-card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+        }
+
+        .beasiswa-card-content {
+            position: absolute;
+            bottom: 24px;
+            left: 24px;
+            right: 24px;
+            color: white;
+        }
+
+        .beasiswa-card-content h4 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .beasiswa-card-content p {
+            opacity: 0.9;
+        }
+
+        .beasiswa-card-info {
+            padding: 24px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            text-align: center;
+        }
+
+        .beasiswa-info-item {
+            text-align: center;
+        }
+
+        .beasiswa-info-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0F7536;
+        }
+
+        .beasiswa-info-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .floating-element {
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .floating-1 {
+            top: -16px;
+            right: -16px;
+            background: #77A686;
+        }
+
+        .floating-2 {
+            bottom: -16px;
+            left: -16px;
+            background: #97BDA2;
+        }
+
+        /* Quick Links */
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
+        }
+
+        .quick-link-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-link-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 64px rgba(0, 0, 0, 0.15);
+        }
+
+        .quick-link-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #0F7536, #77A686);
+            transform: translateX(-100%);
+            transition: transform 0.3s;
+        }
+
+        .quick-link-card:hover::before {
+            transform: translateX(0);
+        }
+
+        .quick-link-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 32px;
+            transition: all 0.3s;
+        }
+
+        .quick-link-card:hover .quick-link-icon {
+            background: #0F7536 !important;
+            color: white !important;
+        }
+
+        .quick-link-card h3 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            color: #333;
+        }
+
+        .quick-link-card p {
+            color: #666;
+            margin-bottom: 24px;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #0F7536;
+            border: 2px solid #0F7536;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: #0F7536;
+            color: white;
+        }
+
+        /* Quick Access Section */
+        .quick-access {
+            padding: 64px 0;
+            background: white;
+        }
+
+        .quick-access-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+        }
+
+        .access-btn {
+            background: white;
+            border: 2px solid #E6E9E7;
+            border-radius: 12px;
+            padding: 24px;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .access-btn:hover {
+            border-color: #0F7536;
+            background: rgba(15, 117, 54, 0.05);
+        }
+
+        .access-btn.featured {
+            border-color: #0F7536;
+            background: rgba(15, 117, 54, 0.1);
+        }
+
+        .access-icon {
+            font-size: 32px;
+            color: #0F7536;
+        }
+
+        .access-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .access-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: #0F7536;
+            padding: 64px 0;
+            color: white;
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 40px;
+            margin-bottom: 24px;
+        }
+
+        .cta-section p {
+            font-size: 20px;
+            opacity: 0.9;
+            margin-bottom: 32px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .hero-text h1 {
+                font-size: 36px;
+            }
+
+            .section-header h2 {
+                font-size: 32px;
+            }
+
+            .beasiswa-content {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .nav {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .quick-links {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo">P</div>
+                    <div class="logo-text">
+                        <h1>PERGUNU</h1>
+                        <p>Situbondo</p>
+                    </div>
+                </div>
+                
+                <nav class="nav">
+                    <a href="#" class="active">Home</a>
+                    <a href="#">Tentang</a>
+                    <a href="#">Anggota</a>
+                    <a href="berita.html">Berita</a>
+                    <a href="beasiswa.html">Beasiswa</a>
+                    <a href="#">Sponsor</a>
+                    <a href="#">Hubungi Kami</a>
+                </nav>
+                
+                <a href="#" class="cta-button">Daftarkan Diri Anda</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <div class="badge">Selamat Datang di PERGUNU Situbondo</div>
+                    <h1>Membangun Masa Depan Melalui Pendidikan</h1>
+                    <p>Persatuan Guru Nahdlatul Ulama Situbondo berkomitmen mengembangkan pendidikan berkualitas dan memberikan kesempatan beasiswa bagi generasi penerus bangsa.</p>
+                    <div class="hero-buttons">
+                        <a href="beasiswa.html" class="btn-primary">
+                            🎓 Lihat Program Beasiswa
+                        </a>
+                        <a href="#" class="btn-outline">Tentang PERGUNU</a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <div class="hero-image-container">
+                        <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&h=400" alt="Pendidikan PERGUNU">
+                        <div class="hero-stat">
+                            <div class="hero-stat-icon">🏆</div>
+                            <div>
+                                <div class="hero-stat-number">150+</div>
+                                <div class="hero-stat-label">Penerima Beasiswa</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="statistics">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon users">👥</div>
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Anggota Aktif</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon graduation">🎓</div>
+                    <div class="stat-number">150+</div>
+                    <div class="stat-label">Penerima Beasiswa</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon book">📚</div>
+                    <div class="stat-number">25</div>
+                    <div class="stat-label">Program Aktif</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon award">🏆</div>
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Tahun Pengalaman</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Beasiswa Section -->
+    <section class="beasiswa-section">
+        <div class="container">
+            <div class="section-header">
+                <div class="badge green">Program Unggulan</div>
+                <h2>Program Beasiswa PERGUNU</h2>
+                <p>Beasiswa adalah bantuan biaya pendidikan yang diberikan kepada siswa, mahasiswa, atau individu yang memenuhi kriteria tertentu untuk melanjutkan atau menyelesaikan pendidikan mereka.</p>
+            </div>
+
+            <div class="beasiswa-content">
+                <div class="beasiswa-text">
+                    <h3>Apa itu Program Beasiswa PERGUNU?</h3>
+                    <p>Program Beasiswa PERGUNU adalah inisiatif untuk mendukung pendidikan berkualitas bagi anggota PERGUNU dan keluarga mereka. Kami menyediakan berbagai jenis beasiswa mulai dari pendidikan dasar hingga perguruan tinggi.</p>
+                    
+                    <ul class="feature-list">
+                        <li class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-content">
+                                <h4>Beasiswa Pendidikan Formal</h4>
+                                <p>Dukungan biaya untuk jenjang SD, SMP, SMA, dan Perguruan Tinggi</p>
+                            </div>
+                        </li>
+                        
+                        <li class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-content">
+                                <h4>Beasiswa Penelitian</h4>
+                                <p>Bantuan untuk penelitian pendidikan dan pengembangan keilmuan</p>
+                            </div>
+                        </li>
+                        
+                        <li class="feature-item">
+                            <div class="feature-icon">✓</div>
+                            <div class="feature-content">
+                                <h4>Beasiswa Pelatihan Profesional</h4>
+                                <p>Program sertifikasi dan peningkatan kompetensi guru</p>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <div class="hero-buttons">
+                        <a href="beasiswa.html" class="btn-primary">
+                            🎓 Jelajahi Semua Beasiswa →
+                        </a>
+                        <a href="#" class="btn-secondary">
+                            📋 Panduan Pendaftaran
+                        </a>
+                    </div>
+                </div>
+
+                <div class="beasiswa-image">
+                    <div class="beasiswa-card">
+                        <img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=600&h=400" alt="Program Beasiswa">
+                        <div class="beasiswa-card-overlay"></div>
+                        <div class="beasiswa-card-content">
+                            <h4>Program Beasiswa Terbaru</h4>
+                            <p>Pendaftaran dibuka hingga 31 Maret 2024</p>
+                        </div>
+                        <div class="beasiswa-card-info">
+                            <div class="beasiswa-info-item">
+                                <div class="beasiswa-info-number">Rp 15M</div>
+                                <div class="beasiswa-info-label">Total Dana</div>
+                            </div>
+                            <div class="beasiswa-info-item">
+                                <div class="beasiswa-info-number">25</div>
+                                <div class="beasiswa-info-label">Program Aktif</div>
+                            </div>
+                            <div class="beasiswa-info-item">
+                                <div class="beasiswa-info-number">95%</div>
+                                <div class="beasiswa-info-label">Tingkat Sukses</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="floating-element floating-1">⭐</div>
+                    <div class="floating-element floating-2">📈</div>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="quick-links">
+                <div class="quick-link-card" onclick="window.location.href='beasiswa.html'">
+                    <div class="quick-link-icon" style="background: rgba(15, 117, 54, 0.1); color: #0F7536;">🎓</div>
+                    <h3>Beasiswa Pendidikan</h3>
+                    <p>Program beasiswa untuk siswa berprestasi dari keluarga kurang mampu</p>
+                    <a href="beasiswa.html" class="btn-secondary">Pelajari Lebih Lanjut</a>
+                </div>
+
+                <div class="quick-link-card" onclick="window.location.href='beasiswa.html'">
+                    <div class="quick-link-icon" style="background: rgba(119, 166, 134, 0.1); color: #77A686;">📚</div>
+                    <h3>Beasiswa Penelitian</h3>
+                    <p>Dukungan untuk penelitian pendidikan dan pengembangan akademik</p>
+                    <a href="beasiswa.html" class="btn-secondary">Pelajari Lebih Lanjut</a>
+                </div>
+
+                <div class="quick-link-card" onclick="window.location.href='beasiswa.html'">
+                    <div class="quick-link-icon" style="background: rgba(151, 189, 162, 0.1); color: #97BDA2;">🏆</div>
+                    <h3>Beasiswa Prestasi</h3>
+                    <p>Penghargaan untuk siswa dengan prestasi akademik dan non-akademik</p>
+                    <a href="beasiswa.html" class="btn-secondary">Pelajari Lebih Lanjut</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Access Section -->
+    <section class="quick-access">
+        <div class="container">
+            <div class="section-header">
+                <h2>Akses Cepat</h2>
+                <p>Temukan informasi dan layanan PERGUNU dengan mudah</p>
+            </div>
+            
+            <div class="quick-access-grid">
+                <a href="berita.html" class="access-btn">
+                    <div class="access-icon">🌐</div>
+                    <div class="access-title">Berita Terkini</div>
+                    <div class="access-subtitle">Informasi & Kegiatan</div>
+                </a>
+
+                <a href="#" class="access-btn">
+                    <div class="access-icon">👥</div>
+                    <div class="access-title">Anggota</div>
+                    <div class="access-subtitle">Profil Pengurus</div>
+                </a>
+
+                <a href="sponsor.html" class="access-btn">
+                    <div class="access-icon">❤️</div>
+                    <div class="access-title">Mitra & Sponsor</div>
+                    <div class="access-subtitle">Kerjasama</div>
+                </a>
+
+                <a href="beasiswa.html" class="access-btn featured">
+                    <div class="access-icon">🎓</div>
+                    <div class="access-title" style="color: #0F7536;">Beasiswa</div>
+                    <div class="access-subtitle" style="color: rgba(15, 117, 54, 0.7);">Program Unggulan</div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Siap Meraih Beasiswa Impian Anda?</h2>
+            <p>Bergabunglah dengan ribuan penerima beasiswa PERGUNU dan wujudkan cita-cita pendidikan Anda</p>
+            <div class="cta-buttons">
+                <a href="beasiswa.html" class="btn-primary">
+                    🎓 Daftar Beasiswa Sekarang
+                </a>
+                <a href="#" class="btn-outline">
+                    📞 Hubungi Kami
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Add scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe elements for animation
+        document.querySelectorAll('.stat-card, .quick-link-card, .access-btn').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'all 0.6s ease';
+            observer.observe(el);
+        });
+
+        // Counter animation
+        function animateCounter(element, target) {
+            let current = 0;
+            const increment = target / 100;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(current) + (target >= 1000 ? '+' : '');
+            }, 20);
+        }
+
+        // Animate counters when in view
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const number = entry.target;
+                    const target = parseInt(number.textContent.replace(/\D/g, ''));
+                    animateCounter(number, target);
+                    counterObserver.unobserve(number);
+                }
+            });
+        });
+
+        document.querySelectorAll('.stat-number').forEach(el => {
+            counterObserver.observe(el);
+        });
+    </script>
+</body>
+</html>

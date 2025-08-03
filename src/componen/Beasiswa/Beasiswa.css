@@ -1,0 +1,436 @@
+/* Beasiswa Section - Modern Tailwind-inspired styles */
+.beasiswa-section {
+  padding: 40px 0;
+  background: linear-gradient(135deg, rgba(230, 233, 231, 0.5), white);
+}
+
+.beasiswa-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Section Header */
+.section-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  background-color: rgba(15, 117, 54, 0.1);
+  color: #0F7536;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 48px;
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 24px;
+  line-height: 1.1;
+}
+
+.section-description {
+  font-size: 20px;
+  color: #6b7280;
+  max-width: 768px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Main Content */
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+/* Content Left */
+
+.content-title {
+  font-size: 36px;
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 24px;
+  line-height: 1.2;
+}
+
+.content-description {
+  font-size: 18px;
+  color: #6b7280;
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.features-list {
+  margin-bottom: 32px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.feature-title {
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.feature-desc {
+  color: #6b7280;
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 32px;
+  background-color: #0F7536;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: rgba(15, 117, 54, 0.9);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px 32px;
+  background-color: transparent;
+  color: #0F7536;
+  border: 1px solid #0F7536;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: rgba(15, 117, 54, 0.1);
+}
+
+/* Content Right */
+.content-right {
+  position: relative;
+}
+
+.scholarship-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid #e5e7eb;
+}
+
+.card-image {
+  position: relative;
+}
+
+.card-image img {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+}
+
+.image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+}
+
+.card-content-overlay {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  right: 24px;
+  color: white;
+}
+
+.overlay-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.overlay-desc {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.card-stats {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  text-align: center;
+}
+
+
+
+.stat-number {
+  font-size: 24px;
+  font-weight: bold;
+  color: #0F7536;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* Floating Elements */
+.floating-star {
+  position: absolute;
+  top: -16px;
+  right: -16px;
+  background-color: #77A686;
+  color: white;
+  padding: 12px;
+  border-radius: 50%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.floating-trend {
+  position: absolute;
+  bottom: -16px;
+  left: -16px;
+  background-color: #97BDA2;
+  color: white;
+  padding: 12px;
+  border-radius: 50%;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Cards Grid */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 32px;
+}
+
+.program-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.program-card:hover {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  transform: translateY(-4px);
+}
+
+.card-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  transition: all 0.3s ease;
+}
+
+.card-icon.green {
+  background-color: rgba(15, 117, 54, 0.1);
+  color: #0F7536;
+}
+
+.card-icon.blue {
+  background-color: rgba(119, 166, 134, 0.1);
+  color: #77A686;
+}
+
+.card-icon.mint {
+  background-color: rgba(151, 189, 162, 0.1);
+  color: #97BDA2;
+}
+
+.program-card:hover .card-icon.green {
+  background-color: #0F7536;
+  color: white;
+}
+
+.program-card:hover .card-icon.blue {
+  background-color: #77A686;
+  color: white;
+}
+
+.program-card:hover .card-icon.mint {
+  background-color: #97BDA2;
+  color: white;
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 16px;
+}
+
+.card-description {
+  color: #6b7280;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.card-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: transparent;
+}
+
+.card-button.green {
+  border: 1px solid #0F7536;
+  color: #0F7536;
+}
+
+.card-button.blue {
+  border: 1px solid #77A686;
+  color: #77A686;
+}
+
+.card-button.mint {
+  border: 1px solid #97BDA2;
+  color: #97BDA2;
+}
+
+.card-button.green:hover {
+  background-color: #0F7536;
+  color: white;
+}
+
+.card-button.blue:hover {
+  background-color: #77A686;
+  color: white;
+}
+
+.card-button.mint:hover {
+  background-color: #97BDA2;
+  color: white;
+}
+
+/* SVG Icon Styles */
+.w-6 { width: 24px; }
+.h-6 { height: 24px; }
+.w-5 { width: 20px; }
+.h-5 { height: 20px; }
+.w-8 { width: 32px; }
+.h-8 { height: 32px; }
+
+.text-green-600 {
+  color: #059669;
+}
+
+.flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+.mt-1 {
+  margin-top: 4px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .section-title {
+    font-size: 40px;
+  }
+  
+  .main-content {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  
+  .action-buttons {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .beasiswa-section {
+    padding: 60px 0;
+  }
+  
+  .beasiswa-container {
+    padding: 0 16px;
+  }
+  
+  .section-title {
+    font-size: 32px;
+  }
+  
+  .section-description {
+    font-size: 18px;
+  }
+  
+  .content-title {
+    font-size: 28px;
+  }
+  
+  .content-description {
+    font-size: 16px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .cards-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .btn-primary,
+  .btn-secondary {
+    padding: 16px 24px;
+    font-size: 14px;
+  }
+  
+  .program-card {
+    padding: 24px;
+  }
+}
+

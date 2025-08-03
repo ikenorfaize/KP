@@ -93,6 +93,18 @@ const Navbar = () => {
             <li>
               {isComponentPage ? (
                 <Link 
+                  to="/#beasiswa"
+                  className={location.pathname === '/beasiswa' ? 'sponsor-active' : ''}
+                >
+                  Beasiswa
+                </Link>
+              ) : (
+                <a href="#beasiswa">Beasiswa</a>
+              )}
+            </li>
+            <li>
+              {isComponentPage ? (
+                <Link 
                   to="/#sponsor" 
                   className={location.pathname === '/sponsor' ? 'sponsor-active' : ''}
                 >
