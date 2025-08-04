@@ -1,50 +1,63 @@
+// StatusTracker Component - Komponen untuk melacak status pendaftaran
+// Memungkinkan user untuk cek status pendaftaran dengan memasukkan email
 import React, { useState } from 'react';
 import './StatusTracker.css';
 
 const StatusTracker = () => {
+  // State untuk menyimpan email yang diinput user
   const [email, setEmail] = useState('');
+  
+  // State untuk menyimpan data status pendaftaran
   const [status, setStatus] = useState(null);
+  
+  // State untuk menunjukkan loading indicator
   const [loading, setLoading] = useState(false);
 
+  // Fungsi untuk mengecek status pendaftaran berdasarkan email
   const checkStatus = async () => {
-    setLoading(true);
-    setStatus(null);
+    setLoading(true);    // Tampilkan loading
+    setStatus(null);     // Reset status sebelumnya
     
     try {
-      // Demo mode: Simulasi responses berdasarkan email
+      // Demo mode: Simulasi delay loading untuk UX yang realistis
       await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate loading
       
-      // Demo responses berdasarkan email yang dimasukkan
+      // Demo responses berdasarkan email yang dimasukkan untuk testing
       if (email.toLowerCase().includes('demo')) {
+        // Simulasi status approved
         setStatus({
           email: email,
-          status: 'approved',
-          submittedDate: '2025-01-25',
-          processedDate: '2025-01-26',
+          status: 'approved',                    // Status: disetujui
+          submittedDate: '2025-01-25',           // Tanggal submit
+          processedDate: '2025-01-26',           // Tanggal diproses
           message: 'Selamat! Pendaftaran Anda disetujui. Silakan cek email untuk username dan password.'
         });
       } else if (email.toLowerCase().includes('pending')) {
+        // Simulasi status pending
         setStatus({
           email: email,
-          status: 'pending',
-          submittedDate: '2025-01-27',
+          status: 'pending',                     // Status: menunggu review
+          submittedDate: '2025-01-27',           // Tanggal submit
           message: 'Pendaftaran Anda sedang diproses oleh admin. Harap tunggu maksimal 2x24 jam.'
         });
       } else if (email.toLowerCase().includes('reject')) {
+        // Simulasi status rejected
         setStatus({
           email: email,
-          status: 'rejected',
-          submittedDate: '2025-01-24',
-          processedDate: '2025-01-25',
+          status: 'rejected',                    // Status: ditolak
+          submittedDate: '2025-01-24',           // Tanggal submit
+          processedDate: '2025-01-25',           // Tanggal diproses
           message: 'Pendaftaran perlu diperbaiki. Silakan cek email untuk detail dan daftar ulang.'
         });
       } else {
         // Try real API call first, fallback to demo
+        // Coba panggil API server untuk data real
         try {
           const response = await fetch(`http://localhost:3003/api/check-status/${encodeURIComponent(email)}`);
           if (response.ok) {
             const data = await response.json();
             
+            // Jika API berhasil dan ada data aplikasi
             if (data.success && data.application) {
               setStatus({
                 email: email,

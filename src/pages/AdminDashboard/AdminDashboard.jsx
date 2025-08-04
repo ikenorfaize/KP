@@ -1,48 +1,70 @@
-// AdminDashboard.jsx
+// AdminDashboard.jsx - Main Dashboard untuk Admin PERGUNU
+// Komponen ini adalah control center untuk semua operasi admin:
+// - Dashboard overview dengan statistik real-time
+// - User management (Create, Read, Update, Delete users)
+// - Application review (Approve/Reject pendaftaran baru)
+// - Certificate management (Upload, download, tracking)
+// - Email notification system
+// - Bulk operations dan export data
+// - Admin activity logging dan audit trail
+
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import bcrypt from 'bcryptjs';
-import ApplicationManager from '../../componen/ApplicationManager/ApplicationManager';
+import { useNavigate } from 'react-router-dom';                    // Hook navigasi
+import bcrypt from 'bcryptjs';                                     // Library untuk password hashing
+import ApplicationManager from '../../componen/ApplicationManager/ApplicationManager'; // Komponen untuk manage aplikasi
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
+  // Hook untuk navigasi programmatic (redirect ke login jika tidak authorized)
   const navigate = useNavigate();
+  
+  // State untuk mengontrol tab yang aktif di dashboard multi-tab interface
   const [activeTab, setActiveTab] = useState('dashboard');
+  
+  // State untuk search functionality across all data
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // State untuk statistik dashboard overview (metrics dan KPI)
   const [stats, setStats] = useState({
-    totalUsers: 0,
-    certificatesUploaded: 0,
-    totalDownloads: 0
+    totalUsers: 0,           // Total pengguna terdaftar dan aktif
+    certificatesUploaded: 0, // Total sertifikat yang berhasil diupload
+    totalDownloads: 0,       // Total download sertifikat (tracking engagement)
+    pendingApplications: 0,  // Aplikasi yang menunggu review
+    approvedToday: 0,        // Approval hari ini
+    rejectedToday: 0         // Rejection hari ini
   });
 
-  // State for new user form
+  // State untuk form tambah pengguna baru (manual user creation)
   const [newUser, setNewUser] = useState({
-    fullName: '',
-    email: '',
-    username: '',
-    password: '',
-    position: '',
-    address: '',
-    phone: '',
-    status: 'active',
-    role: 'user'
+    fullName: '',      // Nama lengkap sesuai identitas
+    email: '',         // Email unik untuk komunikasi
+    username: '',      // Username unik untuk login
+    password: '',      // Password (akan di-hash dengan bcrypt)
+    position: '',      // Posisi/jabatan dalam organisasi
+    address: '',       // Alamat lengkap
+    phone: '',         // Nomor telepon/WhatsApp aktif
+    status: 'active',  // Status akun (active/inactive/suspended)
+    role: 'user'       // Role permission (user/admin/moderator)
   });
-  const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [users, setUsers] = useState([]);
-  const [isLoadingUsers, setIsLoadingUsers] = useState(true);
+  
+  // State untuk UI controls dan user experience
+  const [showPassword, setShowPassword] = useState(false);   // Toggle visibility password
+  const [isSubmitting, setIsSubmitting] = useState(false);   // Loading state saat submit forms
+  const [users, setUsers] = useState([]);                   // Array semua pengguna dari database
+  const [isLoadingUsers, setIsLoadingUsers] = useState(true); // Loading state untuk fetch users
 
-  // State for editing user
-  const [editingUser, setEditingUser] = useState(null);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showEditPassword, setShowEditPassword] = useState(false);
+  // State untuk edit pengguna
+  const [editingUser, setEditingUser] = useState(null); // Data user yang sedang diedit
+  const [showEditModal, setShowEditModal] = useState(false); // Modal edit visibility
+  const [showEditPassword, setShowEditPassword] = useState(false); // Toggle password di edit
 
-  // Fetch users from JSON Server
+  // Fungsi untuk mengambil data pengguna dari JSON Server
   const fetchUsers = useCallback(async () => {
     try {
       setIsLoadingUsers(true);
-      console.log('🔄 Fetching users from JSON Server...');
+      console.log('🔄 Mengambil data pengguna dari JSON Server...');
       
+      // Fetch data dari JSON Server (port 3001)
       const response = await fetch('http://localhost:3001/users');
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -119,75 +141,75 @@ const AdminDashboard = () => {
     setStats(computedStats);
   }, [computedStats]);
 
-  // Logout function
+  // Fungsi untuk logout admin dengan konfirmasi
   const handleLogout = () => {
-    // Clear authentication data
-    localStorage.removeItem('adminAuth');
-    localStorage.removeItem('userSession');
+    // Clear authentication data dari localStorage  
+    localStorage.removeItem('adminAuth');      // Remove admin session token
+    localStorage.removeItem('userSession');   // Remove user session data
     
-    // Show confirmation
+    // Show confirmation dialog untuk mencegah logout tidak sengaja
     const confirmed = window.confirm('Apakah Anda yakin ingin keluar dari admin dashboard?');
     
     if (confirmed) {
       console.log('🚪 Admin logging out...');
-      // Navigate to home page
+      // Navigate to home page dengan replace: true untuk clear history
       navigate('/', { replace: true });
     }
   };
 
-  // Handle new user form input changes
+  // Handler untuk perubahan input form user baru
   const handleNewUserChange = (e) => {
     const { name, value } = e.target;
     setNewUser(prev => ({
-      ...prev,
-      [name]: value
+      ...prev,                    // Spread existing data
+      [name]: value              // Update field yang berubah
     }));
   };
 
-  // Reset new user form
+  // Reset form user baru ke nilai default
   const resetNewUserForm = () => {
     setNewUser({
-      fullName: '',
-      email: '',
-      username: '',
-      password: '',
-      position: '',
-      address: '',
-      phone: '',
-      status: 'active',
-      role: 'user'
+      fullName: '',      // Reset nama lengkap
+      email: '',         // Reset email
+      username: '',      // Reset username
+      password: '',      // Reset password
+      position: '',      // Reset posisi/jabatan
+      address: '',       // Reset alamat
+      phone: '',         // Reset nomor telepon
+      status: 'active',  // Default status aktif
+      role: 'user'       // Default role user biasa
     });
-    setShowPassword(false); // Reset password visibility
+    setShowPassword(false); // Reset password visibility untuk security
   };
 
-  // Handle editing user
+  // Handler untuk mulai edit user - populate form dengan data existing
   const handleEditUser = (user) => {
     setEditingUser({
-      ...user,
-      password: '' // Always start with empty password for security
+      ...user,                    // Spread semua data user
+      password: ''               // Always start dengan empty password untuk security
     });
-    setShowEditModal(true);
-    setShowEditPassword(false);
+    setShowEditModal(true);      // Show modal edit
+    setShowEditPassword(false);  // Hide password input initially
   };
 
-  // Handle edit user form changes
+  // Handler untuk perubahan input di form edit user
   const handleEditUserChange = (e) => {
     const { name, value } = e.target;
     setEditingUser(prev => ({
-      ...prev,
-      [name]: value
+      ...prev,                    // Spread existing editing user data
+      [name]: value              // Update field yang berubah
     }));
   };
 
-  // Handle save edited user
+  // Handler untuk save perubahan user (PATCH request ke JSON Server)
   const handleSaveEditUser = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
+    e.preventDefault();          // Prevent default form submission
+    setIsSubmitting(true);       // Set loading state
+    
     try {
       console.log('🔄 Updating user...');
-
-      // Prepare update data
+      
+      // Prepare data yang akan diupdate (trim whitespace)
       const updateData = {
         fullName: editingUser.fullName.trim(),
         email: editingUser.email.trim(),
@@ -195,65 +217,67 @@ const AdminDashboard = () => {
         position: editingUser.position.trim(),
         address: editingUser.address.trim(),
         phone: editingUser.phone.trim(),
-        status: editingUser.status,
-        role: editingUser.role
+        status: editingUser.status,    // Status dropdown value
+        role: editingUser.role         // Role dropdown value
       };
-
-      // Only update password if a new one is provided
+      
+      // Only update password jika user input password baru
       if (editingUser.password && editingUser.password.trim()) {
-        const saltRounds = 12;
+        const saltRounds = 12;     // bcrypt salt rounds untuk security
         const hashedPassword = await bcrypt.hash(editingUser.password.trim(), saltRounds);
-        updateData.password = hashedPassword;
+        updateData.password = hashedPassword; // Add hashed password ke update data
         console.log('🔐 Password updated');
       }
-
-      // Send update to JSON Server
+      
+      // Send PATCH request ke JSON Server
       const response = await fetch(`http://localhost:3001/users/${editingUser.id}`, {
-        method: 'PATCH',
+        method: 'PATCH',           // PATCH method untuk partial update
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updateData)
+        body: JSON.stringify(updateData)  // Convert object ke JSON string
       });
-
+      
+      // Check response status
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-
-      const updatedUser = await response.json();
+      
+      const updatedUser = await response.json(); // Parse response
       console.log('✅ User updated:', updatedUser);
-
-      // Refresh the users list
+      
+      // Refresh the users list untuk show perubahan terbaru
       await fetchUsers();
-
-      // Close modal
+      
+      // Close modal dan reset state
       setShowEditModal(false);
       setEditingUser(null);
-
-      alert('✅ User berhasil diupdate!');
-
+      
+      alert('✅ User berhasil diupdate!'); // Success feedback
+      
     } catch (error) {
       console.error('❌ Error updating user:', error);
-      alert(`❌ Error: ${error.message}`);
+      alert(`❌ Error: ${error.message}`); // Error feedback
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false);    // Reset loading state
     }
   };
 
-  // Close edit modal
+  // Handler untuk close edit modal tanpa save
   const handleCloseEditModal = () => {
-    setShowEditModal(false);
-    setEditingUser(null);
-    setShowEditPassword(false);
+    setShowEditModal(false);     // Hide modal
+    setEditingUser(null);        // Clear editing data
+    setShowEditPassword(false);  // Reset password visibility
   };
 
-  // Handle new user submission
+  // Handler untuk menambah user baru (POST request ke JSON Server)
   const handleAddUser = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
+    e.preventDefault();          // Prevent default form submission
+    setIsSubmitting(true);       // Set loading state untuk disable form
+    
     try {
-      // Validate required fields
+      // === STEP 1: CLIENT-SIDE VALIDATION ===
+      // Validate required fields untuk memastikan data lengkap
       const requiredFields = ['fullName', 'email', 'username', 'password', 'position', 'phone'];
       for (const field of requiredFields) {
         if (!newUser[field].trim()) {
@@ -262,8 +286,8 @@ const AdminDashboard = () => {
           return;
         }
       }
-
-      // Check if username or email already exists
+      
+      // Check duplicate username atau email
       const existingUser = users.find(user => 
         user.username === newUser.username || user.email === newUser.email
       );
@@ -273,82 +297,88 @@ const AdminDashboard = () => {
         setIsSubmitting(false);
         return;
       }
-
+      
       console.log('🔄 Adding new user to JSON Server...');
-
-      // Hash password before sending to server
-      const saltRounds = 12;
+      
+      // === STEP 2: PASSWORD HASHING ===
+      // Hash password dengan bcrypt untuk security (NEVER store plain text passwords)
+      const saltRounds = 12;     // Higher salt rounds = more secure but slower
       const hashedPassword = await bcrypt.hash(newUser.password.trim(), saltRounds);
       console.log('🔐 Password hashed successfully');
-
-      // Create new user object for JSON Server
+      
+      // === STEP 3: PREPARE USER DATA ===
+      // Create new user object dengan semua data yang diperlukan
       const userToAdd = {
         fullName: newUser.fullName.trim(),
         email: newUser.email.trim(),
         username: newUser.username.trim(),
-        password: hashedPassword, // Now properly hashed
+        password: hashedPassword,           // Hashed password untuk security
         position: newUser.position.trim(),
         address: newUser.address.trim(),
         phone: newUser.phone.trim(),
-        status: newUser.status,
-        role: newUser.role,
-        createdAt: new Date().toISOString()
+        status: newUser.status,             // active/inactive/suspended
+        role: newUser.role,                 // user/admin/moderator
+        createdAt: new Date().toISOString() // Timestamp creation
       };
-
-      // Send to JSON Server
+      
+      // === STEP 4: DATABASE SAVE OPERATION ===
+      // Send POST request ke JSON Server
       const response = await fetch('http://localhost:3001/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(userToAdd)
+        body: JSON.stringify(userToAdd)     // Convert object ke JSON string
       });
-
+      
+      // Check response status
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-
-      const savedUser = await response.json();
+      
+      const savedUser = await response.json(); // Parse response data
       console.log('✅ User saved to JSON Server:', savedUser);
-
-      // Refresh the users list to show the new user
+      
+      // === STEP 5: UI UPDATE & FEEDBACK ===
+      // Refresh the users list untuk show user baru
       await fetchUsers();
-
-      // Show success message
+      
+      // Show success message dengan credentials untuk admin
       alert(`✅ Karyawan ${newUser.fullName} berhasil ditambahkan!\n\nCredentials:\n👤 Username: ${newUser.username}\n🔑 Password: ${newUser.password}\n\nUser dapat login dengan credentials ini.`);
-
-      // Reset form
+      
+      // Reset form untuk input selanjutnya
       resetNewUserForm();
-
-      // Switch to dashboard tab to show the new user
+      
+      // Switch to dashboard tab untuk show user baru
       setActiveTab('dashboard');
-
-      console.log('✅ New user added successfully:', userWithAvatar);
-
+      
+      console.log('✅ New user added successfully');
+      
     } catch (error) {
       console.error('❌ Error adding user:', error);
       
-      // Fallback: save to localStorage if JSON Server fails
+      // === FALLBACK: LOCAL STATE SAVE ===
+      // Jika JSON Server gagal, simpan ke local state sebagai backup
       console.log('⚠️ JSON Server failed, saving to local state only');
       
       const userToAdd = {
-        id: Date.now().toString(),
-        ...newUser,
+        id: Date.now().toString(),          // Generate ID dari timestamp
+        ...newUser,                         // Spread form data
         profileImage: `https://ui-avatars.com/api/?name=${encodeURIComponent(newUser.fullName)}&background=0F7536&color=fff`,
-        downloads: 0,
-        certificates: [],
-        lastDownload: null,
-        createdAt: new Date().toISOString()
+        downloads: 0,                       // Initialize download counter
+        certificates: [],                   // Initialize empty certificates array
+        lastDownload: null,                 // Initialize last download timestamp
+        createdAt: new Date().toISOString() // Timestamp creation
       };
-
-      setUsers(prev => [...prev, userToAdd]);
+      
+      setUsers(prev => [...prev, userToAdd]); // Add to local state
       
       alert(`⚠️ User ditambahkan ke local state (JSON Server error).\n\nCredentials:\n👤 Username: ${newUser.username}\n🔑 Password: ${newUser.password}\n\nNOTE: Data mungkin tidak persisten!`);
       
-      resetNewUserForm();
-      setActiveTab('dashboard');
+      resetNewUserForm();    // Reset form
+      setActiveTab('dashboard'); // Switch tab
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false); // Reset loading state
     }
   };
 

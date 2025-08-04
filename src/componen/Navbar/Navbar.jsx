@@ -1,35 +1,70 @@
+// Navbar Component - Main Navigation Menu untuk Aplikasi PERGUNU
+// Komponen navigasi utama yang menangani:
+// - Navigation links dengan behavior adaptif (scroll vs route navigation)
+// - Authentication state management (login/logout UI)
+// - Mobile responsive hamburger menu
+// - Active state indicator untuk current page/section
+// - User session persistence dan security
+// - Conditional navigation berdasarkan user role
+
 import React, { useState, useEffect } from "react";
-import { NavLink, Link, useLocation } from "react-router-dom";
+import { NavLink, Link, useLocation } from "react-router-dom";  // Router hooks untuk navigasi
 import "./Navbar.css";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/logo.png";  // Logo PERGUNU
 
+// KOMPONEN NAVBAR - Menu navigasi utama aplikasi
 const Navbar = () => {
+  // Hook untuk mendapatkan lokasi/path saat ini untuk conditional behavior
   const location = useLocation();
+  
+  // State untuk menyimpan data user yang sedang login (null jika belum login)
   const [user, setUser] = useState(null);
+  
+  // State untuk mobile menu toggle
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Check for logged in user
+  // Effect untuk cek status login user saat component mount dan setiap render
   useEffect(() => {
-    const userAuth = localStorage.getItem('userAuth');
-    const adminAuth = localStorage.getItem('adminAuth');
+    // Cek localStorage untuk data session yang tersimpan
+    const userAuth = localStorage.getItem('userAuth');    // Regular user session
+    const adminAuth = localStorage.getItem('adminAuth');  // Admin session
     
+    // Set user state berdasarkan data session yang ditemukan
     if (userAuth) {
-      setUser({ ...JSON.parse(userAuth), type: 'user' });
+      try {
+        const userData = JSON.parse(userAuth);
+        setUser({ ...userData, type: 'user' });  // Mark sebagai regular user
+      } catch (error) {
+        console.error('Error parsing userAuth:', error);
+        localStorage.removeItem('userAuth');  // Clear corrupted data
+      }
     } else if (adminAuth) {
-      setUser({ ...JSON.parse(adminAuth), type: 'admin' });
+      try {
+        const adminData = JSON.parse(adminAuth);
+        setUser({ ...adminData, type: 'admin' }); // Mark sebagai admin
+      } catch (error) {
+        console.error('Error parsing adminAuth:', error);
+        localStorage.removeItem('adminAuth');  // Clear corrupted data
+      }
     }
-  }, []);
+  }, [location.pathname]); // Re-run when route changes
 
+  // Fungsi untuk handle logout dengan confirmation
   const handleLogout = () => {
     const confirmed = window.confirm('Apakah Anda yakin ingin keluar?');
     if (confirmed) {
+      // Clear semua session data dari localStorage
       localStorage.removeItem('userAuth');
       localStorage.removeItem('adminAuth');
-      setUser(null);
+      setUser(null);  // Reset user state
+      
+      // Force redirect ke homepage dengan page reload untuk clean state
       window.location.href = '/';
     }
   };
   
-  // Check if we're on a separate component page
+  // Check apakah kita sedang di halaman component terpisah
+  // Menentukan behavior navigation (scroll vs route)
   const isComponentPage = ['/sponsor', '/tentang', '/anggota', '/berita', '/layanan'].includes(location.pathname);
   
   return (
@@ -81,18 +116,6 @@ const Navbar = () => {
             <li>
               {isComponentPage ? (
                 <Link 
-                  to="/#layanan"
-                  className={location.pathname === '/layanan' ? 'sponsor-active' : ''}
-                >
-                  Layanan
-                </Link>
-              ) : (
-                <a href="#layanan">Layanan</a>
-              )}
-            </li>
-            <li>
-              {isComponentPage ? (
-                <Link 
                   to="/#beasiswa"
                   className={location.pathname === '/beasiswa' ? 'sponsor-active' : ''}
                 >
@@ -102,6 +125,19 @@ const Navbar = () => {
                 <a href="#beasiswa">Beasiswa</a>
               )}
             </li>
+            <li>
+              {isComponentPage ? (
+                <Link 
+                  to="/#layanan"
+                  className={location.pathname === '/layanan' ? 'sponsor-active' : ''}
+                >
+                  Layanan
+                </Link>
+              ) : (
+                <a href="#layanan">Layanan</a>
+              )}
+            </li>
+            
             <li>
               {isComponentPage ? (
                 <Link 

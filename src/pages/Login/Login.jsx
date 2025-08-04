@@ -1,146 +1,187 @@
+// Login Component - Halaman login untuk user dan admin PERGUNU
+// Komponen ini menangani autentikasi dengan fitur:
+// - Dual role authentication (user dan admin)
+// - Password visibility toggle untuk UX
+// - Loading states dan error handling
+// - Auto-redirect berdasarkan role
+// - Session management dengan localStorage
+// - Integration dengan apiService untuk backend calls
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "./Login.css";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-import logo from "../../assets/logo.png";
-import { apiService } from '../../services/apiService';
+import { Link, useNavigate } from "react-router-dom";   // Router hooks untuk navigasi
+import "./Login.css";                                   // Styling untuk login page
+import { FaEye, FaEyeSlash } from "react-icons/fa";     // Icons untuk toggle password visibility
+import logo from "../../assets/logo.png";               // Logo PERGUNU untuk branding
+import { apiService } from '../../services/apiService'; // Core service untuk API communication
 
 const Login = () => {
+  // Hook untuk navigasi programmatic (redirect after login)
   const navigate = useNavigate();
+  
+  // State untuk toggle visibility password (security UX)
   const [showPassword, setShowPassword] = useState(false);
+  
+  // State untuk loading indicator saat proses login (prevent double submit)
   const [isLoading, setIsLoading] = useState(false);
+  
+  // State untuk menampilkan pesan dari API (error/success feedback)
   const [apiMessage, setApiMessage] = useState('');
+  
+  // State untuk data form login dengan controlled components
   const [loginData, setLoginData] = useState({
-    username: '',
-    password: ''
+    username: '',  // Username atau email (flexible login)
+    password: ''   // Password user (akan di-hash server-side)
   });
 
+  // Handler untuk perubahan input form dengan auto-trim
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setLoginData(prev => ({
       ...prev,
-      [name]: value.trim() // Automatically trim whitespace
+      [name]: value.trim() // Automatically trim whitespace untuk clean data
     }));
-    setApiMessage(''); // Clear message when user types
+    setApiMessage(''); // Clear message ketika user mulai mengetik (UX improvement)
   };
 
+  // === MAIN LOGIN HANDLER ===
+  
+  // Handler untuk submit form login dengan role-based redirect
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setApiMessage('');
+    e.preventDefault();         // Prevent default form submission behavior
+    setIsLoading(true);         // Show loading indicator untuk UX feedback
+    setApiMessage('');          // Clear previous messages untuk clean UI
     
     console.log('🔐 Starting login process...');
     
     try {
+      // === STEP 1: API AUTHENTICATION ===
+      // Panggil API login dengan credentials yang diinput user
       const result = await apiService.login({
-        username: loginData.username,
-        password: loginData.password
+        username: loginData.username, // Username/email yang diinput
+        password: loginData.password  // Password yang akan diverifikasi
       });
       
       console.log('✅ Login successful:', result.user);
       
-      // Check if user is admin
+      // === STEP 2: ROLE-BASED ROUTING ===
+      // Cek role user untuk menentukan redirect destination
       if (result.user.role === 'admin') {
         console.log('🔑 Admin login detected, redirecting to admin dashboard...');
         
-        // Store admin session
+        // === ADMIN SESSION MANAGEMENT ===
+        // Simpan session admin di localStorage untuk persistence across browser sessions
         localStorage.setItem('adminAuth', JSON.stringify({
-          username: result.user.username,
-          role: 'admin',
-          fullName: result.user.fullName,
-          userId: result.user.id, // Add missing userId
-          email: result.user.email,
-          loginTime: new Date().toISOString()
+          username: result.user.username,           // Username untuk identification
+          role: 'admin',                           // Role untuk authorization
+          fullName: result.user.fullName,          // Display name untuk UI
+          userId: result.user.id,                  // User ID untuk API calls
+          email: result.user.email,                // Email untuk communication
+          loginTime: new Date().toISOString()      // Login timestamp untuk session tracking
         }));
         
-        // Immediate redirect to admin dashboard
+        // Navigate ke admin dashboard dengan replace: true untuk security
         navigate('/admin', { replace: true });
         
       } else {
         console.log('👤 User login detected, redirecting to user dashboard...');
         
-        // Store user session
+        // === USER SESSION MANAGEMENT ===
+        // Store user session dengan data lengkap untuk user dashboard
         localStorage.setItem('userAuth', JSON.stringify({
-          username: result.user.username,
-          role: result.user.role || 'user',
-          fullName: result.user.fullName,
-          email: result.user.email,
-          userId: result.user.id,
-          loginTime: new Date().toISOString()
+          username: result.user.username,           // Username untuk identification
+          role: result.user.role || 'user',        // Role dengan fallback ke 'user'
+          fullName: result.user.fullName,          // Display name untuk UI
+          email: result.user.email,                // Email untuk profile
+          userId: result.user.id,                  // User ID untuk API calls
+          loginTime: new Date().toISOString()      // Login timestamp untuk session tracking
         }));
         
-        // Immediate redirect to user dashboard
+        // Navigate ke user dashboard dengan replace: true untuk clean history
         navigate('/user-dashboard', { replace: true });
       }
       
     } catch (error) {
+      // === ERROR HANDLING ===
+      // Handle semua errors dari API atau network issues
       console.error('❌ Login failed:', error);
-      setApiMessage(`❌ Login failed: ${error.message}`);
+      setApiMessage(`❌ Login failed: ${error.message}`); // Display error ke user
     } finally {
+      // === CLEANUP ===
+      // Reset loading state untuk enable form kembali
       setIsLoading(false);
     }
   };
 
+  // === COMPONENT RENDER ===
+  
   return (
     <div className="login-container">
-      {/* KIRI */}
+      {/* === LEFT SECTION (BRANDING) === */}
       <div className="login-left">
         <div className="login-overlay">
-          <img src={logo} alt="Logo" className="login-logo" />
+          <img src={logo} alt="Logo PERGUNU" className="login-logo" />
           <h2>Hey! Welcome</h2>
           <p>Join us and give information to people</p>
         </div>
       </div>
 
-      {/* KANAN */}
+      {/* === RIGHT SECTION (LOGIN FORM) === */}
       <div className="login-right">
         <div className="login-box">
           <h2>Log in</h2>
           <form onSubmit={handleSubmit}>
+            {/* Username/Email input dengan validation */}
             <input 
               type="text" 
               name="username"
               placeholder="Username or Email" 
               value={loginData.username}
               onChange={handleInputChange}
-              required 
+              required                          // HTML5 validation
             />
+            
+            {/* Password input dengan toggle visibility untuk UX */}
             <div className="password-input-wrapper">
               <input
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? "text" : "password"} // Toggle antara text/password
                 name="password"
                 placeholder="Password"
                 value={loginData.password}
                 onChange={handleInputChange}
-                required
+                required                        // HTML5 validation
               />
+              {/* Toggle button dengan icon yang sesuai */}
               <span
                 className="toggle-password"
-                onClick={() => setShowPassword((v) => !v)}
-                tabIndex={0}
-                aria-label="Show or hide password"
+                onClick={() => setShowPassword((v) => !v)} // Toggle state
+                tabIndex={0}                    // Keyboard accessibility
+                aria-label="Show or hide password" // Screen reader support
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
 
+            {/* Additional login options */}
             <div className="login-options">
               <a href="#">Forgot Password?</a>
             </div>
 
+            {/* Submit button dengan loading state */}
             <button type="submit" className="login-button" disabled={isLoading}>
-              {isLoading ? 'Logging in...' : 'Log in'}
+              {isLoading ? 'Logging in...' : 'Log in'} {/* Dynamic text based on state */}
             </button>
             
-            {/* API Status Message */}
+            {/* === API STATUS MESSAGE === */}
+            {/* Display API response messages dengan conditional styling */}
             {apiMessage && (
               <div className={`api-message ${apiMessage.includes('✅') ? 'success' : 'error'}`}>
                 {apiMessage}
               </div>
             )}
 
+            {/* Social login divider (placeholder) */}
             <p className="login-divider">Or with</p>
 
+            {/* Social login buttons (placeholder - not functional) */}
             <div className="login-social">
               <button className="google">G+</button>
               <button className="facebook">f</button>
@@ -148,6 +189,7 @@ const Login = () => {
             </div>
           </form>
 
+          {/* Registration information untuk users */}
           <p className="create-account">
             <span style={{color: '#6b7280', fontSize: '0.9rem'}}>
               Belum punya akun? Hubungi Admin untuk mendaftar

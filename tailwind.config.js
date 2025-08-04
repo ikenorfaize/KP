@@ -1,18 +1,23 @@
 /** @type {import('tailwindcss').Config} */
+// KONFIGURASI TAILWINDCSS - Utility-first CSS framework
 export default {
+  // Content paths - file mana saja yang akan di-scan untuk TailwindCSS classes
   content: [
-    "./index.html",
-    "./src/**/*.{js,jsx,ts,tsx}",
+    "./index.html", // File HTML utama
+    "./src/**/*.{js,jsx,ts,tsx}", // Semua file JS/JSX/TS/TSX di folder src
   ],
+  
+  // Theme customization
   theme: {
     extend: {
+      // Custom colors untuk branding PERGUNU
       colors: {
-        // Custom colors untuk proyek KP
+        // Custom primary color palette (berbagai shade biru)
         primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
+          50: '#f0f9ff',  // Biru sangat terang
+          100: '#e0f2fe', // Biru terang
+          200: '#bae6fd', // Biru muda
+          300: '#7dd3fc', // Biru sedang
           400: '#38bdf8',
           500: '#0ea5e9',
           600: '#0284c7',

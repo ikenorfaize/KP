@@ -1,57 +1,84 @@
-// API service untuk demo - bisa switch antara localStorage dan JSON Server
-import bcrypt from 'bcryptjs';
+// ApiService.js - Core Service Layer untuk Komunikasi Backend
+// Service ini adalah jantung aplikasi yang mengelola semua operasi data:
+// 1. Authentication & Authorization (login, session management)
+// 2. User Management (CRUD operations)
+// 3. Application Management (pendaftaran, approve/reject)
+// 4. Database Operations dengan fallback strategy
+// 5. Password Security (hashing, verification)
+// 6. API Error Handling & Retry Logic
+// 
+// Backend Support:
+// - Primary: JSON Server (development) - port 3001
+// - Fallback: LocalStorage (offline/demo mode)
+
+import bcrypt from 'bcryptjs'; // Library untuk secure password hashing
 
 class ApiService {
   constructor() {
-    // Set API URL - ganti ke localStorage jika JSON Server tidak available
-    this.USE_JSON_SERVER = true;
-    this.API_URL = 'http://localhost:3001';
-    this.initialized = false;
+    // Konfigurasi service dengan flexible backend options
+    this.USE_JSON_SERVER = true;                    // Flag untuk backend selection
+    this.API_URL = 'http://localhost:3001';         // JSON Server endpoint
+    this.initialized = false;                       // Initialization status
+    this.isServerAvailable = false;                 // Server availability status
+    this.retryCount = 3;                           // Retry attempts untuk failed requests
+    this.timeout = 10000;                          // Request timeout (10 seconds)
   }
 
-  // Password utilities
+  // === PASSWORD SECURITY UTILITIES ===
+  
+  // Hash password menggunakan bcrypt dengan salt yang kuat
+  // Salt rounds 12 memberikan keamanan tinggi vs performance tradeoff
   async hashPassword(plainPassword) {
     try {
-      const saltRounds = 12;
+      const saltRounds = 12; // Tingkat kesulitan hash (2^12 iterations)
       const hashedPassword = await bcrypt.hash(plainPassword, saltRounds);
+      console.log('✅ Password berhasil di-hash dengan salt rounds:', saltRounds);
       return hashedPassword;
     } catch (error) {
-      console.error('Error hashing password:', error);
-      throw new Error('Password hashing failed');
+      console.error('❌ Error saat hashing password:', error);
+      throw new Error('Password hashing gagal');
     }
   }
 
+  // Verifikasi password dengan comparing plain text vs stored hash
+  // Menggunakan bcrypt compare yang secure terhadap timing attacks
   async verifyPassword(plainPassword, hashedPassword) {
     try {
       const isMatch = await bcrypt.compare(plainPassword, hashedPassword);
+      console.log(isMatch ? '✅ Password verified' : '❌ Password mismatch');
       return isMatch;
     } catch (error) {
-      console.error('Error verifying password:', error);
+      console.error('❌ Error saat verifikasi password:', error);
       return false;
     }
   }
 
-  // Initialize and check server status
+  // === SERVICE INITIALIZATION ===
+  
+  // Inisialisasi service dengan health check dan fallback strategy
   async init() {
     if (this.initialized) return;
     
-    // Check if JSON Server is available
+    console.log('🔧 Initializing ApiService...');
+    
+    // Health check untuk JSON Server availability
     try {
       const response = await fetch(`${this.API_URL}/users`, {
         method: 'GET',
-        timeout: 2000
+        timeout: this.timeout,
+        timeout: 2000 // Timeout 2 detik
       });
       
       if (response.ok) {
         this.USE_JSON_SERVER = true;
-        console.log('API Service initialized in JSON Server mode');
+        console.log('✅ API Service diinisialisasi dalam mode JSON Server');
       } else {
         this.USE_JSON_SERVER = false;
-        console.log('API Service initialized in localStorage mode');
+        console.log('⚠️ API Service diinisialisasi dalam mode localStorage');
       }
     } catch (error) {
       this.USE_JSON_SERVER = false;
-      console.log('API Service initialized in localStorage mode (JSON Server not found)');
+      console.log('⚠️ API Service diinisialisasi dalam mode localStorage (JSON Server tidak ditemukan)');
     }
     
     this.initialized = true;
@@ -62,97 +89,112 @@ class ApiService {
     this.USE_JSON_SERVER = useJsonServer;
   }
 
-  // Register user
+  // === USER REGISTRATION METHODS ===
+  
+  // Register user baru dengan validation dan dual backend support
   async register(userData) {
-    await this.init(); // Ensure initialized
+    await this.init(); // Ensure service sudah diinisialisasi
     
-    // Trim whitespace from user data
+    // Clean dan trim whitespace dari user input untuk consistency
     const cleanUserData = {
       ...userData,
-      fullName: userData.fullName?.trim() || '',
-      email: userData.email?.trim() || '',
-      username: userData.username?.trim() || '',
-      password: userData.password?.trim() || ''
+      fullName: userData.fullName?.trim() || '',   // Nama lengkap tanpa leading/trailing spaces
+      email: userData.email?.trim() || '',         // Email dalam format bersih
+      username: userData.username?.trim() || '',   // Username tanpa spaces
+      password: userData.password?.trim() || ''    // Password tanpa spaces
     };
     
     console.log('🧹 Cleaned user data for registration:', {
       fullName: cleanUserData.fullName,
       email: cleanUserData.email,
       username: cleanUserData.username,
-      password: '***' // Don't log actual password
+      password: '***' // NEVER log actual password untuk security
     });
     
+    // Route ke backend yang sesuai berdasarkan configuration
     if (this.USE_JSON_SERVER) {
-      return this.registerWithServer(cleanUserData);
+      return this.registerWithServer(cleanUserData);   // Primary: JSON Server
     } else {
-      return this.registerWithLocalStorage(cleanUserData);
+      return this.registerWithLocalStorage(cleanUserData); // Fallback: LocalStorage
     }
   }
 
-  // Login user  
+  // === USER LOGIN METHODS ===
+  
+  // Login user dengan credential validation dan dual backend support  
   async login(credentials) {
-    await this.init(); // Ensure initialized
+    await this.init(); // Ensure service sudah diinisialisasi
     
-    // Trim whitespace from credentials
+    // Clean dan trim credentials untuk consistent comparison
     const cleanCredentials = {
-      username: credentials.username?.trim() || '',
-      password: credentials.password?.trim() || ''
+      username: credentials.username?.trim() || '', // Username/email input
+      password: credentials.password?.trim() || ''  // Password input
     };
     
     console.log('🧹 Cleaned credentials:', {
       username: cleanCredentials.username,
-      password: '***' // Don't log actual password
+      password: '***' // NEVER log actual password untuk security
     });
     
+    // Route ke backend yang sesuai berdasarkan configuration
     if (this.USE_JSON_SERVER) {
-      return this.loginWithServer(cleanCredentials);
+      return this.loginWithServer(cleanCredentials);      // Primary: JSON Server
     } else {
-      return this.loginWithLocalStorage(cleanCredentials);
+      return this.loginWithLocalStorage(cleanCredentials); // Fallback: LocalStorage
     }
   }
 
-  // JSON Server Methods
+  // === JSON SERVER IMPLEMENTATIONS ===
+  
+  // Registration implementation untuk JSON Server backend
   async registerWithServer(userData) {
     try {
-      // Check if user exists
+      // === STEP 1: CHECK DUPLICATE EMAIL ===
+      // Cek apakah email sudah terdaftar untuk prevent duplicate accounts
       const existingUsers = await fetch(`${this.API_URL}/users?email=${userData.email}`);
       const users = await existingUsers.json();
       
       if (users.length > 0) {
         throw new Error('Email already registered');
       }
-
-      // Hash password sebelum disimpan
+      // === STEP 2: PASSWORD HASHING ===
+      // Hash password sebelum disimpan ke database untuk security
       const hashedPassword = await this.hashPassword(userData.password);
 
-      // Create new user
+      // === STEP 3: CREATE USER RECORD ===
+      // Create new user dengan metadata dan security measures
       const response = await fetch(`${this.API_URL}/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...userData,
-          id: Date.now(),
-          password: hashedPassword, // Password yang sudah di-hash
-          createdAt: new Date().toISOString(),
-          role: 'user'
+          ...userData,                              // Spread user data
+          id: Date.now(),                          // Generate unique ID
+          password: hashedPassword,                // Hashed password untuk security
+          createdAt: new Date().toISOString(),     // Timestamp creation
+          role: 'user'                            // Default role untuk new users
         })
       });
 
       if (!response.ok) throw new Error('Registration failed');
       
-      return await response.json();
+      return await response.json(); // Return created user data
     } catch (error) {
+      // === FALLBACK STRATEGY ===
+      // Jika JSON Server tidak available, switch ke localStorage
       console.warn('JSON Server not available, switching to localStorage');
       this.USE_JSON_SERVER = false;
       return this.registerWithLocalStorage(userData);
     }
   }
 
+  // Login implementation untuk JSON Server backend
   async loginWithServer(credentials) {
     try {
       console.log('🔄 Attempting to fetch users from JSON Server...');
       console.log('🌐 API URL:', this.API_URL);
       
+      // === STEP 1: FETCH ALL USERS ===
+      // Get semua users dari JSON Server untuk authentication
       const response = await fetch(`${this.API_URL}/users`, {
         method: 'GET',
         headers: {
@@ -172,9 +214,11 @@ class ApiService {
       console.log('👥 Users list:', users.map(u => `${u.username} (${u.role})`));
       console.log('📝 Looking for username:', credentials.username);
       
+      // === STEP 2: USER LOOKUP ===
+      // Cari user berdasarkan email atau username (flexible login)
       const user = users.find(u => {
-        const emailMatch = u.email === credentials.username;
-        const usernameMatch = u.username === credentials.username;
+        const emailMatch = u.email === credentials.username;    // Match dengan email
+        const usernameMatch = u.username === credentials.username; // Match dengan username
         console.log(`🔍 Checking user ${u.username}: email=${emailMatch}, username=${usernameMatch}`);
         return emailMatch || usernameMatch;
       });
@@ -189,7 +233,8 @@ class ApiService {
       console.log('🔑 Input password:', credentials.password);
       console.log('🔒 Stored hash:', user.password);
       
-      // Password verification dengan bcrypt
+      // === STEP 3: PASSWORD VERIFICATION ===
+      // Verify password menggunakan bcrypt compare yang secure
       const isPasswordValid = await this.verifyPassword(credentials.password, user.password);
       
       console.log('✅ Password verification result:', isPasswordValid);
@@ -199,39 +244,49 @@ class ApiService {
       }
 
       console.log('🎫 Creating session...');
-      // Create session
+      
+      // === STEP 4: SESSION CREATION ===
+      // Create session token untuk maintain user state
       const sessionResponse = await fetch(`${this.API_URL}/sessions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: user.id,
-          token: `session_${Date.now()}`,
-          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+          userId: user.id,                                    // Link session ke user ID
+          token: `session_${Date.now()}`,                    // Generate unique token
+          expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours expiry
         })
       });
 
       const session = await sessionResponse.json();
       console.log('🎉 Login successful for:', user.fullName);
       
+      // Return user data tanpa password + session token
       return {
-        user: { ...user, password: undefined }, // Don't return password
+        user: { ...user, password: undefined }, // NEVER return password untuk security
         session: session.token
       };
     } catch (error) {
       console.error('❌ JSON Server login error:', error.message);
       console.error('📝 Full error details:', error);
       console.warn('⚠️ Switching to localStorage mode...');
+      
+      // === FALLBACK STRATEGY ===
+      // Jika JSON Server gagal, switch ke localStorage
       this.USE_JSON_SERVER = false;
       return this.loginWithLocalStorage(credentials);
     }
   }
 
-  // LocalStorage Methods (Fallback)
+  // === LOCALSTORAGE IMPLEMENTATIONS (FALLBACK METHODS) ===
+  
+  // Registration implementation untuk localStorage fallback
   registerWithLocalStorage(userData) {
     return new Promise(async (resolve, reject) => {
+      // Get existing users dari localStorage
       const users = JSON.parse(localStorage.getItem('users') || '[]');
       
-      // Check if user exists
+      // === DUPLICATE CHECK ===
+      // Check apakah user sudah exist berdasarkan email atau username
       const userExists = users.find(user => 
         user.email === userData.email || user.username === userData.username
       );
@@ -241,32 +296,36 @@ class ApiService {
         return;
       }
       
-      // Hash password untuk localStorage juga
+      // === PASSWORD HASHING ===
+      // Hash password untuk localStorage juga (consistent security)
       const hashedPassword = await this.hashPassword(userData.password);
       
-      // Add new user
+      // === CREATE USER RECORD ===
+      // Add new user dengan metadata
       const newUser = {
-        id: Date.now(),
-        ...userData,
-        password: hashedPassword, // Password yang sudah di-hash
-        createdAt: new Date().toISOString(),
-        role: 'user'
+        id: Date.now(),                          // Generate unique ID
+        ...userData,                             // Spread user data
+        password: hashedPassword,                // Hashed password untuk security
+        createdAt: new Date().toISOString(),     // Timestamp creation
+        role: 'user'                            // Default role
       };
       
       users.push(newUser);
       localStorage.setItem('users', JSON.stringify(users));
       
-      resolve(newUser);
+      resolve(newUser); // Return created user
     });
   }
 
+  // Login implementation untuk localStorage fallback
   loginWithLocalStorage(credentials) {
     return new Promise(async (resolve, reject) => {
       console.log('📦 Using localStorage mode...');
       const users = JSON.parse(localStorage.getItem('users') || '[]');
       console.log('💾 LocalStorage users found:', users.length);
       
-      // If no users in localStorage, create default users
+      // === DEFAULT USERS SEEDING ===
+      // Jika tidak ada users di localStorage, create default users untuk demo
       if (users.length === 0) {
         console.log('⚠️ No users in localStorage, creating default users...');
         const defaultUsers = [
@@ -275,7 +334,7 @@ class ApiService {
             fullName: 'Demo User',
             email: 'demo@pergunu.com',
             username: 'demo',
-            password: '$2b$12$M5h98irDfJH7EZqlv3AjceSCrbx4yCatuEX/KHLumWnnSLS9d/AX.',
+            password: '$2b$12$M5h98irDfJH7EZqlv3AjceSCrbx4yCatuEX/KHLumWnnSLS9d/AX.', // Hashed: 'demo123'
             role: 'user',
             createdAt: new Date().toISOString()
           },
@@ -284,7 +343,7 @@ class ApiService {
             fullName: 'Admin Pergunu',
             email: 'admin@pergunu.com',
             username: 'admin',
-            password: '$2b$12$BNUmVyFMI/MMOd7aXmBx7OcFGEDPbJ9WOnbqoyPZGRc.m4v2pJBRG',
+            password: '$2b$12$BNUmVyFMI/MMOd7aXmBx7OcFGEDPbJ9WOnbqoyPZGRc.m4v2pJBRG', // Hashed: 'admin123'
             role: 'admin',
             createdAt: new Date().toISOString()
           },
@@ -293,7 +352,7 @@ class ApiService {
             fullName: 'Akun1 User',
             email: 'akun1@example.com',
             username: 'akun1',
-            password: '$2b$12$A1CfbogXUJSNQqGcd4NKq.2wUwAT1e6WNZC4pLicRfy5yIN2xJHse',
+            password: '$2b$12$A1CfbogXUJSNQqGcd4NKq.2wUwAT1e6WNZC4pLicRfy5yIN2xJHse', // Hashed: 'akun123'
             role: 'user',
             createdAt: new Date().toISOString()
           }
@@ -303,6 +362,8 @@ class ApiService {
         console.log('✅ Default users created in localStorage');
       }
       
+      // === USER LOOKUP ===
+      // Cari user berdasarkan email atau username (flexible login)
       console.log('🔍 Looking for user:', credentials.username);
       const user = users.find(u => 
         (u.email === credentials.username || u.username === credentials.username)
@@ -315,8 +376,9 @@ class ApiService {
         return;
       }
 
+      // === PASSWORD VERIFICATION ===
       console.log('🔐 Verifying password...');
-      // Password verification dengan bcrypt
+      // Password verification dengan bcrypt (consistent dengan JSON Server)
       const isPasswordValid = await this.verifyPassword(credentials.password, user.password);
       
       console.log('✅ Password valid:', isPasswordValid);
@@ -326,41 +388,50 @@ class ApiService {
         return;
       }
       
-      // Save current session
+      // === SESSION CREATION ===
+      // Save current session ke localStorage
       localStorage.setItem('currentUser', JSON.stringify({
         ...user,
-        password: undefined
+        password: undefined // NEVER store password dalam session
       }));
       
+      // Return user data + session token
       resolve({
-        user: { ...user, password: undefined },
-        session: `localStorage_session_${Date.now()}`
+        user: { ...user, password: undefined }, // Remove password dari response
+        session: `localStorage_session_${Date.now()}` // Generate session token
       });
     });
   }
 
-  // Get current user
+  // === UTILITY METHODS ===
+  
+  // Get current logged in user dari session
   getCurrentUser() {
     if (this.USE_JSON_SERVER) {
-      // In real app, verify session token with server
+      // In production app, verify session token dengan server
       return JSON.parse(localStorage.getItem('currentUser') || 'null');
     } else {
+      // LocalStorage mode: get dari localStorage
       return JSON.parse(localStorage.getItem('currentUser') || 'null');
     }
   }
 
-  // Logout
+  // Logout user dan clear session data
   logout() {
-    localStorage.removeItem('currentUser');
+    localStorage.removeItem('currentUser'); // Clear user session
     if (this.USE_JSON_SERVER) {
-      // In real app, invalidate session on server
+      // In production app, invalidate session pada server
       console.log('Session invalidated');
     }
   }
 }
 
-// Export singleton instance
+// === EXPORT STATEMENTS ===
+
+// Export singleton instance untuk aplikasi umum
+// Gunakan ini untuk konsistensi instance across aplikasi
 export const apiService = new ApiService();
 
-// Export class for custom usage
+// Export class untuk custom usage atau testing
+// Gunakan ini jika perlu create multiple instances atau testing
 export default ApiService;

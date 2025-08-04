@@ -1,50 +1,57 @@
-// EmailService.js - Service untuk auto email
+// EmailService.js - Service untuk mengirim email otomatis menggunakan EmailJS
+// File ini mengatur semua fungsi pengiriman email dalam aplikasi PERGUNU
+// Digunakan untuk notifikasi approval, rejection, dan pemberitahuan admin
+
+// Import template email yang sudah didefinisikan
 import emailTemplates from './EmailTemplates.js';
 
 class EmailService {
   constructor() {
-    // Enhanced EmailJS Configuration - PASTIKAN SESUAI DASHBOARD ANDA
+    // Konfigurasi EmailJS - PASTIKAN SESUAI DENGAN DASHBOARD EMAILJS ANDA
     this.emailConfig = {
-      serviceId: 'service_ublbpnp', // ✅ Service ID dari EmailJS dashboard
-      templateId: 'template_qnuud6d', // ⚠️ PASTIKAN template ini ada dan aktif
-      publicKey: 'AIgbwO-ayq2i-I0ou', // ✅ Public key dari EmailJS dashboard
-      adminEmail: 'fairuzo1dyck@gmail.com', // ✅ Target email yang benar
-      isDemoMode: false // Set false untuk production
+      serviceId: 'service_ublbpnp',         // ID service dari EmailJS dashboard
+      templateId: 'template_qnuud6d',       // ID template email yang akan digunakan
+      publicKey: 'AIgbwO-ayq2i-I0ou',       // Public key untuk autentikasi EmailJS
+      adminEmail: 'fairuzo1dyck@gmail.com', // Email admin yang menerima notifikasi
+      isDemoMode: false                     // Set true untuk testing tanpa mengirim email sungguhan
     };
     
-    // Add retry configuration
+    // Konfigurasi retry untuk mengulang pengiriman jika gagal
     this.retryConfig = {
-      maxRetries: 3,
-      retryDelay: 2000,
-      timeoutMs: 30000
+      maxRetries: 3,      // Maksimal 3 kali percobaan
+      retryDelay: 2000,   // Jeda 2 detik antar percobaan
+      timeoutMs: 30000    // Timeout 30 detik per percobaan
     };
     
-    // Add debug flag
+    // Flag untuk menampilkan log debugging di console
     this.debugMode = true;
   }
 
-  // Enhanced EmailJS initialization dengan better error handling
+  // Fungsi inisialisasi EmailJS dengan penanganan error yang lebih baik
   async initEmailService() {
-    console.log('🔧 === EMAILJS INITIALIZATION DEBUG ===');
-    console.log('🔧 Config being used:', {
+    console.log('🔧 === MEMULAI INISIALISASI EMAILJS ===');
+    
+    // Log konfigurasi yang digunakan (sembunyikan sebagian public key untuk keamanan)
+    console.log('🔧 Konfigurasi yang digunakan:', {
       serviceId: this.emailConfig.serviceId,
       templateId: this.emailConfig.templateId,
-      publicKey: this.emailConfig.publicKey?.substring(0, 8) + '...',
+      publicKey: this.emailConfig.publicKey?.substring(0, 8) + '...', // Hide full key for security
       adminEmail: this.emailConfig.adminEmail
     });
     
     try {
+      // Jika dalam demo mode, gunakan mock service
       if (this.emailConfig.isDemoMode) {
         console.log('📧 Demo Mode Active - Using mock email service');
         return { send: this.mockEmailSend.bind(this) };
       }
       
-      // Check for EmailJS in window (CDN)
+      // Check apakah EmailJS tersedia di window (CDN)
       if (typeof window !== 'undefined' && window.emailjs) {
         console.log('✅ EmailJS found in window (CDN)');
         console.log('📦 EmailJS methods available:', Object.keys(window.emailjs));
         
-        // Verify all required configuration
+        // Verifikasi semua konfigurasi yang diperlukan sudah ada
         const missingConfig = [];
         if (!this.emailConfig.publicKey) missingConfig.push('publicKey');
         if (!this.emailConfig.serviceId) missingConfig.push('serviceId');

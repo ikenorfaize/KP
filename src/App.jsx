@@ -1,105 +1,131 @@
+// App.jsx - Main Application Component
+// Komponen utama yang mengatur routing dan struktur aplikasi PERGUNU
 import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import Navbar from "./componen/Navbar/Navbar";
-import Hero from "./componen/Hero/Hero";
-import Tentang from "./componen/Tentang/Tentang";
-import Berita from "./componen/Berita/Berita";
-import StatsSection from "./componen/Stats/StatsSection";
-import Anggota from "./componen/Anggota/Anggota";
-import Layanan from "./componen/Layanan/Layanan";
-import Sponsor from "./componen/Sponsor/Sponsor";
-import BeasiswaCard from "./componen/Beasiswa/Beasiswa";
-import Footer from "./componen/Footer/Footer";
-import StatusTracker from "./componen/StatusTracker/StatusTracker";
 
-import BeritaUtama from "./pages/Berita/BeritaUtama";
-import Berita1 from "./pages/Berita/Berita1";
-import Berita2 from "./pages/Berita/Berita2";
-import Berita3 from "./pages/Berita/Berita3";
-import Login from "./pages/Login/Login";
-import RegisterForm from "./pages/RegisterForm/RegisterForm";
-import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
-import UserDashboard from "./pages/UserDashboard/UserDashboard";
-import SponsorPage from "./pages/SponsorPage/SponsorPage";
-import Beasiswa from "./pages/Beasiswa/Beasiswa";
+// Import komponen untuk halaman utama (homepage)
+import Navbar from "./componen/Navbar/Navbar";           // Navigation bar
+import Hero from "./componen/Hero/Hero";                 // Hero section dengan animasi
+import Tentang from "./componen/Tentang/Tentang";        // Section tentang PERGUNU
+import Berita from "./componen/Berita/Berita";           // Grid berita terbaru
+import StatsSection from "./componen/Stats/StatsSection"; // Statistik organisasi
+import Anggota from "./componen/Anggota/Anggota";        // Tim dan anggota
+import Layanan from "./componen/Layanan/Layanan";        // Layanan yang ditawarkan
+import Sponsor from "./componen/Sponsor/Sponsor";        // Partner dan sponsor
+import BeasiswaCard from "./componen/Beasiswa/Beasiswa"; // Card info beasiswa
+import Footer from "./componen/Footer/Footer";           // Footer website
+import StatusTracker from "./componen/StatusTracker/StatusTracker"; // Cek status pendaftaran
+
+// Import halaman-halaman terpisah (pages) yang memiliki route sendiri
+import BeritaUtama from "./pages/Berita/BeritaUtama";     // Detail berita utama
+import Berita1 from "./pages/Berita/Berita1";             // Detail berita 1
+import Berita2 from "./pages/Berita/Berita2";             // Detail berita 2
+import Berita3 from "./pages/Berita/Berita3";             // Detail berita 3
+import Login from "./pages/Login/Login";                  // Halaman login user/admin
+import RegisterForm from "./pages/RegisterForm/RegisterForm"; // Form pendaftaran anggota
+import AdminDashboard from "./pages/AdminDashboard/AdminDashboard"; // Dashboard admin
+import UserDashboard from "./pages/UserDashboard/UserDashboard";     // Dashboard user
+import SponsorPage from "./pages/SponsorPage/SponsorPage"; // Halaman khusus sponsor
+import Beasiswa from "./pages/Beasiswa/Beasiswa";         // Halaman informasi beasiswa
 
 import "./App.css";
 
 const App = () => {
+  // Hook untuk mendapatkan lokasi/URL saat ini untuk keperluan scroll management
   const location = useLocation();
 
-  // Disable browser scroll restoration globally
+  // Effect untuk disable scroll restoration browser secara global
+  // Ini mencegah browser mengingat posisi scroll saat navigasi back/forward
+  // Berguna untuk SPA yang mengelola scroll secara manual
   useEffect(() => {
     if (window.history.scrollRestoration) {
       window.history.scrollRestoration = 'manual';
     }
   }, []);
 
-  // Reset scroll position on route change for specific routes
+  // Effect untuk reset posisi scroll ke atas saat pindah ke halaman tertentu
+  // Dipicu setiap kali location.pathname berubah
+  // Berguna untuk halaman yang dibuka di tab/window baru atau navigasi direct
   useEffect(() => {
     if (location.pathname === '/sponsor' || location.pathname === '/tentang' || 
         location.pathname === '/anggota' || location.pathname === '/berita' || 
         location.pathname === '/layanan' || location.pathname === '/beasiswa') {
-      window.scrollTo(0, 0);
+      window.scrollTo(0, 0); // Scroll ke posisi teratas halaman
     }
-  }, [location.pathname]);
+  }, [location.pathname]); // Dependency array: effect dijalankan ketika pathname berubah
 
-  // Handle hash navigation for home page
+  // Effect untuk handle navigasi hash (anchor links) di homepage
+  // Contoh: /#tentang akan scroll ke section tentang dengan smooth scrolling
   useEffect(() => {
     if (location.pathname === '/' && location.hash) {
-      // Wait a bit for the page to render
+      // Tunggu sedikit agar page selesai render sebelum scroll
       setTimeout(() => {
         const element = document.querySelector(location.hash);
         if (element) {
+          // Scroll ke element dengan animasi smooth
           element.scrollIntoView({ behavior: 'smooth' });
         }
-      }, 100);
+      }, 100); // Delay 100ms untuk memastikan DOM sudah ready
     }
-  }, [location.pathname, location.hash]);
+  }, [location.pathname, location.hash]); // Re-run ketika path atau hash berubah
 
   return (
     <>
       <Routes>
+        {/* ROUTE UTAMA - HOMEPAGE (/) */}
+        {/* Halaman utama yang menggabungkan semua section dalam satu page */}
+        {/* Single Page Application dengan semua konten dalam satu route */}
         <Route
           path="/"
           element={
             <>
-              <Navbar />
+              <Navbar />  {/* Navigation bar tetap di atas */}
               <div className="app-wrapper">
-                <Hero />
+                <Hero />  {/* Section banner utama dengan CTA dan animasi typing */}
               </div>
-              <Tentang />
-              <StatsSection />
-              <Anggota />
-              <Berita />
-              <BeasiswaCard />
-              <Layanan />
+              <Tentang />       {/* Section tentang organisasi PERGUNU */}
+              <StatsSection />  {/* Section statistik (jumlah anggota, achievement) */}
+              <Anggota />       {/* Section tim inti dan keanggotaan */}
+              <Berita />        {/* Section berita terbaru (3 artikel) */}
+              <BeasiswaCard />  {/* Section program beasiswa dan bantuan */}
+              <Layanan />       {/* Section layanan yang ditawarkan PERGUNU */}
               <div id="status-tracker">
-                <StatusTracker />
+                <StatusTracker />  {/* Section cek status pendaftaran dengan form */}
               </div>
-              <Sponsor />
-              <Footer />
+              <Sponsor />  {/* Section sponsor, partner, dan mitra kerjasama */}
+              <Footer />   {/* Footer dengan informasi kontak dan copyright */}
             </>
           }
         />
+        
+        {/* ROUTES BERITA - Halaman artikel berita detail terpisah */}
+        {/* Setiap berita memiliki halaman tersendiri dengan konten lengkap */}
         <Route path="/berita-utama" element={<><Navbar /><BeritaUtama /></>} />
         <Route path="/berita-1" element={<><Navbar /><Berita1 /></>} />
         <Route path="/berita-2" element={<><Navbar /><Berita2 /></>} />
         <Route path="/berita-3" element={<><Navbar /><Berita3 /></>} />
+        
+        {/* ROUTES HALAMAN SECTION - Versi halaman penuh dari section homepage */}
+        {/* Untuk user yang ingin fokus pada satu section tertentu */}
         <Route path="/sponsor" element={<><Navbar /><SponsorPage /><Footer /></>} />
         <Route path="/tentang" element={<><Navbar /><Tentang /><Footer /></>} />
         <Route path="/anggota" element={<><Navbar /><Anggota /><Footer /></>} />
         <Route path="/berita" element={<><Navbar /><Berita /><Footer /></>} />
         <Route path="/layanan" element={<><Navbar /><Layanan /><Footer /></>} />
         <Route path="/beasiswa" element={<><Navbar /><Beasiswa /><Footer /></>} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/daftar" element={<RegisterForm />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/user-dashboard" element={<UserDashboard />} />
+        
+        {/* ROUTES SISTEM - Authentication dan Dashboard */}
+        {/* Halaman-halaman yang memerlukan interaksi khusus atau autentikasi */}
+        <Route path="/login" element={<Login />} />                    {/* Login admin/user */}
+        <Route path="/daftar" element={<RegisterForm />} />            {/* Form pendaftaran anggota */}
+        <Route path="/admin" element={<AdminDashboard />} />           {/* Dashboard untuk admin */}
+        <Route path="/user-dashboard" element={<UserDashboard />} />   {/* Dashboard untuk user */}
       </Routes>
     </>
   );
 };
 
+// Export App component sebagai default export
+// Component ini akan diimport di main.jsx sebagai root component
 export default App;

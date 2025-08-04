@@ -1,14 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./Hero.css";
-import heroImg from "../../assets/hero.png";
+import heroImg from "../../assets/hero.png"; // Import gambar hero banner
 
+// Array konten hero yang bisa berganti-ganti (carousel content)
 const heroContents = [
   {
     title: "Bergerak dan Menggerakkan, Merawat Jagad dan Membangun Peradaban",
     desc: "Persatuan Guru Nahdlatul Ulama (Pergunu) merupakan salah satu badan otonom NU yang menghimpun dan menaungi para guru, dosen dan ustad.",
   },
   {
-    title: "Menguatkan Peran Guru dalam Era Digital",
+    title: "Menguatkan Peran Guru dalam Era Digital", 
     desc: "Pergunu berkomitmen meningkatkan kapasitas guru melalui pelatihan, kolaborasi, dan inovasi teknologi pendidikan.",
   },
   {
@@ -17,16 +18,19 @@ const heroContents = [
   },
 ];
 
+// KOMPONEN HERO - Banner utama dengan carousel content dan animasi scroll
 const Hero = () => {
-  const ref = useRef(null);
-  const [index, setIndex] = useState(0);
+  const ref = useRef(null); // Ref untuk element animasi scroll
+  const [index, setIndex] = useState(0); // State untuk index konten yang aktif
 
+  // Effect untuk animasi scroll - menambah class 'animate' saat visible
   useEffect(() => {
     const handleScroll = () => {
       if (ref.current) {
-        const { top } = ref.current.getBoundingClientRect();
+        const { top } = ref.current.getBoundingClientRect(); // Posisi element dari viewport
         const windowHeight =
           window.innerHeight || document.documentElement.clientHeight;
+        // Trigger animasi saat element 80% visible
         if (top <= windowHeight * 0.8) {
           ref.current.classList.add("animate");
         } else {
@@ -35,15 +39,18 @@ const Hero = () => {
       }
     };
 
+    // Add scroll listener dan trigger sekali saat mount
     window.addEventListener("scroll", handleScroll);
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
+    handleScroll(); // Initial check
+    return () => window.removeEventListener("scroll", handleScroll); // Cleanup
   }, []);
 
+  // Fungsi untuk navigasi ke konten selanjutnya (carousel)
   const nextContent = () => {
     setIndex((prevIndex) => (prevIndex + 1) % heroContents.length);
   };
 
+  // Fungsi untuk navigasi ke konten sebelumnya (carousel)
   const prevContent = () => {
     setIndex((prevIndex) =>
       (prevIndex - 1 + heroContents.length) % heroContents.length

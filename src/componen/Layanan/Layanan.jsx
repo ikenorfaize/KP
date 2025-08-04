@@ -39,10 +39,11 @@ const layananData = [
   },
 ];
 
+// KOMPONEN LAYANAN - Menampilkan berbagai layanan dengan detail selector
 const Layanan = () => {
-  const [selected, setSelected] = useState("jago");
-  const [ref, isVisible] = useScrollAnimation();
-  const detail = layananData.find((item) => item.id === selected);
+  const [selected, setSelected] = useState("jago"); // State untuk layanan yang dipilih (default JAGO)
+  const [ref, isVisible] = useScrollAnimation(); // Hook animasi scroll
+  const detail = layananData.find((item) => item.id === selected); // Find detail berdasarkan selected ID
 
   return (
     <section className={`layanan-section ${isVisible ? 'animate' : ''}`} id="layanan" ref={ref}>
@@ -52,30 +53,36 @@ const Layanan = () => {
         dengan PERGUNU Situbondo
       </h2>
       <div className="layanan-wrapper">
+        {/* Menu selector layanan - Radio button style */}
         <div className="layanan-menu">
           {layananData.map((item) => (
             <button
               key={item.id}
-              className={`layanan-button ${selected === item.id ? "active" : ""}`}
-              onClick={() => setSelected(item.id)}
+              className={`layanan-button ${selected === item.id ? "active" : ""}`} // Class conditional untuk active state
+              onClick={() => setSelected(item.id)} // Set selected layanan
             >
               <span className="radio-button">
+                {/* Radio dot hanya muncul jika selected */}
                 {selected === item.id && <span className="radio-dot" />}
               </span>
               {item.title}
             </button>
           ))}
         </div>
+        {/* Content area - Menampilkan detail layanan yang dipilih */}
         <div className="layanan-content">
+          {/* Conditional rendering gambar jika ada */}
           {detail.image && (
             <img src={detail.image} alt={detail.title} className="layanan-image" />
           )}
           <div className="layanan-detail">
             <h3 className="detail-title">{detail.title}</h3>
             <div className="detail-content">
+              {/* Conditional rendering berdasarkan tipe content (string vs object) */}
               {typeof detail.content === 'object' ? (
                 <>
                   <p>{detail.content.description}</p>
+                  {/* Render features sebagai list jika ada */}
                   <ul>
                     {detail.content.features.map((feature, index) => (
                       <li key={index}>{feature}</li>

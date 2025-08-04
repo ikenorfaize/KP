@@ -1,45 +1,57 @@
 <!doctype html>
+<!-- HTML5 Document untuk website PERGUNU Situbondo -->
 <html lang="id">
   <head>
+    <!-- Character encoding UTF-8 untuk support karakter Indonesia -->
     <meta charset="UTF-8" />
+    
+    <!-- IE compatibility mode untuk Internet Explorer -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    
+    <!-- Responsive viewport untuk mobile optimization -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- Title yang muncul di tab browser -->
     <title>Pergunu Situbondo</title>
     
-    <!-- Favicon -->
+    <!-- Favicon - icon yang muncul di tab browser -->
     <link rel="icon" type="image/png" href="/logo.png" />
 
-    <!-- Meta tambahan (optional) -->
+    <!-- Meta description untuk SEO -->
     <meta name="description" content="Website Resmi Persatuan Guru Nahdlatul Ulama Situbondo" />
     
     <!-- EmailJS CDN untuk email service -->
+    <!-- Library untuk mengirim email langsung dari frontend tanpa backend -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script type="text/javascript">
-      // Verify EmailJS loading
+      // Verify EmailJS loading dan setup global
       (function() {
         console.log('📧 === EMAILJS CDN STATUS CHECK ===');
         
-        // Wait a moment for EmailJS to load
+        // Tunggu sebentar agar EmailJS selesai load
         setTimeout(() => {
           if (typeof emailjs !== 'undefined') {
             console.log('✅ EmailJS CDN loaded successfully');
             console.log('📦 EmailJS version:', emailjs.version || 'Unknown');
             console.log('🔧 EmailJS methods:', Object.keys(emailjs));
             
-            // Make it available as window.emailjs for consistency
+            // Buat tersedia sebagai window.emailjs untuk konsistensi
             window.emailjs = emailjs;
           } else {
             console.error('❌ EmailJS CDN failed to load!');
             console.error('🔍 Check network connection and CDN availability');
           }
-        }, 500);
+        }, 500); // Delay 500ms untuk memastikan library sudah siap
       })();
     </script>
   </head>
   <body>
+    <!-- Root element tempat React app akan di-mount -->
+    <!-- Element ini akan diisi oleh ReactDOM.createRoot di main.jsx -->
     <div id="root"></div>
 
+    <!-- Entry point untuk aplikasi React -->
+    <!-- Vite akan memproses file ini dan semua dependencies -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
