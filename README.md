@@ -265,7 +265,7 @@ npm run full-demo
 ## 📞 **Support & Contact**
 
 - **Developer:** GitHub Copilot
-- **Admin Email:** fairuz.fuadi004@gmail.com
+- **Admin Email:** fa@gmail.com
 - **Project:** KP PERGUNU Digital Certificate System
 
 ## 📄 **License**
