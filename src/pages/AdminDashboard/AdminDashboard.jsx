@@ -64,8 +64,9 @@ const AdminDashboard = () => {
       setIsLoadingUsers(true);
       console.log('🔄 Mengambil data pengguna dari JSON Server...');
       
-      // Fetch data dari JSON Server (port 3001)
-      const response = await fetch('http://localhost:3001/users');
+      // Fetch data dari JSON Server menggunakan environment URL
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiUrl}/users`);
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
@@ -230,7 +231,8 @@ const AdminDashboard = () => {
       }
       
       // Send PATCH request ke JSON Server
-      const response = await fetch(`http://localhost:3001/users/${editingUser.id}`, {
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiUrl}/users/${editingUser.id}`, {
         method: 'PATCH',           // PATCH method untuk partial update
         headers: {
           'Content-Type': 'application/json',
@@ -323,7 +325,8 @@ const AdminDashboard = () => {
       
       // === STEP 4: DATABASE SAVE OPERATION ===
       // Send POST request ke JSON Server
-      const response = await fetch('http://localhost:3001/users', {
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiUrl}/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -462,8 +465,9 @@ const AdminDashboard = () => {
             )
           );
 
-          // Update in JSON Server
-          const response = await fetch(`http://localhost:3001/users/${userId}`, {
+          // Update in JSON Server menggunakan environment URL
+          const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+          const response = await fetch(`${apiUrl}/users/${userId}`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -531,8 +535,9 @@ const AdminDashboard = () => {
         )
       );
 
-      // Update in JSON Server
-      const response = await fetch(`http://localhost:3001/users/${userId}`, {
+      // Update in JSON Server menggunakan environment URL
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiUrl}/users/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -620,8 +625,9 @@ const AdminDashboard = () => {
     try {
       console.log(`🗑️ Deleting user ${userId} (${userToDelete.username}) from JSON Server...`);
 
-      // Send DELETE request to JSON Server
-      const response = await fetch(`http://localhost:3001/users/${userId}`, {
+      // Send DELETE request to JSON Server menggunakan environment URL
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiUrl}/users/${userId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

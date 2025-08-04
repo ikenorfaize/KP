@@ -41,7 +41,8 @@ const UserDashboard = () => {
         const userId = userData.userId || userData.id;
         console.log(`🔄 Fetching user data for ID: ${userId}`);
         
-        const response = await fetch(`http://localhost:3001/users/${userId}`);
+        const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+        const response = await fetch(`${apiUrl}/users/${userId}`);
         if (!response.ok) {
           throw new Error(`Failed to fetch user data: ${response.status}`);
         }
@@ -202,7 +203,8 @@ const UserDashboard = () => {
       setUser(updatedUser);
 
       // Update in JSON Server
-      await fetch(`http://localhost:3001/users/${user.id}`, {
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      await fetch(`${apiUrl}/users/${user.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

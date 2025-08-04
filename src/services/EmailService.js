@@ -7,13 +7,13 @@ import emailTemplates from './EmailTemplates.js';
 
 class EmailService {
   constructor() {
-    // Konfigurasi EmailJS - PASTIKAN SESUAI DENGAN DASHBOARD EMAILJS ANDA
+    // Konfigurasi EmailJS - MENGGUNAKAN ENVIRONMENT VARIABLES UNTUK KEAMANAN
     this.emailConfig = {
-      serviceId: 'service_ublbpnp',         // ID service dari EmailJS dashboard
-      templateId: 'template_qnuud6d',       // ID template email yang akan digunakan
-      publicKey: 'AIgbwO-ayq2i-I0ou',       // Public key untuk autentikasi EmailJS
-      adminEmail: 'fairuzo1dyck@gmail.com', // Email admin yang menerima notifikasi
-      isDemoMode: false                     // Set true untuk testing tanpa mengirim email sungguhan
+      serviceId: import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_ublbpnp',         // ID service dari EmailJS dashboard
+      templateId: import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_qnuud6d',       // ID template email yang akan digunakan
+      publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'AIgbwO-ayq2i-I0ou',       // Public key untuk autentikasi EmailJS
+      adminEmail: import.meta.env.VITE_ADMIN_EMAIL || 'fairuzo1dyck@gmail.com', // Email admin yang menerima notifikasi
+      isDemoMode: import.meta.env.VITE_DEMO_MODE === 'true' || false                     // Set true untuk testing tanpa mengirim email sungguhan
     };
     
     // Konfigurasi retry untuk mengulang pengiriman jika gagal
@@ -24,7 +24,14 @@ class EmailService {
     };
     
     // Flag untuk menampilkan log debugging di console
-    this.debugMode = true;
+    this.debugMode = import.meta.env.VITE_APP_DEBUG_MODE === 'true' || true;
+    
+    // Additional template IDs untuk berbagai keperluan
+    this.templates = {
+      admin: import.meta.env.VITE_EMAILJS_ADMIN_TEMPLATE_ID || 'template_admin_notif',
+      approval: import.meta.env.VITE_EMAILJS_APPROVAL_TEMPLATE_ID || 'template_user_approval',
+      rejection: import.meta.env.VITE_EMAILJS_REJECTION_TEMPLATE_ID || 'template_user_rejection'
+    };
   }
 
   // Fungsi inisialisasi EmailJS dengan penanganan error yang lebih baik

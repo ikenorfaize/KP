@@ -23,3 +23,22 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment variables dan sensitive files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Database files (development)
+db.json.bak
+db.json.backup
+
+# Upload files
+uploads/
+public/uploads/
+
+# Log files
+logs/
+*.log

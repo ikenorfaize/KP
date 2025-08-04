@@ -35,7 +35,8 @@ const ApplicationManager = () => {
       
       // Coba ambil data dari API server terlebih dahulu
       try {
-        const response = await fetch('http://localhost:3001/applications');
+        const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+        const response = await fetch(`${apiUrl}/applications`);
         if (response.ok) {
           const data = await response.json();
           setApplications(data);  // Set data dari API jika berhasil

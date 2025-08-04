@@ -15,22 +15,27 @@ import bcrypt from 'bcryptjs'; // Library untuk secure password hashing
 
 class ApiService {
   constructor() {
-    // Konfigurasi service dengan flexible backend options
-    this.USE_JSON_SERVER = true;                    // Flag untuk backend selection
-    this.API_URL = 'http://localhost:3001';         // JSON Server endpoint
+    // Konfigurasi service dengan flexible backend options menggunakan environment variables
+    this.USE_JSON_SERVER = import.meta.env.VITE_USE_JSON_SERVER === 'true' || true;    // Flag untuk backend selection
+    this.API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';         // JSON Server endpoint
     this.initialized = false;                       // Initialization status
     this.isServerAvailable = false;                 // Server availability status
     this.retryCount = 3;                           // Retry attempts untuk failed requests
     this.timeout = 10000;                          // Request timeout (10 seconds)
+    
+    // Security configuration dari environment variables
+    this.saltRounds = parseInt(import.meta.env.VITE_BCRYPT_SALT_ROUNDS) || 12;
+    this.maxLoginAttempts = parseInt(import.meta.env.VITE_MAX_LOGIN_ATTEMPTS) || 5;
+    this.sessionTimeout = parseInt(import.meta.env.VITE_SESSION_TIMEOUT) || 3600000;
   }
 
   // === PASSWORD SECURITY UTILITIES ===
   
-  // Hash password menggunakan bcrypt dengan salt yang kuat
-  // Salt rounds 12 memberikan keamanan tinggi vs performance tradeoff
+  // Hash password menggunakan bcrypt dengan salt yang kuat dari environment config
+  // Salt rounds dari environment variable untuk flexibility
   async hashPassword(plainPassword) {
     try {
-      const saltRounds = 12; // Tingkat kesulitan hash (2^12 iterations)
+      const saltRounds = this.saltRounds; // Tingkat kesulitan hash dari env config
       const hashedPassword = await bcrypt.hash(plainPassword, saltRounds);
       console.log('✅ Password berhasil di-hash dengan salt rounds:', saltRounds);
       return hashedPassword;
@@ -341,9 +346,9 @@ class ApiService {
           {
             id: '2',
             fullName: 'Admin Pergunu',
-            email: 'admin@pergunu.com',
-            username: 'admin',
-            password: '$2b$12$BNUmVyFMI/MMOd7aXmBx7OcFGEDPbJ9WOnbqoyPZGRc.m4v2pJBRG', // Hashed: 'admin123'
+            email: import.meta.env.VITE_ADMIN_EMAIL || 'admin@pergunu.com',
+            username: import.meta.env.VITE_ADMIN_USERNAME || 'admin',
+            password: '$2b$12$BNUmVyFMI/MMOd7aXmBx7OcFGEDPbJ9WOnbqoyPZGRc.m4v2pJBRG', // Hashed default: 'admin123' - update via environment
             role: 'admin',
             createdAt: new Date().toISOString()
           },
