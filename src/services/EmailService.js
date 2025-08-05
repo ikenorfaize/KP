@@ -9,10 +9,10 @@ class EmailService {
   constructor() {
     // Konfigurasi EmailJS - MENGGUNAKAN ENVIRONMENT VARIABLES UNTUK KEAMANAN
     this.emailConfig = {
-      serviceId: import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_ublbpnp',         // ID service dari EmailJS dashboard
-      templateId: import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_qnuud6d',       // ID template email yang akan digunakan
-      publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'AIgbwO-ayq2i-I0ou',       // Public key untuk autentikasi EmailJS
-      adminEmail: import.meta.env.VITE_ADMIN_EMAIL || 'fairuzo1dyck@gmail.com', // Email admin yang menerima notifikasi
+      serviceId: import.meta.env.VITE_EMAILJS_SERVICE_ID,         // ID service dari EmailJS dashboard
+      templateId: import.meta.env.VITE_EMAILJS_TEMPLATE_ID,       // ID template email yang akan digunakan
+      publicKey: import.meta.env.VITE_EMAILJS_PUBLIC_KEY,       // Public key untuk autentikasi EmailJS
+      adminEmail: import.meta.env.VITE_ADMIN_EMAIL, // Email admin yang menerima notifikasi
       isDemoMode: import.meta.env.VITE_DEMO_MODE === 'true' || false                     // Set true untuk testing tanpa mengirim email sungguhan
     };
     
@@ -26,12 +26,40 @@ class EmailService {
     // Flag untuk menampilkan log debugging di console
     this.debugMode = import.meta.env.VITE_APP_DEBUG_MODE === 'true' || true;
     
+    // Validasi environment variables yang diperlukan
+    this.validateEnvironmentVariables();
+    
     // Additional template IDs untuk berbagai keperluan
     this.templates = {
-      admin: import.meta.env.VITE_EMAILJS_ADMIN_TEMPLATE_ID || 'template_admin_notif',
-      approval: import.meta.env.VITE_EMAILJS_APPROVAL_TEMPLATE_ID || 'template_user_approval',
-      rejection: import.meta.env.VITE_EMAILJS_REJECTION_TEMPLATE_ID || 'template_user_rejection'
+      admin: import.meta.env.VITE_EMAILJS_ADMIN_TEMPLATE_ID,
+      approval: import.meta.env.VITE_EMAILJS_APPROVAL_TEMPLATE_ID,
+      rejection: import.meta.env.VITE_EMAILJS_REJECTION_TEMPLATE_ID
     };
+  }
+
+  // Validasi environment variables yang diperlukan
+  validateEnvironmentVariables() {
+    const required = {
+      'VITE_EMAILJS_SERVICE_ID': this.emailConfig.serviceId,
+      'VITE_EMAILJS_TEMPLATE_ID': this.emailConfig.templateId,
+      'VITE_EMAILJS_PUBLIC_KEY': this.emailConfig.publicKey,
+      'VITE_ADMIN_EMAIL': this.emailConfig.adminEmail
+    };
+
+    const missing = [];
+    for (const [key, value] of Object.entries(required)) {
+      if (!value || value.trim() === '') {
+        missing.push(key);
+      }
+    }
+
+    if (missing.length > 0) {
+      console.error('❌ Missing required environment variables:', missing);
+      console.error('⚠️ Please check your .env file and ensure these variables are set properly.');
+      throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+    }
+
+    console.log('✅ All required environment variables are present');
   }
 
   // Fungsi inisialisasi EmailJS dengan penanganan error yang lebih baik
