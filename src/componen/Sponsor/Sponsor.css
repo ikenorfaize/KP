@@ -198,11 +198,11 @@
 
 .sponsor-btn {
   display: inline-block;
-  background: linear-gradient(135deg, #0F7536 0%, #28a745 100%);
-  color: white;
+  background: #0F7536;
+  color: white !important;
   padding: 12px 30px;
   border-radius: 25px;
-  text-decoration: none;
+  text-decoration: none !important;
   font-weight: 600;
   font-size: 1rem;
   transition: all 0.3s ease;
@@ -211,9 +211,11 @@
 }
 
 .sponsor-btn:hover {
-  background: linear-gradient(135deg, #28a745 0%, #0F7536 100%);
+  background: #0d6530;
+  color: white !important;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(15, 117, 54, 0.3);
+  text-decoration: none !important;
 }
 
 /* Responsive */

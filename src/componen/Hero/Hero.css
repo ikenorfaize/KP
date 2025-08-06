@@ -105,22 +105,46 @@
 }
 
 .hero-button {
-  background-color: #1e7e34;
-  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   padding: 12px 28px;
   font-size: 15px;
   font-weight: 700;
   border: none;
   border-radius: 999px;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
+  text-decoration: none;
+  min-width: 180px;
 }
 
-.hero-button:hover {
-  background-color: #16682b;
-  transform: scale(1.05);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+.hero-button.primary {
+  background-color: #0F7536;
+  color: white;
+  box-shadow: 0 4px 15px rgba(15, 117, 54, 0.2);
+}
+
+.hero-button.primary:hover {
+  background-color: #0d6530;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(15, 117, 54, 0.3);
+  color: white;
+}
+
+.hero-button.secondary {
+  background-color: transparent;
+  color: #0F7536;
+  border: 2px solid #0F7536;
+  box-shadow: 0 4px 15px rgba(15, 117, 54, 0.1);
+}
+
+.hero-button.secondary:hover {
+  background-color: #0F7536;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(15, 117, 54, 0.2);
 }
 
 .nav-buttons {

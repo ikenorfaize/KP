@@ -713,10 +713,13 @@ const AdminDashboard = () => {
         <div className="search-container">
           <input
             type="text"
+            id="admin-search-users"
+            name="search"
             placeholder="Search users..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
+            autoComplete="off"
           />
         </div>
       </div>
@@ -813,6 +816,8 @@ const AdminDashboard = () => {
                       Upload PDF
                       <input
                         type="file"
+                        id={`upload-pdf-${user.id}`}
+                        name="certificate-upload"
                         accept=".pdf"
                         style={{ display: 'none' }}
                         onChange={(e) => {
@@ -874,49 +879,57 @@ const AdminDashboard = () => {
             <h3>📋 Informasi Pribadi</h3>
             
             <div className="form-group">
-              <label>Nama Lengkap *</label>
+              <label htmlFor="admin-add-fullname">Nama Lengkap *</label>
               <input
                 type="text"
+                id="admin-add-fullname"
                 name="fullName"
                 value={newUser.fullName}
                 onChange={handleNewUserChange}
                 placeholder="Masukkan nama lengkap"
                 required
+                autoComplete="name"
               />
             </div>
 
             <div className="form-group">
-              <label>Email *</label>
+              <label htmlFor="admin-add-email">Email *</label>
               <input
                 type="email"
+                id="admin-add-email"
                 name="email"
                 value={newUser.email}
                 onChange={handleNewUserChange}
                 placeholder="contoh@pergunu.com"
                 required
+                autoComplete="email"
               />
             </div>
 
             <div className="form-group">
-              <label>No. Telepon *</label>
+              <label htmlFor="admin-add-phone">No. Telepon *</label>
               <input
                 type="tel"
+                id="admin-add-phone"
                 name="phone"
                 value={newUser.phone}
                 onChange={handleNewUserChange}
-                placeholder="081234567890"
+                placeholder="08123456789"
                 required
+                autoComplete="tel"
               />
             </div>
 
             <div className="form-group">
-              <label>Alamat</label>
+              <label htmlFor="admin-add-address">Alamat</label>
               <textarea
+                id="admin-add-address"
                 name="address"
                 value={newUser.address}
                 onChange={handleNewUserChange}
                 placeholder="Alamat lengkap karyawan"
                 rows="3"
+                autoComplete="street-address"
               />
             </div>
           </div>
@@ -926,22 +939,25 @@ const AdminDashboard = () => {
             <h3>🔐 Informasi Akun</h3>
             
             <div className="form-group">
-              <label>Username *</label>
+              <label htmlFor="admin-add-username">Username *</label>
               <input
                 type="text"
+                id="admin-add-username"
                 name="username"
                 value={newUser.username}
                 onChange={handleNewUserChange}
                 placeholder="username_unik"
                 required
+                autoComplete="username"
               />
             </div>
 
             <div className="form-group">
-              <label>Password *</label>
+              <label htmlFor="admin-add-password">Password *</label>
               <div style={{ position: 'relative' }}>
                 <input
                   type={showPassword ? "text" : "password"}
+                  id="admin-add-password"
                   name="password"
                   value={newUser.password}
                   onChange={handleNewUserChange}
@@ -949,6 +965,7 @@ const AdminDashboard = () => {
                   required
                   minLength="6"
                   style={{ paddingRight: '45px' }}
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"
@@ -1145,22 +1162,28 @@ const AdminDashboard = () => {
             
             <form onSubmit={handleSaveEditUser} className="user-form">
               <div className="form-group">
-                <label>Full Name</label>
+                <label htmlFor="edit-user-fullname">Full Name</label>
                 <input
                   type="text"
+                  id="edit-user-fullname"
+                  name="fullName"
                   value={editingUser.fullName}
                   onChange={(e) => setEditingUser({...editingUser, fullName: e.target.value})}
                   required
+                  autoComplete="name"
                 />
               </div>
 
               <div className="form-group">
-                <label>Username</label>
+                <label htmlFor="edit-user-username">Username</label>
                 <input
                   type="text"
+                  id="edit-user-username"
+                  name="username"
                   value={editingUser.username}
                   onChange={(e) => setEditingUser({...editingUser, username: e.target.value})}
                   required
+                  autoComplete="username"
                 />
               </div>
 

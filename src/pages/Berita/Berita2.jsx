@@ -187,7 +187,15 @@ const Berita2 = () => {
             alert('Terima kasih! Email ' + email + ' telah didaftarkan untuk newsletter.');
             e.target.reset();
           }}>
-            <input type="email" className="newsletter-input" placeholder="Masukkan email Anda" required />
+            <input 
+              type="email" 
+              id="newsletter-email-berita2"
+              name="newsletter-email"
+              className="newsletter-input" 
+              placeholder="Masukkan email Anda" 
+              required 
+              autoComplete="email"
+            />
             <button type="submit" className="newsletter-btn">Berlangganan</button>
           </form>
         </div>

@@ -132,22 +132,26 @@ const Login = () => {
             {/* Username/Email input dengan validation */}
             <input 
               type="text" 
+              id="login-username"
               name="username"
               placeholder="Username or Email" 
               value={loginData.username}
               onChange={handleInputChange}
               required                          // HTML5 validation
+              autoComplete="username"
             />
             
             {/* Password input dengan toggle visibility untuk UX */}
             <div className="password-input-wrapper">
               <input
                 type={showPassword ? "text" : "password"} // Toggle antara text/password
+                id="login-password"
                 name="password"
                 placeholder="Password"
                 value={loginData.password}
                 onChange={handleInputChange}
                 required                        // HTML5 validation
+                autoComplete="current-password"
               />
               {/* Toggle button dengan icon yang sesuai */}
               <span
