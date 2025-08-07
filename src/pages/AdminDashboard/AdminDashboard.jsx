@@ -11,6 +11,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';                    // Hook navigasi
 import bcrypt from 'bcryptjs';                                     // Library untuk password hashing
+import { apiService } from '../../services/apiService';            // Import API service
 import ApplicationManager from '../../componen/ApplicationManager/ApplicationManager'; // Komponen untuk manage aplikasi
 import './AdminDashboard.css';
 
@@ -58,15 +59,17 @@ const AdminDashboard = () => {
   const [showEditModal, setShowEditModal] = useState(false); // Modal edit visibility
   const [showEditPassword, setShowEditPassword] = useState(false); // Toggle password di edit
 
-  // Fungsi untuk mengambil data pengguna dari JSON Server
+  // Fungsi untuk mengambil data pengguna dari Express.js API
   const fetchUsers = useCallback(async () => {
     try {
       setIsLoadingUsers(true);
-      console.log('🔄 Mengambil data pengguna dari JSON Server...');
+      console.log('🔄 Mengambil data pengguna dari Express.js API...');
       
-      // Fetch data dari JSON Server menggunakan environment URL
-      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
-      const response = await fetch(`${apiUrl}/users`);
+      // Ensure apiService is initialized
+      await apiService.init();
+      
+      // Fetch data dari Express.js API menggunakan apiService
+      const response = await fetch(`${apiService.API_URL}/users`);
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
@@ -230,8 +233,8 @@ const AdminDashboard = () => {
         console.log('🔐 Password updated');
       }
       
-      // Send PATCH request ke JSON Server
-      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      // Send PATCH request ke Express.js API
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
       const response = await fetch(`${apiUrl}/users/${editingUser.id}`, {
         method: 'PATCH',           // PATCH method untuk partial update
         headers: {
@@ -324,8 +327,8 @@ const AdminDashboard = () => {
       };
       
       // === STEP 4: DATABASE SAVE OPERATION ===
-      // Send POST request ke JSON Server
-      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      // Send POST request ke Express.js API
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
       const response = await fetch(`${apiUrl}/users`, {
         method: 'POST',
         headers: {
@@ -450,29 +453,29 @@ const AdminDashboard = () => {
             return;
           }
 
-          // Update certificates array
+          // Update certificates array ONLY
           const updatedCertificates = [...(userToUpdate.certificates || []), fileData];
 
-          const updatedUser = {
-            ...userToUpdate,
+          // ONLY update certificates field - DO NOT touch password or other sensitive data
+          const certificateUpdate = {
             certificates: updatedCertificates
           };
 
           // Update local state
           setUsers(prevUsers =>
             prevUsers.map(user =>
-              user.id === userId ? updatedUser : user
+              user.id === userId ? { ...user, certificates: updatedCertificates } : user
             )
           );
 
-          // Update in JSON Server menggunakan environment URL
-          const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+          // Update in Express.js API - PATCH instead of PUT to avoid overwriting password
+          const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
           const response = await fetch(`${apiUrl}/users/${userId}`, {
-            method: 'PUT',
+            method: 'PATCH',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(updatedUser)
+            body: JSON.stringify(certificateUpdate)
           });
 
           if (!response.ok) {
@@ -535,8 +538,8 @@ const AdminDashboard = () => {
         )
       );
 
-      // Update in JSON Server menggunakan environment URL
-      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      // Update in Express.js API menggunakan environment URL
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
       const response = await fetch(`${apiUrl}/users/${userId}`, {
         method: 'PUT',
         headers: {
@@ -625,8 +628,8 @@ const AdminDashboard = () => {
     try {
       console.log(`🗑️ Deleting user ${userId} (${userToDelete.username}) from JSON Server...`);
 
-      // Send DELETE request to JSON Server menggunakan environment URL
-      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      // Send DELETE request to Express.js API menggunakan environment URL
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
       const response = await fetch(`${apiUrl}/users/${userId}`, {
         method: 'DELETE',
         headers: {

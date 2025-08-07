@@ -15,13 +15,17 @@ import bcrypt from 'bcryptjs'; // Library untuk secure password hashing
 
 class ApiService {
   constructor() {
-    // Konfigurasi service dengan flexible backend options menggunakan environment variables
-    this.USE_JSON_SERVER = import.meta.env.VITE_USE_JSON_SERVER === 'true' || true;    // Flag untuk backend selection
-    this.API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';         // JSON Server endpoint
+    // Konfigurasi service dengan Express.js backend
+    this.USE_JSON_SERVER = false;                   // Using Express.js instead of json-server
+    this.API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';     // Express.js API endpoint
+    this.FILE_SERVER_URL = import.meta.env.VITE_FILE_SERVER_URL || 'http://localhost:3002'; // File server endpoint
     this.initialized = false;                       // Initialization status
     this.isServerAvailable = false;                 // Server availability status
     this.retryCount = 3;                           // Retry attempts untuk failed requests
     this.timeout = 10000;                          // Request timeout (10 seconds)
+    this.version = '2.0.0-fix-' + Date.now();      // Force cache refresh
+    
+    console.log('🆕 NEW ApiService version:', this.version);
     
     // Security configuration dari environment variables
     this.saltRounds = parseInt(import.meta.env.VITE_BCRYPT_SALT_ROUNDS) || 12;
@@ -65,25 +69,31 @@ class ApiService {
     if (this.initialized) return;
     
     console.log('🔧 Initializing ApiService...');
+    console.log('🌐 API_URL:', this.API_URL); // DEBUG: Print API URL
+    console.log('🔍 EXPECTED URL should contain /api path'); // DEBUG
     
-    // Health check untuk JSON Server availability
+    // Health check untuk Express.js API availability
     try {
-      const response = await fetch(`${this.API_URL}/users`, {
+      console.log('🔍 Health check URL:', `${this.API_URL}/health`); // DEBUG: Print full URL
+      const response = await fetch(`${this.API_URL}/health`, {
         method: 'GET',
-        timeout: this.timeout,
         timeout: 2000 // Timeout 2 detik
       });
       
       if (response.ok) {
         this.USE_JSON_SERVER = true;
-        console.log('✅ API Service diinisialisasi dalam mode JSON Server');
+        this.isServerAvailable = true;
+        console.log('✅ API Service diinisialisasi dalam mode Express.js API');
       } else {
         this.USE_JSON_SERVER = false;
+        this.isServerAvailable = false;
         console.log('⚠️ API Service diinisialisasi dalam mode localStorage');
       }
     } catch (error) {
       this.USE_JSON_SERVER = false;
-      console.log('⚠️ API Service diinisialisasi dalam mode localStorage (JSON Server tidak ditemukan)');
+      this.isServerAvailable = false;
+      console.log('⚠️ API Service diinisialisasi dalam mode localStorage (Express.js API tidak ditemukan)');
+      console.error('❌ Health check error:', error);
     }
     
     this.initialized = true;
@@ -129,6 +139,13 @@ class ApiService {
   // Login user dengan credential validation dan dual backend support  
   async login(credentials) {
     await this.init(); // Ensure service sudah diinisialisasi
+    
+    // === RESET MODE SETIAP LOGIN ATTEMPT ===
+    // Pastikan selalu coba Express.js dulu, kecuali server benar-benar down
+    if (this.isServerAvailable) {
+      this.USE_JSON_SERVER = true;
+      console.log('🔄 Reset to Express.js mode for new login attempt');
+    }
     
     // Clean dan trim credentials untuk consistent comparison
     const cleanCredentials = {
@@ -192,31 +209,51 @@ class ApiService {
     }
   }
 
-  // Login implementation untuk JSON Server backend
+  // Login implementation untuk Express.js backend
   async loginWithServer(credentials) {
     try {
-      console.log('🔄 Attempting to fetch users from JSON Server...');
+      console.log('🔄 Attempting login with Express.js API...');
       console.log('🌐 API URL:', this.API_URL);
       
-      // === STEP 1: FETCH ALL USERS ===
-      // Get semua users dari JSON Server untuk authentication
-      const response = await fetch(`${this.API_URL}/users`, {
-        method: 'GET',
+      // === LOGIN WITH EXPRESS.JS API ===
+      const response = await fetch(`${this.API_URL}/auth/login`, {
+        method: 'POST',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({
+          username: credentials.username,
+          password: credentials.password
+        })
       });
       
       console.log('📡 Response status:', response.status, response.statusText);
       
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
       }
       
-      const users = await response.json();
-      console.log('✅ Successfully fetched users:', users.length, 'users found');
-      console.log('👥 Users list:', users.map(u => `${u.username} (${u.role})`));
+      const result = await response.json();
+      console.log('✅ Login successful:', result.message);
+      console.log('👤 User:', result.user.username, '(', result.user.role, ')');
+      
+      // Store user session
+      const userSession = {
+        user: result.user,
+        token: result.token,
+        timestamp: Date.now(),
+        loginTime: new Date().toISOString()
+      };
+      
+      localStorage.setItem('currentUser', JSON.stringify(userSession));
+      
+      return {
+        success: true,
+        user: result.user,
+        message: result.message
+      };
       console.log('📝 Looking for username:', credentials.username);
       
       // === STEP 2: USER LOOKUP ===
@@ -273,12 +310,22 @@ class ApiService {
     } catch (error) {
       console.error('❌ JSON Server login error:', error.message);
       console.error('📝 Full error details:', error);
-      console.warn('⚠️ Switching to localStorage mode...');
       
-      // === FALLBACK STRATEGY ===
-      // Jika JSON Server gagal, switch ke localStorage
-      this.USE_JSON_SERVER = false;
-      return this.loginWithLocalStorage(credentials);
+      // === SMART FALLBACK STRATEGY ===
+      // HANYA switch ke localStorage jika ada SERVER ERROR
+      // JANGAN switch jika hanya AUTHENTICATION ERROR (password salah)
+      if (error.message.includes('Invalid credentials') || 
+          error.message.includes('401') ||
+          error.message.includes('Unauthorized')) {
+        // Authentication error - TETAP gunakan Express.js, jangan switch!
+        console.log('🔐 Authentication failed, but keeping Express.js mode');
+        throw error; // Re-throw authentication error
+      } else {
+        // Server error - baru switch ke localStorage
+        console.warn('⚠️ Server error detected, switching to localStorage mode...');
+        this.USE_JSON_SERVER = false;
+        return this.loginWithLocalStorage(credentials);
+      }
     }
   }
 
