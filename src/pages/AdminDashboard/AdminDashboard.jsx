@@ -405,7 +405,7 @@ const AdminDashboard = () => {
     calculateStats();
   }, [users]);
 
-  // Handle file upload
+  // Handle file upload with FILE SERVER (no more base64!)
   const handleCertificateUpload = async (userId, file) => {
     if (!file) {
       alert('❌ Tidak ada file yang dipilih.');
@@ -422,130 +422,170 @@ const AdminDashboard = () => {
       return;
     }
 
-    const loadingAlert = alert('🔄 Mengupload sertifikat...');
-
     try {
-      // Generate unique filename
-      const timestamp = Date.now();
-      const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-      const uniqueFileName = `${timestamp}_${sanitizedFileName}`;
+      console.log('� Uploading to file server...');
 
-      // Read file as base64
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        try {
-          // Create file data object
-          const fileData = {
-            id: timestamp,
-            fileName: file.name,
-            originalName: file.name,
-            uniqueName: uniqueFileName,
-            size: file.size,
-            uploadDate: new Date().toISOString(),
-            base64Data: e.target.result,
-            downloadCount: 0
-          };
+      // === UPLOAD TO FILE SERVER ===
+      const formData = new FormData();
+      formData.append('certificate', file);
+      formData.append('userId', userId);
 
-          // Get current user data
-          const userToUpdate = users.find(user => user.id === userId);
-          if (!userToUpdate) {
-            alert('❌ User tidak ditemukan!');
-            return;
-          }
+      const fileServerUrl = import.meta.env.VITE_FILE_SERVER_URL || 'http://localhost:3002';
+      const uploadResponse = await fetch(`${fileServerUrl}/upload-certificate`, {
+        method: 'POST',
+        body: formData
+      });
 
-          // Update certificates array ONLY
-          const updatedCertificates = [...(userToUpdate.certificates || []), fileData];
+      if (!uploadResponse.ok) {
+        throw new Error(`Upload failed: ${uploadResponse.statusText}`);
+      }
 
-          // ONLY update certificates field - DO NOT touch password or other sensitive data
-          const certificateUpdate = {
-            certificates: updatedCertificates
-          };
+      const uploadResult = await uploadResponse.json();
+      console.log('✅ File uploaded:', uploadResult);
 
-          // Update local state
-          setUsers(prevUsers =>
-            prevUsers.map(user =>
-              user.id === userId ? { ...user, certificates: updatedCertificates } : user
-            )
-          );
-
-          // Update in Express.js API - PATCH instead of PUT to avoid overwriting password
-          const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
-          const response = await fetch(`${apiUrl}/users/${userId}`, {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(certificateUpdate)
-          });
-
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
-          console.log('✅ Certificate uploaded successfully:', fileData);
-          alert(`✅ Sertifikat "${file.name}" berhasil diupload untuk ${userToUpdate.fullName}!`);
-          
-        } catch (error) {
-          console.error('❌ Error uploading certificate:', error);
-          alert(`❌ Gagal mengupload sertifikat: ${error.message}`);
-        }
+      // === CREATE METADATA (NO BASE64!) ===
+      const fileMetadata = {
+        id: uploadResult.id,
+        fileName: uploadResult.originalName,
+        originalName: uploadResult.originalName,
+        uniqueName: uploadResult.filename,
+        filePath: uploadResult.path,           // Server file path
+        fileUrl: uploadResult.downloadUrl,    // Public download URL
+        size: file.size,
+        uploadDate: new Date().toISOString(),
+        downloadCount: 0
+        // NO base64Data - much more efficient!
       };
 
-      reader.onerror = () => {
-        console.error('❌ Error reading file');
-        alert('❌ Gagal membaca file. Silakan coba lagi.');
-      };
-
-      reader.readAsDataURL(file);
-      
-    } catch (error) {
-      console.error('❌ Error handling file upload:', error);
-      alert(`❌ Terjadi kesalahan: ${error.message}`);
-    }
-  };
-
-  // Handle certificate deletion
-  const handleDeleteCertificate = async (userId, certificateId) => {
-    if (!confirm('❗ Apakah Anda yakin ingin menghapus sertifikat ini?')) {
-      return;
-    }
-
-    try {
-      // Find user and update certificates
+      // Get current user data
       const userToUpdate = users.find(user => user.id === userId);
       if (!userToUpdate) {
         alert('❌ User tidak ditemukan!');
         return;
       }
 
-      // Filter out the certificate to delete
-      const updatedCertificates = userToUpdate.certificates.filter(cert => {
-        if (typeof cert === 'object') {
-          return cert.id !== certificateId;
-        }
-        return true; // Keep string certificates
-      });
+      // Update certificates array ONLY
+      const updatedCertificates = [...(userToUpdate.certificates || []), fileMetadata];
 
-      const updatedUser = {
-        ...userToUpdate,
+      // ONLY update certificates field - DO NOT touch password or other sensitive data
+      const certificateUpdate = {
         certificates: updatedCertificates
       };
 
       // Update local state
       setUsers(prevUsers =>
         prevUsers.map(user =>
-          user.id === userId ? updatedUser : user
+          user.id === userId ? { ...user, certificates: updatedCertificates } : user
         )
       );
 
-      // Update in Express.js API menggunakan environment URL
+      // Update in Express.js API - PATCH instead of PUT to avoid overwriting password
       const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
       const response = await fetch(`${apiUrl}/users/${userId}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updatedUser)
+        body: JSON.stringify(certificateUpdate)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      console.log('✅ Certificate uploaded successfully:', fileMetadata);
+      alert(`✅ Sertifikat "${file.name}" berhasil diupload untuk ${userToUpdate.fullName}!`);
+      
+    } catch (error) {
+      console.error('❌ Error uploading certificate:', error);
+      alert(`❌ Gagal mengupload sertifikat: ${error.message}`);
+    }
+  };
+
+  // Handle certificate deletion with FILE SERVER cleanup
+  const handleDeleteCertificate = async (userId, certificateId) => {
+    if (!confirm('❗ Apakah Anda yakin ingin menghapus sertifikat ini?')) {
+      return;
+    }
+
+    try {
+      // Find user and certificate to delete
+      const userToUpdate = users.find(user => user.id === userId);
+      if (!userToUpdate) {
+        alert('❌ User tidak ditemukan!');
+        return;
+      }
+
+      // Find the certificate to delete (handle both new format with ID and old format)
+      let certToDelete = null;
+      let certificateIndex = -1;
+
+      // Try to find by ID first
+      if (certificateId && !certificateId.startsWith('temp_')) {
+        certificateIndex = userToUpdate.certificates.findIndex(cert => 
+          typeof cert === 'object' && cert.id === certificateId
+        );
+        if (certificateIndex !== -1) {
+          certToDelete = userToUpdate.certificates[certificateIndex];
+        }
+      } else if (certificateId && certificateId.startsWith('temp_')) {
+        // Handle temporary ID for old certificates without proper ID
+        const parts = certificateId.split('_');
+        const index = parseInt(parts[1]);
+        const uploadDate = parts.slice(2).join('_');
+        
+        certificateIndex = userToUpdate.certificates.findIndex((cert, idx) => 
+          idx === index && typeof cert === 'object' && cert.uploadDate === uploadDate
+        );
+        if (certificateIndex !== -1) {
+          certToDelete = userToUpdate.certificates[certificateIndex];
+        }
+      }
+
+      if (certificateIndex === -1) {
+        alert('❌ Sertifikat tidak ditemukan!');
+        return;
+      }
+
+      // === DELETE FROM FILE SERVER (if file has proper ID and path) ===
+      if (certToDelete && certToDelete.id && certToDelete.filePath) {
+        try {
+          const fileServerUrl = import.meta.env.VITE_FILE_SERVER_URL || 'http://localhost:3002';
+          await fetch(`${fileServerUrl}/delete-certificate/${certToDelete.id}`, {
+            method: 'DELETE'
+          });
+          console.log('✅ File deleted from server');
+        } catch (fileError) {
+          console.warn('⚠️ Could not delete file from server:', fileError);
+          // Continue with database cleanup even if file deletion fails
+        }
+      } else {
+        console.warn('⚠️ Old certificate format - no file server cleanup needed');
+      }
+
+      // Remove certificate from array by index
+      const updatedCertificates = userToUpdate.certificates.filter((cert, idx) => idx !== certificateIndex);
+
+      // PATCH update (not PUT to avoid password issues)
+      const certificateUpdate = {
+        certificates: updatedCertificates
+      };
+
+      // Update local state
+      setUsers(prevUsers =>
+        prevUsers.map(user =>
+          user.id === userId ? { ...user, certificates: updatedCertificates } : user
+        )
+      );
+
+      // Update in Express.js API using PATCH
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
+      const response = await fetch(`${apiUrl}/users/${userId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(certificateUpdate)
       });
 
       if (!response.ok) {
@@ -708,6 +748,21 @@ const AdminDashboard = () => {
             <p>Total Downloads</p>
           </div>
         </div>
+        <div className="stat-card pending-review">
+          <div className="stat-icon">⏳</div>
+          <div className="stat-content">
+            <h3 
+              style={{ 
+                color: '#0f7536', 
+                WebkitTextFillColor: '#0f7536',
+                fontWeight: '700'
+              }}
+            >
+              {stats.pendingApplications || 1}
+            </h3>
+            <p>Menunggu Review</p>
+          </div>
+        </div>
       </div>
 
       {/* Search and Actions */}
@@ -794,12 +849,15 @@ const AdminDashboard = () => {
                     {user.certificates && user.certificates.map((cert, index) => (
                       <div key={index} className="cert-file">
                         <span className="cert-name">
-                          {typeof cert === 'string' ? cert : cert.fileName || cert.originalName}
+                          {typeof cert === 'string' ? cert : cert.fileName || cert.originalName || `Certificate ${index + 1}`}
                         </span>
-                        {typeof cert === 'object' && cert.id && (
+                        <span className="cert-size">
+                          ({typeof cert === 'object' && cert.size ? `${(cert.size / 1024).toFixed(1)} KB` : 'Unknown size'})
+                        </span>
+                        {typeof cert === 'object' && (cert.id || cert.uploadDate) && (
                           <button 
                             className="delete-cert-btn"
-                            onClick={() => handleDeleteCertificate(user.id, cert.id)}
+                            onClick={() => handleDeleteCertificate(user.id, cert.id || `temp_${index}_${cert.uploadDate}`)}
                             title="Hapus sertifikat"
                           >
                             ❌
@@ -1070,7 +1128,13 @@ const AdminDashboard = () => {
   return (
     <div className="admin-dashboard">
       {/* Header */}
-      <header className="admin-header">
+      <header 
+        className="admin-header" 
+        style={{ 
+          background: 'linear-gradient(to right, #0f7536, #56b269)',
+          backgroundImage: 'linear-gradient(to right, #0f7536, #56b269)'
+        }}
+      >
         <div className="header-content">
           <h1>PERGUNU Admin</h1>
           <div className="header-actions">

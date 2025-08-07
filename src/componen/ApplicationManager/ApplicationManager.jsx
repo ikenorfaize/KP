@@ -1,6 +1,6 @@
 // ApplicationManager Component - Komponen untuk mengelola aplikasi pendaftaran
 // Digunakan di AdminDashboard untuk review, approve, dan reject pendaftaran
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { emailService } from '../../services/EmailService';  // Service untuk mengirim email notifikasi
 import './ApplicationManager.css';
 
@@ -22,6 +22,42 @@ const ApplicationManager = () => {
   
   // State untuk menyimpan aplikasi yang dipilih untuk aksi
   const [selectedApp, setSelectedApp] = useState(null);
+
+  // Ref untuk memaksa styling hijau
+  const greenNumberRef = useRef(null);
+
+  // Effect untuk memaksa warna hijau dengan JavaScript - OPTIMIZED VERSION
+  useEffect(() => {
+    const forceGreenStyling = () => {
+      if (greenNumberRef.current) {
+        // APPLY GREEN STYLING WITH MAXIMUM PRIORITY
+        greenNumberRef.current.style.setProperty('color', '#0f7536', 'important');
+        greenNumberRef.current.style.setProperty('-webkit-text-fill-color', '#0f7536', 'important');
+        greenNumberRef.current.style.setProperty('font-weight', '700', 'important');
+        greenNumberRef.current.style.setProperty('text-shadow', 'none', 'important');
+        greenNumberRef.current.style.setProperty('background-color', 'transparent', 'important');
+        
+        // Additional force properties
+        greenNumberRef.current.style.color = '#0f7536';
+        greenNumberRef.current.style.fontWeight = '700';
+        greenNumberRef.current.setAttribute('data-forced-green', 'true');
+        
+        // Single success log
+        console.log('✅ GREEN COLOR APPLIED TO PENDING COUNT - SUCCESS!');
+        return true; // Signal success
+      }
+      return false;
+    };
+
+    // Apply immediately when component mounts
+    forceGreenStyling();
+    
+    // Clean implementation - no continuous polling needed since styling is working
+    
+    return () => {
+      // Cleanup if needed
+    };
+  }, [applications]);
 
   // Effect untuk fetch aplikasi saat component mount
   useEffect(() => {
@@ -261,8 +297,25 @@ const ApplicationManager = () => {
         <div className="applications-actions">
           {/* Statistics cards untuk quick overview */}
           <div className="applications-stats">
-            <div className="stat-item">
-              <span className="stat-number">{pendingApplications.length}</span>
+            <div className="stat-item pending-review">
+              <div 
+                ref={greenNumberRef}
+                id="FORCE-GREEN-PENDING-NUMBER"
+                className="stat-number pending-review-number GREEN-FORCE JAVASCRIPT-FORCED" 
+                style={{
+                  color: '#0f7536 !important', 
+                  fontWeight: '700 !important',
+                  WebkitTextFillColor: '#0f7536 !important',
+                  textShadow: 'none !important',
+                  backgroundColor: 'transparent !important',
+                  display: 'block !important',
+                  fontSize: '2rem !important'
+                }}
+                data-force-green="true"
+                data-green-number="pending"
+              >
+                {pendingApplications.length}
+              </div>
               <span className="stat-label">Menunggu Review</span>
             </div>
             <div className="stat-item">

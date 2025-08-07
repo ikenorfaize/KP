@@ -126,8 +126,11 @@ app.post('/upload-certificate', upload.single('certificate'), (req, res) => {
 
     const certificateData = {
       id: Date.now(),
-      fileName: req.file.originalname,
+      originalName: req.file.originalname,
+      filename: req.file.filename,
       filePath: req.file.path,
+      downloadUrl: `/download-certificate/${Date.now()}`,
+      path: req.file.path,
       uploadDate: new Date().toISOString(),
       size: req.file.size
     };
@@ -226,6 +229,71 @@ app.get('/user-certificates/:userId', (req, res) => {
   }
 });
 
+// Delete certificate file
+app.delete('/delete-certificate/:certificateId', async (req, res) => {
+  try {
+    const { certificateId } = req.params;
+    const db = readDB();
+    
+    // Find certificate in any user's certificates
+    let certificate = null;
+    let user = null;
+    let userIndex = -1;
+    let certIndex = -1;
+
+    for (let i = 0; i < db.users.length; i++) {
+      const u = db.users[i];
+      if (u.certificates) {
+        for (let j = 0; j < u.certificates.length; j++) {
+          if (u.certificates[j].id && u.certificates[j].id.toString() === certificateId) {
+            certificate = u.certificates[j];
+            user = u;
+            userIndex = i;
+            certIndex = j;
+            break;
+          }
+        }
+        if (certificate) break;
+      }
+    }
+
+    if (!certificate) {
+      return res.status(404).json({ error: 'Certificate not found' });
+    }
+
+    // Delete physical file
+    if (certificate.filePath && existsSync(certificate.filePath)) {
+      try {
+        const fs = await import('fs/promises');
+        await fs.unlink(certificate.filePath);
+        console.log('✅ Physical file deleted:', certificate.filePath);
+      } catch (fileError) {
+        console.warn('⚠️ Could not delete physical file:', fileError);
+        // Continue with database cleanup
+      }
+    }
+
+    // Remove from database
+    db.users[userIndex].certificates.splice(certIndex, 1);
+    const success = writeDB(db);
+
+    if (!success) {
+      return res.status(500).json({ error: 'Failed to update database' });
+    }
+
+    res.json({
+      message: 'Certificate deleted successfully',
+      deletedCertificate: {
+        id: certificate.id,
+        fileName: certificate.fileName
+      }
+    });
+  } catch (error) {
+    console.error('Delete error:', error);
+    res.status(500).json({ error: 'Delete failed' });
+  }
+});
+
 // ===== ERROR HANDLING =====
 app.use((error, req, res, next) => {
   if (error instanceof multer.MulterError) {
@@ -244,10 +312,11 @@ app.listen(PORT, () => {
   console.log(`🌐 File server running on: http://localhost:${PORT}`);
   console.log(`📁 Upload directory: ${uploadDir}`);
   console.log('📋 Available endpoints:');
-  console.log('  GET  /health - Health check');
-  console.log('  POST /upload-certificate - Upload certificate');
-  console.log('  GET  /download-certificate/:id - Download certificate');
-  console.log('  GET  /user-certificates/:userId - Get user certificates');
+  console.log('  GET    /health - Health check');
+  console.log('  POST   /upload-certificate - Upload certificate');
+  console.log('  GET    /download-certificate/:id - Download certificate');
+  console.log('  DELETE /delete-certificate/:id - Delete certificate');
+  console.log('  GET    /user-certificates/:userId - Get user certificates');
   console.log('\n✨ File server ready!\n');
 });
 

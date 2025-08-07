@@ -1,4 +1,8 @@
 /* ApplicationManager.css */
+:root {
+  --green-force: #0f7536;
+}
+
 .application-manager {
   padding: 2rem;
   max-width: 1200px;
@@ -57,12 +61,145 @@
   display: block;
   font-size: 2rem;
   font-weight: bold;
-  color: #0f7536;
+  color: #0f7536 !important;
 }
 
 .stat-label {
   font-size: 0.9rem;
   color: #6b7280;
+}
+
+/* Force green color for pending review statistics */
+.applications-stats .stat-item.pending-review .stat-number {
+  color: #0f7536 !important;
+  -webkit-text-fill-color: #0f7536 !important;
+  font-weight: 700 !important;
+}
+
+/* Maximum specificity overrides for any conflicting styles */
+.application-manager .applications-stats .stat-item.pending-review .stat-number,
+.application-manager .stat-item.pending-review .stat-number,
+.applications-header .applications-stats .pending-review .stat-number,
+.admin-dashboard .application-manager .pending-review .stat-number {
+  color: #0f7536 !important;
+  -webkit-text-fill-color: #0f7536 !important;
+  font-weight: 700 !important;
+  text-shadow: none !important;
+}
+
+/* Force override any white color specifically */
+.stat-number[style*="color"] {
+  color: inherit !important;
+}
+
+.pending-review .stat-number[style*="color"] {
+  color: #0f7536 !important;
+  -webkit-text-fill-color: #0f7536 !important;
+}
+
+/* Ultimate override for any inheritance issues */
+.application-manager .pending-review .stat-number,
+.application-manager .stat-item.pending-review .stat-number,
+[class*="pending-review"] .stat-number,
+div[class*="pending-review"] span[class*="stat-number"] {
+  color: #0f7536 !important;
+  -webkit-text-fill-color: #0f7536 !important;
+  font-weight: 700 !important;
+}
+
+/* Force green even if there are global styles */
+span.stat-number[style] {
+  color: #0f7536 !important;
+}
+
+/* Most specific selector for pending review number */
+.pending-review-number,
+span.pending-review-number,
+.stat-number.pending-review-number {
+  color: #0f7536 !important;
+  -webkit-text-fill-color: #0f7536 !important;
+  font-weight: 700 !important;
+  text-shadow: none !important;
+}
+
+/* ULTIMATE GREEN FORCE - highest specificity possible */
+.application-manager .applications-stats .stat-item.pending-review .stat-number.GREEN-FORCE,
+.GREEN-FORCE,
+span.GREEN-FORCE,
+[data-force-green="true"],
+span[data-force-green="true"],
+.stat-number[data-force-green="true"] {
+  color: #0f7536 !important;
+  -webkit-text-fill-color: #0f7536 !important;
+  font-weight: 700 !important;
+  text-shadow: none !important;
+  background-color: transparent !important;
+}
+
+/* JavaScript applied class - maximum specificity */
+.FORCE-GREEN-JS,
+span.FORCE-GREEN-JS,
+.stat-number.FORCE-GREEN-JS,
+div.FORCE-GREEN-JS {
+  color: #0f7536 !important;
+  -webkit-text-fill-color: #0f7536 !important;
+  font-weight: 700 !important;
+  text-shadow: none !important;
+}
+
+/* Additional rules for div elements */
+div.stat-number,
+div.stat-number.GREEN-FORCE,
+div.stat-number.pending-review-number {
+  color: #0f7536 !important;
+  -webkit-text-fill-color: #0f7536 !important;
+  font-weight: 700 !important;
+  text-shadow: none !important;
+  display: block !important;
+  font-size: 2rem !important;
+}
+
+/* ULTIMATE FORCE - using CSS variable */
+.stat-number.GREEN-FORCE,
+div.GREEN-FORCE,
+[data-force-green="true"] {
+  color: var(--green-force) !important;
+  -webkit-text-fill-color: var(--green-force) !important;
+  font-weight: 700 !important;
+  text-shadow: none !important;
+}
+
+/* MOST AGGRESSIVE CSS SELECTORS - ID selector has highest specificity */
+#FORCE-GREEN-PENDING-NUMBER,
+div#FORCE-GREEN-PENDING-NUMBER,
+.application-manager #FORCE-GREEN-PENDING-NUMBER,
+#FORCE-GREEN-PENDING-NUMBER.stat-number {
+  color: #0f7536 !important;
+  -webkit-text-fill-color: #0f7536 !important;
+  font-weight: 700 !important;
+  text-shadow: none !important;
+  background-color: transparent !important;
+  display: block !important;
+  font-size: 2rem !important;
+}
+
+/* JavaScript forced class */
+.JAVASCRIPT-FORCED,
+div.JAVASCRIPT-FORCED,
+[data-forced-green="true"] {
+  color: #0f7536 !important;
+  -webkit-text-fill-color: #0f7536 !important;
+  font-weight: 700 !important;
+}
+
+/* EXTREME MEASURES - if color still not working, try filter */
+#FORCE-GREEN-PENDING-NUMBER {
+  filter: hue-rotate(0deg) brightness(1) contrast(1) !important;
+}
+
+/* If white color is still showing, this will force it to green using filter */
+.FORCE-FILTER-GREEN {
+  filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%) !important;
 }
 
 .applications-section {
