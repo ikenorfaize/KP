@@ -1,7 +1,7 @@
 # 🔐 Environment Configuration Guide
 ## PERGUNU Project - Secure Configuration Management
 
-### 📋 Overview
+### 📋 Overviewservice_ublbpnp
 File ini menjelaskan konfigurasi environment variables yang telah dipindahkan dari hardcoded values ke `.env` file untuk meningkatkan keamanan dan flexibility.
 
 ---
@@ -12,7 +12,7 @@ File ini menjelaskan konfigurasi environment variables yang telah dipindahkan da
 **Before:**
 ```javascript
 // EmailService.js - HARDCODED (❌ INSECURE)
-serviceId: 'service_ublbpnp',
+serviceId: '',
 templateId: 'template_qnuud6d', 
 publicKey: 'AIgbwO-ayq2i-I0ou',
 adminEmail: 'fairuzo1dyck@gmail.com'

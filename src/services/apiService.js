@@ -19,7 +19,8 @@ class ApiService {
     this.USE_JSON_SERVER = false;                   // Using Express.js instead of json-server
     this.API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';     // Express.js API endpoint
     this.FILE_SERVER_URL = import.meta.env.VITE_FILE_SERVER_URL || 'http://localhost:3002'; // File server endpoint
-    this.initialized = false;                       // Initialization status
+  this.initialized = false;                       // Initialization status
+  this._initializingPromise = null;               // Promise to guard concurrent init
     this.isServerAvailable = false;                 // Server availability status
     this.retryCount = 3;                           // Retry attempts untuk failed requests
     this.timeout = 10000;                          // Request timeout (10 seconds)
@@ -67,13 +68,19 @@ class ApiService {
   // Inisialisasi service dengan health check dan fallback strategy
   async init() {
     if (this.initialized) return;
+    if (this._initializingPromise) {
+      // Wait for ongoing initialization
+      await this._initializingPromise;
+      return;
+    }
     
     console.log('🔧 Initializing ApiService...');
     console.log('🌐 API_URL:', this.API_URL); // DEBUG: Print API URL
     console.log('🔍 EXPECTED URL should contain /api path'); // DEBUG
     
     // Health check untuk Express.js API availability
-    try {
+    this._initializingPromise = (async () => {
+      try {
       console.log('🔍 Health check URL:', `${this.API_URL}/health`); // DEBUG: Print full URL
       const response = await fetch(`${this.API_URL}/health`, {
         method: 'GET',
@@ -94,9 +101,12 @@ class ApiService {
       this.isServerAvailable = false;
       console.log('⚠️ API Service diinisialisasi dalam mode localStorage (Express.js API tidak ditemukan)');
       console.error('❌ Health check error:', error);
-    }
-    
-    this.initialized = true;
+  } finally {
+      this.initialized = true;
+      this._initializingPromise = null;
+  }
+  })();
+    await this._initializingPromise;
   }
 
   // Switch mode API

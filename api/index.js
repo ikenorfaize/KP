@@ -394,6 +394,18 @@ app.get('/api/applications', (req, res) => {
   }
 });
 
+// Get application by ID
+app.get('/api/applications/:id', (req, res) => {
+  try {
+    const db = readDB();
+    const appItem = (db.applications || []).find(a => a.id === req.params.id);
+    if (!appItem) return res.status(404).json({ error: 'Application not found' });
+    res.json(appItem);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch application' });
+  }
+});
+
 // Create application
 app.post('/api/applications', (req, res) => {
   try {
@@ -423,6 +435,54 @@ app.post('/api/applications', (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: 'Failed to create application' });
+  }
+});
+
+// Update (partial) application e.g. approve/reject
+app.patch('/api/applications/:id', (req, res) => {
+  try {
+    const updates = req.body || {};
+    const db = readDB();
+    if (!db.applications) db.applications = [];
+    const idx = db.applications.findIndex(a => a.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: 'Application not found' });
+
+    // Auto set processedAt if status transitions away from pending and not provided
+    const prev = db.applications[idx];
+    const nextStatus = updates.status ?? prev.status;
+    const isProcessed = nextStatus !== 'pending';
+    const patch = { ...updates };
+    if (isProcessed && !patch.processedAt) {
+      patch.processedAt = new Date().toISOString();
+    }
+
+    db.applications[idx] = { ...prev, ...patch, updatedAt: new Date().toISOString() };
+    const success = writeDB(db);
+    if (!success) return res.status(500).json({ error: 'Failed to update application' });
+
+    res.json({
+      message: 'Application updated successfully',
+      application: db.applications[idx]
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update application' });
+  }
+});
+
+// Delete application
+app.delete('/api/applications/:id', (req, res) => {
+  try {
+    const db = readDB();
+    if (!db.applications) db.applications = [];
+    const before = db.applications.length;
+    db.applications = db.applications.filter(a => a.id !== req.params.id);
+    const after = db.applications.length;
+    const success = writeDB(db);
+    if (!success) return res.status(500).json({ error: 'Failed to delete application' });
+    if (before === after) return res.status(404).json({ error: 'Application not found' });
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete application' });
   }
 });
 

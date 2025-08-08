@@ -2,9 +2,16 @@
 // Digunakan di AdminDashboard untuk review, approve, dan reject pendaftaran
 import React, { useState, useEffect, useRef } from 'react';
 import { emailService } from '../../services/EmailService';  // Service untuk mengirim email notifikasi
+import { ApplicationService } from '../../services/ApplicationService';
 import './ApplicationManager.css';
+import { usePendingApplications } from '../../context/PendingApplicationsContext';
 
-const ApplicationManager = () => {
+// Optional prop onPendingCountChange: function(count:number) => void
+// Optional props:
+// - onPendingCountChange(count)
+// - onUsersChanged(): notify parent to refresh users list after approval
+const ApplicationManager = ({ onPendingCountChange, onUsersChanged }) => {
+  const { setPendingCount } = usePendingApplications() || {};
   // State untuk menyimpan daftar aplikasi pendaftaran
   const [applications, setApplications] = useState([]);
   
@@ -22,6 +29,7 @@ const ApplicationManager = () => {
   
   // State untuk menyimpan aplikasi yang dipilih untuk aksi
   const [selectedApp, setSelectedApp] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   // Ref untuk memaksa styling hijau
   const greenNumberRef = useRef(null);
@@ -68,82 +76,8 @@ const ApplicationManager = () => {
   const fetchApplications = async () => {
     try {
       setLoading(true);
-      
-      // Coba ambil data dari API server terlebih dahulu
-      try {
-        const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
-        const response = await fetch(`${apiUrl}/applications`);
-        if (response.ok) {
-          const data = await response.json();
-          setApplications(data);  // Set data dari API jika berhasil
-          return;
-        }
-      } catch (apiError) {
-        console.log('API tidak tersedia, menggunakan demo data');
-      }
-      
-      // Fallback ke demo data jika API tidak tersedia
-      const demoApplications = [
-        {
-          id: '1',                                    // ID unik aplikasi
-          fullName: 'Ahmad Fajar Rahman',             // Nama lengkap pendaftar
-          email: 'fajar.demo@gmail.com',              // Email untuk komunikasi
-          phone: '081234567890',                      // Nomor telepon
-          position: 'Guru Matematika',                // Posisi yang dilamar
-          address: 'Jl. Pendidikan No. 123, Jakarta', // Alamat lengkap
-          status: 'pending',                          // Status: pending/approved/rejected
-          submittedAt: '2025-01-27T08:30:00Z',        // Tanggal submit
-          processedAt: null,                          // Tanggal diproses (null jika belum)
-          processedBy: null,                          // Admin yang memproses (null jika belum)
-          rejectionReason: null,                      // Alasan penolakan (null jika tidak ditolak)
-          username: null                              // Username yang akan diberikan (null jika belum approved)
-        },
-        {
-          id: '2',                                    // ID aplikasi kedua
-          fullName: 'Siti Nurhaliza',                 // Nama pendaftar kedua
-          email: 'siti.pending@gmail.com',            // Email dengan keyword 'pending'
-          phone: '081234567891',                      // Nomor telepon
-          position: 'Guru Bahasa Indonesia',          // Posisi yang dilamar
-          address: 'Jl. Bahasa No. 456, Bandung',     // Alamat lengkap
-          status: 'pending',                          // Status: masih menunggu review
-          submittedAt: '2025-01-27T09:15:00Z',        // Tanggal submit
-          processedAt: null,                          // Belum diproses
-          processedBy: null,                          // Belum ada admin yang handle
-          rejectionReason: null,                      // Tidak ada alasan penolakan
-          username: null                              // Belum dibuat username
-        },
-        {
-          id: '3',                                    // ID aplikasi ketiga
-          fullName: 'Budi Santoso',                   // Nama pendaftar yang sudah disetujui
-          email: 'budi.approved@gmail.com',           // Email dengan keyword 'approved'
-          phone: '081234567892',                      // Nomor telepon
-          position: 'Guru Fisika',                    // Posisi yang dilamar
-          address: 'Jl. Fisika No. 789, Surabaya',    // Alamat lengkap
-          status: 'approved',                         // Status: sudah disetujui
-          submittedAt: '2025-01-26T10:00:00Z',        // Tanggal submit
-          processedAt: '2025-01-26T15:30:00Z',        // Tanggal diproses
-          processedBy: 'admin',                       // Diproses oleh admin
-          rejectionReason: null,                      // Tidak ada alasan penolakan
-          username: 'budi_santoso_123'                // Username yang diberikan
-        },
-        {
-          id: '4',                                    // ID aplikasi keempat
-          fullName: 'Maya Dewi',                      // Nama pendaftar yang ditolak
-          email: 'maya.rejected@gmail.com',           // Email dengan keyword 'rejected'
-          phone: '081234567893',                      // Nomor telepon
-          position: 'Guru Kimia',                     // Posisi yang dilamar
-          address: 'Jl. Kimia No. 321, Yogyakarta',   // Alamat lengkap
-          status: 'rejected',                         // Status: ditolak
-          submittedAt: '2025-01-25T11:00:00Z',        // Tanggal submit
-          processedAt: '2025-01-25T16:45:00Z',
-          processedBy: 'admin',
-          rejectionReason: 'Data ijazah tidak lengkap. Mohon upload ijazah yang jelas dan sertifikat mengajar.',
-          username: null
-        }
-      ];
-      
-      setApplications(demoApplications);
-      
+      const data = await ApplicationService.getApplications();
+      setApplications(data);
     } catch (error) {
       console.error('Error fetching applications:', error);
       alert('Gagal memuat data pendaftaran');
@@ -157,35 +91,27 @@ const ApplicationManager = () => {
     try {
       setProcessing(application.id); // Set loading state untuk mencegah double click
 
-      // Demo mode: Simulate approval process
-      console.log('🔄 DEMO: Processing approval for', application.fullName);
-      
-      // Simulate API delay untuk memberikan feedback visual
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Generate demo credentials untuk user yang disetujui
-      const demoCredentials = {
-        username: application.fullName.toLowerCase().replace(/\s+/g, '_') + '_' + Math.floor(Math.random() * 1000),
-        password: 'Demo' + Math.floor(Math.random() * 10000)
+      // Generate random credentials
+      const creds = {
+        username: (application.fullName || 'user')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '_')
+          .replace(/^_+|_+$/g, '') + '_' + Math.floor(Math.random() * 1000),
+        password: 'Pg' + Math.random().toString(36).slice(2, 8) + Math.floor(Math.random()*90+10)
       };
-      
-      console.log('📧 DEMO EMAIL SENT TO:', application.email);
-      console.log('🔑 Demo Credentials:', demoCredentials);
-      
-      // Update local state dengan status approved dan metadata
-      setApplications(prev => prev.map(app => 
-        app.id === application.id 
-          ? { 
-              ...app, 
-              status: 'approved', 
-              processedAt: new Date().toISOString(),
-              username: demoCredentials.username 
-            }
-          : app
-      ));
-      
-      // Tampilkan konfirmasi berhasil dengan credentials
-      alert(`✅ DEMO: ${application.fullName} berhasil disetujui!\n\n🔑 Demo Credentials:\nUsername: ${demoCredentials.username}\nPassword: ${demoCredentials.password}\n\n📧 Dalam mode production, credentials akan dikirim ke: ${application.email}`);
+
+      // Create real user, then approve the application (server-backed if available)
+  const { application: updatedApp, user } = await ApplicationService.approveAndRegister(application, creds);
+
+      // Update local state to reflect persisted data
+      setApplications(prev => prev.map(app => app.id === application.id ? { ...app, ...updatedApp } : app));
+
+  // Notify parent to refresh users if needed
+  try { if (typeof onUsersChanged === 'function') onUsersChanged(); } catch {}
+
+  // User feedback with final username
+      const finalUser = user || { username: updatedApp?.username || creds.username };
+      alert(`✅ ${application.fullName} disetujui.\n\n🔑 Akun Pengguna:\nUsername: ${finalUser.username}\nPassword: ${creds.password}`);
       
     } catch (error) {
       console.error('Error approving application:', error);
@@ -214,28 +140,10 @@ const ApplicationManager = () => {
     try {
       setProcessing(selectedApp.id); // Set loading state
 
-      // === DEMO MODE SIMULATION ===
-      console.log('🔄 DEMO: Processing rejection for', selectedApp.fullName);
-      console.log('📝 Rejection reason:', rejectionReason);
-      
-      // Simulate API delay untuk realistic UX
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      console.log('📧 DEMO EMAIL SENT TO:', selectedApp.email);
-      console.log('📄 Rejection email with reason sent');
-      
-      // === UPDATE APPLICATION STATUS ===
-      // Update status aplikasi ke rejected dengan metadata dan alasan
-      setApplications(prev => prev.map(app => 
-        app.id === selectedApp.id 
-          ? { 
-              ...app, 
-              status: 'rejected',                    // Status berubah ke rejected
-              processedAt: new Date().toISOString(), // Timestamp diproses
-              rejectionReason: rejectionReason.trim() // Alasan penolakan dari admin
-            }
-          : app
-      ));
+  // Persist rejection via service
+  const updated = await ApplicationService.rejectApplication(selectedApp.id, rejectionReason.trim());
+  // Update local state with server/localStorage response
+  setApplications(prev => prev.map(app => app.id === selectedApp.id ? { ...app, ...updated } : app));
 
       // === USER FEEDBACK ===
       alert(`✅ DEMO: Pendaftaran ${selectedApp.fullName} ditolak.\n\n📧 Dalam mode production, email pemberitahuan dengan alasan penolakan akan dikirim ke: ${selectedApp.email}`);
@@ -275,6 +183,43 @@ const ApplicationManager = () => {
   // Filter aplikasi berdasarkan status untuk UI grouping
   const pendingApplications = applications.filter(app => app.status === 'pending');     // Aplikasi menunggu review
   const processedApplications = applications.filter(app => app.status !== 'pending');  // Aplikasi yang sudah diproses
+
+  // Inform parent about pending count when data changes (to sync dashboard tiles)
+  const lastPendingRef = useRef(pendingApplications.length);
+  useEffect(() => {
+    if (typeof onPendingCountChange === 'function') {
+      const next = pendingApplications.length;
+      if (lastPendingRef.current !== next) {
+        try {
+          onPendingCountChange(next);
+          lastPendingRef.current = next;
+        } catch (e) {
+          console.warn('onPendingCountChange callback error:', e);
+        }
+      }
+    }
+    // Also update shared context if available
+    if (setPendingCount) {
+      const next = pendingApplications.length;
+      if (lastPendingRef.current !== next) {
+        setPendingCount(next);
+      }
+    }
+  }, [pendingApplications.length, onPendingCountChange]);
+
+  // Delete processed application from history
+  const handleDelete = async (id) => {
+    if (!window.confirm('Hapus entri riwayat ini? Tindakan tidak dapat dibatalkan.')) return;
+    try {
+      setDeletingId(id);
+      await ApplicationService.deleteApplication(id);
+      setApplications(prev => prev.filter(a => a.id !== id));
+    } catch (e) {
+      alert('Gagal menghapus riwayat: ' + (e?.message || 'Unknown error'));
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   // === LOADING STATE ===
   
@@ -345,7 +290,7 @@ const ApplicationManager = () => {
                   <p><strong>📱 Phone:</strong> {app.phone}</p>
                   <p><strong>💼 Position:</strong> {app.position}</p>
                   <p><strong>📍 Address:</strong> {app.address}</p>
-                  <p><strong>📅 Submitted:</strong> {new Date(app.submittedAt).toLocaleDateString('id-ID')}</p>
+                  <p><strong>📅 Submitted:</strong> {app.submittedAt ? new Date(app.submittedAt).toLocaleDateString('id-ID') : '-'}</p>
                 </div>
                 {/* Action buttons untuk approve/reject dengan loading state */}
                 <div className="card-actions">
@@ -394,12 +339,19 @@ const ApplicationManager = () => {
                     <td>{app.email}</td>
                     <td>{app.position}</td>
                     <td>{getStatusBadge(app.status)}</td>
-                    <td>{new Date(app.submittedAt).toLocaleDateString('id-ID')}</td>
+                    <td>{app.submittedAt ? new Date(app.submittedAt).toLocaleDateString('id-ID') : '-'}</td>
                     <td>
-                      {app.processedAt ? 
-                        new Date(app.processedAt).toLocaleDateString('id-ID') : 
-                        '-'
-                      }
+                      {app.processedAt ? new Date(app.processedAt).toLocaleDateString('id-ID') : '-'}
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <button
+                        className="btn-reject"
+                        onClick={() => handleDelete(app.id)}
+                        disabled={deletingId === app.id}
+                        title="Hapus dari riwayat"
+                      >
+                        {deletingId === app.id ? 'Menghapus…' : '🗑️ Hapus'}
+                      </button>
                     </td>
                   </tr>
                 ))}

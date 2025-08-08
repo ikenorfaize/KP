@@ -12,10 +12,13 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';                    // Hook navigasi
 import bcrypt from 'bcryptjs';                                     // Library untuk password hashing
 import { apiService } from '../../services/apiService';            // Import API service
+import { ApplicationService } from '../../services/ApplicationService';
+import { usePendingApplications } from '../../context/PendingApplicationsContext';
 import ApplicationManager from '../../componen/ApplicationManager/ApplicationManager'; // Komponen untuk manage aplikasi
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
+  const { pendingCount, setPendingCount, refresh: refreshPending } = usePendingApplications();
   // Hook untuk navigasi programmatic (redirect ke login jika tidak authorized)
   const navigate = useNavigate();
   
@@ -121,6 +124,15 @@ const AdminDashboard = () => {
     fetchUsers();
   }, [fetchUsers]);
 
+  // Stable callback to receive pending count from ApplicationManager without causing re-render loops
+  const handlePendingCountChange = useCallback((count) => {
+    setStats(prev => (
+      prev.pendingApplications === count
+        ? prev
+        : { ...prev, pendingApplications: count }
+    ));
+  }, []);
+
   // Computed values with useMemo for performance
   const filteredUsers = useMemo(() => {
     if (!searchTerm) return users;
@@ -140,10 +152,15 @@ const AdminDashboard = () => {
     return { totalUsers, certificatesUploaded, totalDownloads };
   }, [users]);
 
-  // Update stats when computed values change
+  // Update stats when computed values change, preserve pendingApplications and other transient fields
   useEffect(() => {
-    setStats(computedStats);
+    setStats(prev => ({ ...prev, ...computedStats }));
   }, [computedStats]);
+
+  // Sync context pendingCount to local stats for display co-location
+  useEffect(() => {
+    setStats(prev => (prev.pendingApplications === pendingCount ? prev : { ...prev, pendingApplications: pendingCount }));
+  }, [pendingCount]);
 
   // Fungsi untuk logout admin dengan konfirmasi
   const handleLogout = () => {
@@ -758,7 +775,7 @@ const AdminDashboard = () => {
                 fontWeight: '700'
               }}
             >
-              {stats.pendingApplications || 1}
+              {pendingCount ?? 0}
             </h3>
             <p>Menunggu Review</p>
           </div>
@@ -1122,7 +1139,10 @@ const AdminDashboard = () => {
   );
 
   const renderApplications = () => (
-    <ApplicationManager />
+    <ApplicationManager
+  onPendingCountChange={handlePendingCountChange}
+  onUsersChanged={fetchUsers}
+    />
   );
 
   return (

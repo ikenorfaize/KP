@@ -30,6 +30,7 @@ import SponsorPage from "./pages/SponsorPage/SponsorPage"; // Halaman khusus spo
 import Beasiswa from "./pages/Beasiswa/Beasiswa";         // Halaman informasi beasiswa
 
 import "./App.css";
+import { PendingApplicationsProvider } from './context/PendingApplicationsContext';
 
 const App = () => {
   // Hook untuk mendapatkan lokasi/URL saat ini untuk keperluan scroll management
@@ -119,7 +120,7 @@ const App = () => {
         {/* Halaman-halaman yang memerlukan interaksi khusus atau autentikasi */}
         <Route path="/login" element={<Login />} />                    {/* Login admin/user */}
         <Route path="/daftar" element={<RegisterForm />} />            {/* Form pendaftaran anggota */}
-        <Route path="/admin" element={<AdminDashboard />} />           {/* Dashboard untuk admin */}
+  <Route path="/admin" element={<PendingApplicationsProvider><AdminDashboard /></PendingApplicationsProvider>} />           {/* Dashboard untuk admin */}
         <Route path="/user-dashboard" element={<UserDashboard />} />   {/* Dashboard untuk user */}
       </Routes>
     </>
