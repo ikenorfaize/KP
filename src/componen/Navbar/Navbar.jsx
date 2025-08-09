@@ -63,9 +63,8 @@ const Navbar = () => {
     }
   };
   
-  // Check apakah kita sedang di halaman component terpisah
-  // Menentukan behavior navigation (scroll vs route)
-  const isComponentPage = ['/sponsor', '/tentang', '/anggota', '/berita', '/layanan'].includes(location.pathname);
+  // Ketika bukan di homepage, link navbar harus menuju anchor di homepage (/#anchor)
+  const isHome = location.pathname === '/';
   
   return (
     <div className="navbar-wrapper">
@@ -78,83 +77,85 @@ const Navbar = () => {
         <nav className="navbar-right">
           <ul>
             <li>
-              {isComponentPage ? (
+              {/* // Link ke homepage atau anchor section */}
+              {isHome ? (
+                <a href="#tentang">Tentang</a>
+              ) : (
                 <Link 
                   to="/#tentang" 
                   className={location.pathname === '/tentang' ? 'sponsor-active' : ''}
                 >
                   Tentang
                 </Link>
-              ) : (
-                <a href="#tentang">Tentang</a>
               )}
             </li>
             <li>
-              {isComponentPage ? (
+              {/* // Link ke homepage atau anchor section */}
+              {isHome ? (
+                <a href="#anggota">Anggota</a>
+              ) : (
                 <Link 
                   to="/#anggota"
                   className={location.pathname === '/anggota' ? 'sponsor-active' : ''}
                 >
                   Anggota
                 </Link>
-              ) : (
-                <a href="#anggota">Anggota</a>
               )}
             </li>
             <li>
-              {isComponentPage ? (
+              {isHome ? (
+                <a href="#berita">Berita</a>
+              ) : (
                 <Link 
                   to="/#berita"
                   className={location.pathname === '/berita' ? 'sponsor-active' : ''}
                 >
                   Berita
                 </Link>
-              ) : (
-                <a href="#berita">Berita</a>
               )}
             </li>
             <li>
-              {isComponentPage ? (
+              {isHome ? (
+                <a href="#beasiswa">Beasiswa</a>
+              ) : (
                 <Link 
                   to="/#beasiswa"
                   className={location.pathname === '/beasiswa' ? 'sponsor-active' : ''}
                 >
                   Beasiswa
                 </Link>
-              ) : (
-                <a href="#beasiswa">Beasiswa</a>
               )}
             </li>
             <li>
-              {isComponentPage ? (
+              {isHome ? (
+                <a href="#layanan">Layanan</a>
+              ) : (
                 <Link 
                   to="/#layanan"
                   className={location.pathname === '/layanan' ? 'sponsor-active' : ''}
                 >
                   Layanan
                 </Link>
-              ) : (
-                <a href="#layanan">Layanan</a>
               )}
             </li>
             
             <li>
-              {isComponentPage ? (
+              {isHome ? (
+                <a href="#sponsor">Sponsor</a>
+              ) : (
                 <Link 
                   to="/#sponsor" 
                   className={location.pathname === '/sponsor' ? 'sponsor-active' : ''}
                 >
                   Sponsor
                 </Link>
-              ) : (
-                <a href="#sponsor">Sponsor</a>
               )}
             </li>
             <li>
-              {isComponentPage ? (
-                <Link to="/#hubungi">Hubungi Kami</Link>
-              ) : (
+              {isHome ? (
                 <a href="#hubungi">Hubungi Kami</a>
+              ) : (
+                <Link to="/#hubungi">Hubungi Kami</Link>
               )}
             </li>
             <li className="login-button-wrapper">

@@ -161,6 +161,27 @@
   color: #444;
 }
 
+.layanan-actions {
+  margin-top: 16px;
+}
+
+.layanan-actions .tentang-button {
+  background-color: #1e7e34;
+  color: #fff;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.layanan-actions .tentang-button:hover {
+  transform: scale(1.03);
+  background-color: #155724;
+}
+
 /* Default state - hidden */
 .layanan-sub,
 .layanan-title,

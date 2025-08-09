@@ -1,49 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./Layanan.css";
 import { useScrollAnimation } from "../../hooks/useScrollAnimation";
-import jagoImg from "../../assets/jago.png";
-
-const layananData = [
-  {
-    id: "ramadhan",
-    title: "Ramadhan 1445",
-    content: "Kegiatan dan program Pergunu selama bulan Ramadhan 1445 H.",
-    image: null,
-  },
-  {
-    id: "jago",
-    title: "JAGO",
-    content: {
-      description: "JAGO adalah sebuah sistem aplikasi inovatif yang dirancang khusus untuk mendukung dan memperkuat komunitas Persatuan Guru Nahdlatul Ulama (Pergunu).",
-      features: ["Terpercaya", "Layanan cepat"]
-    },
-    image: jagoImg,
-  },
-  {
-    id: "bakti",
-    title: "Kerja Bakti Bersama",
-    content: "Program gotong royong bersama guru dan masyarakat sekitar.",
-    image: null,
-  },
-  {
-    id: "alumni",
-    title: "Kumpul Alumni Pergunu",
-    content: "Reuni dan temu kangen para alumni Pergunu untuk mempererat silaturahmi.",
-    image: null,
-  },
-  {
-    id: "wisata",
-    title: "Wisata Kampung Kerapu",
-    content: "Kegiatan wisata edukatif di Kampung Kerapu bersama komunitas Pergunu.",
-    image: null,
-  },
-];
+import { layananData } from "./layananData";
 
 // KOMPONEN LAYANAN - Menampilkan berbagai layanan dengan detail selector
 const Layanan = () => {
   const [selected, setSelected] = useState("jago"); // State untuk layanan yang dipilih (default JAGO)
+  const navigate = useNavigate();
+  const location = useLocation();
   const [ref, isVisible] = useScrollAnimation(); // Hook animasi scroll
   const detail = layananData.find((item) => item.id === selected); // Find detail berdasarkan selected ID
+
+  // Sinkronkan pilihan layanan dari query param (?id=...) baik di / maupun /layanan
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const qid = params.get('id');
+    if (qid && layananData.some((x) => x.id === qid)) {
+      setSelected(qid);
+    }
+  }, [location.search]);
 
   return (
     <section className={`layanan-section ${isVisible ? 'animate' : ''}`} id="layanan" ref={ref}>
@@ -92,6 +68,14 @@ const Layanan = () => {
               ) : (
                 <p>{detail.content}</p>
               )}
+            </div>
+            <div className="layanan-actions">
+              <button
+                className="tentang-button"
+                onClick={() => navigate(`/layanan/${detail.id}`)}
+              >
+                Baca selengkapnya
+              </button>
             </div>
           </div>
         </div>
