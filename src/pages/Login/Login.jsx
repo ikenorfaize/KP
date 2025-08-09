@@ -115,6 +115,7 @@ const Login = () => {
   
   return (
     <div className="login-container">
+      <Link to="/" className="back-home">← Back to Home</Link>
       {/* === LEFT SECTION (BRANDING) === */}
       <div className="login-left">
         <div className="login-overlay">
@@ -182,22 +183,17 @@ const Login = () => {
               </div>
             )}
 
-            {/* Social login divider (placeholder) */}
-            <p className="login-divider">Or with</p>
-
-            {/* Social login buttons (placeholder - not functional) */}
-            <div className="login-social">
-              <button className="google">G+</button>
-              <button className="facebook">f</button>
-              <button className="twitter">t</button>
-            </div>
+            {/* Removed social login (G+/Facebook/Twitter) */}
           </form>
 
           {/* Registration information untuk users */}
           <p className="create-account">
             <span style={{color: '#6b7280', fontSize: '0.9rem'}}>
-              Belum punya akun? Hubungi Admin untuk mendaftar
-            </span>
+              Belum punya akun?
+            </span>{' '}
+            <Link to="/daftar" style={{ fontSize: '0.9rem', fontWeight: 600, color: '#0F7536' }}>
+              Daftar sekarang
+            </Link>
           </p>
         </div>
       </div>
