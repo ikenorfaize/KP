@@ -965,3 +965,23 @@ h3[style*="color: #0f7536"] {
 .delete-cert-btn:hover {
   background-color: rgba(239, 68, 68, 0.1);
 }
+
+/* Toast notifications */
+.toast {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  transform: translateY(-16px);
+  opacity: 0;
+  transition: opacity 200ms ease, transform 200ms ease;
+  background: var(--primary-green);
+  color: var(--white);
+  padding: 10px 14px;
+  border-radius: 8px;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+  z-index: 1000;
+  font-size: 14px;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.error { background: #c62828; }
+.toast.success { background: var(--primary-green); }

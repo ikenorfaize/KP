@@ -67,7 +67,7 @@ const upload = multer({
 });
 
 // ===== DATABASE FUNCTIONS =====
-const DB_PATH = join(__dirname, 'db.json');
+const DB_PATH = join(__dirname, 'api', 'db.json');
 
 const readDB = () => {
   try {
@@ -124,13 +124,14 @@ app.post('/upload-certificate', upload.single('certificate'), (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
+    const certificateId = Date.now();
     const certificateData = {
-      id: Date.now(),
+      id: certificateId,
       originalName: req.file.originalname,
-      filename: req.file.filename,
+      fileName: req.file.originalname, // keep a stable name used by download/history
+      filename: req.file.filename,     // unique saved filename on disk
       filePath: req.file.path,
-      downloadUrl: `/download-certificate/${Date.now()}`,
-      path: req.file.path,
+      downloadUrl: `/download-certificate/${certificateId}`,
       uploadDate: new Date().toISOString(),
       size: req.file.size
     };
@@ -160,6 +161,8 @@ app.post('/upload-certificate', upload.single('certificate'), (req, res) => {
 app.get('/download-certificate/:certificateId', (req, res) => {
   try {
     const { certificateId } = req.params;
+    console.log('🔍 Download request for certificate ID:', certificateId);
+    
     const db = readDB();
     
     // Find certificate in any user's certificates
@@ -168,23 +171,27 @@ app.get('/download-certificate/:certificateId', (req, res) => {
 
     for (const u of db.users) {
       if (u.certificates) {
-        certificate = u.certificates.find(c => c.id.toString() === certificateId);
+        certificate = u.certificates.find(c => c.id && c.id.toString() === certificateId.toString());
         if (certificate) {
           user = u;
+          console.log('✅ Found certificate:', certificate.fileName || certificate.originalName);
           break;
         }
       }
     }
 
     if (!certificate) {
+      console.log('❌ Certificate not found for ID:', certificateId);
       return res.status(404).json({ error: 'Certificate not found' });
     }
 
+    console.log('📄 Certificate file path:', certificate.filePath);
     if (!existsSync(certificate.filePath)) {
+      console.log('❌ File does not exist:', certificate.filePath);
       return res.status(404).json({ error: 'Certificate file not found' });
     }
 
-    // Update download statistics
+  // Update download statistics
     const userIndex = db.users.findIndex(u => u.id === user.id);
     if (userIndex !== -1) {
       db.users[userIndex].downloads = (db.users[userIndex].downloads || 0) + 1;
@@ -196,15 +203,19 @@ app.get('/download-certificate/:certificateId', (req, res) => {
       
       db.users[userIndex].downloadHistory.push({
         id: Date.now(),
-        certificateTitle: certificate.fileName,
+    certificateTitle: certificate.fileName || certificate.originalName || certificate.filename,
         downloadDate: new Date().toISOString(),
-        fileName: certificate.fileName
+    fileName: certificate.fileName || certificate.originalName || certificate.filename
       });
 
       writeDB(db);
     }
 
-    res.download(certificate.filePath, certificate.fileName);
+  const downloadName = certificate.fileName || certificate.originalName || certificate.filename || 'certificate.pdf';
+  // Use sendFile with explicit headers for better reliability across environments
+  res.setHeader('Content-Disposition', `attachment; filename="${downloadName}"`);
+  res.setHeader('Content-Type', 'application/pdf');
+  return res.sendFile(certificate.filePath);
   } catch (error) {
     console.error('Download error:', error);
     res.status(500).json({ error: 'Download failed' });
@@ -307,7 +318,12 @@ app.use((error, req, res, next) => {
 });
 
 // ===== SERVER STARTUP =====
-app.listen(PORT, () => {
+app.listen(PORT, 'localhost', (err) => {
+  if (err) {
+    console.error('❌ Failed to start file server:', err);
+    process.exit(1);
+  }
+  
   console.log('📁 === PERGUNU FILE SERVER ===');
   console.log(`🌐 File server running on: http://localhost:${PORT}`);
   console.log(`📁 Upload directory: ${uploadDir}`);
@@ -318,6 +334,22 @@ app.listen(PORT, () => {
   console.log('  DELETE /delete-certificate/:id - Delete certificate');
   console.log('  GET    /user-certificates/:userId - Get user certificates');
   console.log('\n✨ File server ready!\n');
+  
+  // Test the server is reachable
+  setTimeout(() => {
+    import('http').then(http => {
+      const req = http.get(`http://localhost:${PORT}/health`, (res) => {
+        console.log('✅ Self-test successful: Server is reachable');
+      });
+      req.on('error', (err) => {
+        console.error('❌ Self-test failed:', err.message);
+      });
+      req.setTimeout(5000, () => {
+        req.destroy();
+        console.error('❌ Self-test timeout');
+      });
+    });
+  }, 1000);
 });
 
 export default app;

@@ -181,39 +181,23 @@ class ApiService {
   // Registration implementation untuk JSON Server backend
   async registerWithServer(userData) {
     try {
-      // === STEP 1: CHECK DUPLICATE EMAIL ===
-      // Cek apakah email sudah terdaftar untuk prevent duplicate accounts
-      const existingUsers = await fetch(`${this.API_URL}/users?email=${userData.email}`);
-      const users = await existingUsers.json();
-      
-      if (users.length > 0) {
-        throw new Error('Email already registered');
-      }
-      // === STEP 2: PASSWORD HASHING ===
-      // Hash password sebelum disimpan ke database untuk security
-      const hashedPassword = await this.hashPassword(userData.password);
-
-      // === STEP 3: CREATE USER RECORD ===
-      // Create new user dengan metadata dan security measures
-      const response = await fetch(`${this.API_URL}/users`, {
+      // Gunakan endpoint Express.js yang sudah ada: /auth/register
+      const response = await fetch(`${this.API_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...userData,                              // Spread user data
-          id: Date.now(),                          // Generate unique ID
-          password: hashedPassword,                // Hashed password untuk security
-          createdAt: new Date().toISOString(),     // Timestamp creation
-          role: 'user'                            // Default role untuk new users
-        })
+        // Kirim data asli; backend akan melakukan validasi & hashing
+        body: JSON.stringify(userData)
       });
 
-      if (!response.ok) throw new Error('Registration failed');
-      
-      return await response.json(); // Return created user data
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ error: 'Registration failed' }));
+        throw new Error(err.error || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      return await response.json();
     } catch (error) {
       // === FALLBACK STRATEGY ===
-      // Jika JSON Server tidak available, switch ke localStorage
-      console.warn('JSON Server not available, switching to localStorage');
+      console.warn('Express API not available, switching to localStorage for registration');
       this.USE_JSON_SERVER = false;
       return this.registerWithLocalStorage(userData);
     }

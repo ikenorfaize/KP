@@ -41,7 +41,7 @@ const UserDashboard = () => {
         const userId = userData.userId || userData.id;
         console.log(`🔄 Fetching user data for ID: ${userId}`);
         
-        const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+  const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
         const response = await fetch(`${apiUrl}/users/${userId}`);
         if (!response.ok) {
           throw new Error(`Failed to fetch user data: ${response.status}`);
@@ -149,33 +149,43 @@ const UserDashboard = () => {
   // Download certificate function
   const handleDownloadCertificate = async (certificate) => {
     try {
-      console.log(`🔄 Downloading: ${certificate.fileName || certificate.originalName}`);
-      
-      // Check if certificate has base64 data
-      if (certificate.base64Data) {
-        // Create download link for base64 data
-        const link = document.createElement('a');
-        link.href = certificate.base64Data;
-        link.download = certificate.fileName || certificate.originalName || 'certificate.pdf';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        console.log('✅ File downloaded successfully');
-      } else if (certificate.url) {
-        // If certificate has URL, download from URL
-        const link = document.createElement('a');
-        link.href = certificate.url;
-        link.download = certificate.fileName || certificate.originalName || 'certificate.pdf';
-        link.target = '_blank';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        // Fallback for old string-based certificates
-        alert(`⚠️ File "${certificate}" tidak tersedia untuk diunduh.\nSilakan hubungi admin untuk mengupload ulang.`);
+      if (!certificate || typeof certificate !== 'object') {
+        alert('⚠️ Sertifikat tidak valid atau belum memiliki file. Minta admin untuk mengupload ulang.');
         return;
       }
+
+      console.log(`🔄 Downloading: ${certificate.fileName || certificate.originalName || certificate.filename}`);
+
+      const fileServerUrl = import.meta.env.VITE_FILE_SERVER_URL || 'http://localhost:3002';
+      let downloadHref = null;
+
+      if (typeof certificate === 'object') {
+        // Preferred: backend-provided URL fields
+        if (certificate.downloadUrl || certificate.fileUrl) {
+          const raw = certificate.downloadUrl || certificate.fileUrl;
+          downloadHref = raw.startsWith('http') ? raw : `${fileServerUrl}${raw}`;
+        } else if (certificate.id) {
+          // Construct from id
+          downloadHref = `${fileServerUrl}/download-certificate/${certificate.id}`;
+        } else if (certificate.base64Data) {
+          downloadHref = certificate.base64Data;
+        } else if (certificate.url) {
+          downloadHref = certificate.url;
+        }
+      }
+
+      if (!downloadHref) {
+        alert(`⚠️ File "${certificate.fileName || certificate.originalName || certificate.filename || 'Tidak diketahui'}" tidak tersedia untuk diunduh.`);
+        return;
+      }
+
+      const link = document.createElement('a');
+      link.href = downloadHref;
+      link.download = certificate.fileName || certificate.originalName || 'certificate.pdf';
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
       // Update download count in user data
       const updatedUser = {
@@ -202,14 +212,18 @@ const UserDashboard = () => {
       // Update local state
       setUser(updatedUser);
 
-      // Update in JSON Server
-      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+      // Update in API (PATCH minimal fields)
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
+      const patchPayload = {
+        downloads: updatedUser.downloads,
+        lastDownload: updatedUser.lastDownload,
+        downloadHistory: updatedUser.downloadHistory,
+        certificates: updatedUser.certificates
+      };
       await fetch(`${apiUrl}/users/${user.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedUser)
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(patchPayload)
       });
 
       // Update stats
@@ -222,7 +236,8 @@ const UserDashboard = () => {
       
     } catch (error) {
       console.error('❌ Error downloading certificate:', error);
-      alert('❌ Gagal mengunduh sertifikat. Silakan coba lagi.');
+      const msg = error?.message ? ` (${error.message})` : '';
+      alert(`❌ Gagal mengunduh sertifikat${msg}. Silakan coba lagi.`);
     }
   };
 
@@ -293,22 +308,34 @@ const UserDashboard = () => {
       <div className="recent-certificates">
         <h2>Sertifikat Terbaru</h2>
         <div className="certificates-preview">
-          {user?.certificates.slice(0, 2).map(certificate => (
-            <div key={certificate.id} className="certificate-card-preview">
+          {user?.certificates.slice(0, 2).map((certificate, idx) => (
+            <div key={certificate.id || idx} className="certificate-card-preview">
               <div className="certificate-info">
-                <h3>{certificate.title}</h3>
-                <p>{certificate.description}</p>
+                <h3>{certificate.title || certificate.originalName || certificate.fileName || 'Sertifikat'}</h3>
+                <p>{certificate.description || 'Sertifikat yang diupload'}</p>
                 <div className="certificate-meta">
-                  <span className="category">{certificate.category}</span>
+                  <span className="category">{certificate.category || 'PDF'}</span>
                   <span className="upload-date">{certificate.uploadDate}</span>
                 </div>
               </div>
-              <button 
-                className="download-btn-small"
-                onClick={() => handleDownloadCertificate(certificate)}
-              >
-                ⬇️ Download
-              </button>
+              {(() => {
+                // Check if certificate has valid download references
+                const hasDownloadUrl = certificate.downloadUrl || certificate.fileUrl;
+                const hasId = certificate.id && (typeof certificate.id === 'number' || typeof certificate.id === 'string');
+                const hasLegacyData = certificate.base64Data || certificate.url;
+                const downloadable = typeof certificate === 'object' && (hasDownloadUrl || hasId || hasLegacyData);
+                
+                return (
+                  <button 
+                    className={`download-btn-small${downloadable ? '' : ' disabled'}`}
+                    onClick={() => downloadable && handleDownloadCertificate(certificate)}
+                    disabled={!downloadable}
+                    title={downloadable ? 'Unduh sertifikat' : 'File tidak tersedia untuk diunduh'}
+                  >
+                    {downloadable ? '⬇️ Download' : '❌ Tidak Tersedia'}
+                  </button>
+                );
+              })()}
             </div>
           ))}
         </div>
@@ -404,12 +431,24 @@ const UserDashboard = () => {
                     </div>
                   </div>
                   <div className="certificate-actions">
-                    <button 
-                      className="download-btn"
-                      onClick={() => handleDownloadCertificate(certificate)}
-                    >
-                      ⬇️ Download PDF
-                    </button>
+                    {(() => {
+                      // Check if certificate has valid download references
+                      const hasDownloadUrl = certificate.downloadUrl || certificate.fileUrl;
+                      const hasId = certificate.id && (typeof certificate.id === 'number' || typeof certificate.id === 'string');
+                      const hasLegacyData = certificate.base64Data || certificate.url;
+                      const downloadable = hasDownloadUrl || hasId || hasLegacyData;
+                      
+                      return (
+                        <button 
+                          className={`download-btn${downloadable ? '' : ' disabled'}`}
+                          onClick={() => downloadable && handleDownloadCertificate(certificate)}
+                          disabled={!downloadable}
+                          title={downloadable ? 'Unduh sertifikat' : 'File tidak tersedia untuk diunduh'}
+                        >
+                          {downloadable ? '⬇️ Download PDF' : '❌ Tidak Tersedia'}
+                        </button>
+                      );
+                    })()}
                   </div>
                 </div>
               );

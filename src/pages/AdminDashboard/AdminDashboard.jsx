@@ -18,6 +18,13 @@ import ApplicationManager from '../../componen/ApplicationManager/ApplicationMan
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
+  // Toast state
+  const [toast, setToast] = React.useState({ visible: false, type: 'success', message: '' });
+  const showToast = (message, type = 'success', duration = 2500) => {
+    setToast({ visible: true, type, message });
+    window.clearTimeout(showToast._t);
+    showToast._t = window.setTimeout(() => setToast(t => ({ ...t, visible: false })), duration);
+  };
   const { pendingCount, setPendingCount, refresh: refreshPending } = usePendingApplications();
   // Hook untuk navigasi programmatic (redirect ke login jika tidak authorized)
   const navigate = useNavigate();
@@ -457,21 +464,21 @@ const AdminDashboard = () => {
         throw new Error(`Upload failed: ${uploadResponse.statusText}`);
       }
 
-      const uploadResult = await uploadResponse.json();
-      console.log('✅ File uploaded:', uploadResult);
+      const uploadJson = await uploadResponse.json();
+      console.log('✅ File uploaded:', uploadJson);
 
-      // === CREATE METADATA (NO BASE64!) ===
+      // Backend returns { message, certificate }
+      const c = uploadJson.certificate || uploadJson;
       const fileMetadata = {
-        id: uploadResult.id,
-        fileName: uploadResult.originalName,
-        originalName: uploadResult.originalName,
-        uniqueName: uploadResult.filename,
-        filePath: uploadResult.path,           // Server file path
-        fileUrl: uploadResult.downloadUrl,    // Public download URL
-        size: file.size,
-        uploadDate: new Date().toISOString(),
+        id: c.id,
+        fileName: c.fileName || c.originalName,
+        originalName: c.originalName,
+        uniqueName: c.filename,         // saved filename
+        filePath: c.filePath,           // server file path
+        fileUrl: c.downloadUrl,         // public download URL
+        size: c.size ?? file.size,
+        uploadDate: c.uploadDate || new Date().toISOString(),
         downloadCount: 0
-        // NO base64Data - much more efficient!
       };
 
       // Get current user data
@@ -510,12 +517,12 @@ const AdminDashboard = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      console.log('✅ Certificate uploaded successfully:', fileMetadata);
-      alert(`✅ Sertifikat "${file.name}" berhasil diupload untuk ${userToUpdate.fullName}!`);
+  console.log('✅ Certificate uploaded successfully:', fileMetadata);
+  showToast(`Sertifikat "${file.name}" berhasil diupload`, 'success');
       
     } catch (error) {
       console.error('❌ Error uploading certificate:', error);
-      alert(`❌ Gagal mengupload sertifikat: ${error.message}`);
+      showToast(`Gagal mengupload sertifikat: ${error.message}`, 'error', 3500);
     }
   };
 
@@ -682,7 +689,7 @@ const AdminDashboard = () => {
 
     if (!confirmed) return;
 
-    try {
+  try {
       console.log(`🗑️ Deleting user ${userId} (${userToDelete.username}) from JSON Server...`);
 
       // Send DELETE request to Express.js API menggunakan environment URL
@@ -698,20 +705,15 @@ const AdminDashboard = () => {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-      console.log('✅ User deleted from JSON Server successfully');
+  console.log('✅ User deleted from JSON Server successfully');
 
-      // Refresh the users list to reflect the deletion
-      await fetchUsers();
+  // Refresh the users list to reflect the deletion
+  await fetchUsers();
 
-      // Show success message
-      alert(
-        `✅ User Berhasil Dihapus!\n\n` +
-        `👤 "${userToDelete.fullName}" telah dihapus dari sistem\n` +
-        `🚫 Username "${userToDelete.username}" tidak dapat digunakan untuk login\n` +
-        `📊 Data user telah dihapus dari database`
-      );
+  // Success toast
+  showToast(`User "${userToDelete.fullName}" telah dihapus`, 'success');
 
-      console.log(`✅ User ${userToDelete.fullName} (${userToDelete.username}) deleted successfully`);
+  console.log(`✅ User ${userToDelete.fullName} (${userToDelete.username}) deleted successfully`);
 
     } catch (error) {
       console.error('❌ Error deleting user:', error);
@@ -728,14 +730,18 @@ const AdminDashboard = () => {
         errorMessage += `🐛 Error: ${error.message}`;
       }
       
-      errorMessage += '\n\n📞 Hubungi administrator jika masalah berlanjut.';
-      
-      alert(errorMessage);
+  errorMessage += '\n\n📞 Hubungi administrator jika masalah berlanjut.';
+  // Error toast (short)
+  showToast(errorMessage.replace(/\n/g, ' '), 'error', 3500);
     }
   };
 
   const renderDashboard = () => (
     <div className="dashboard-content">
+      {/* Toast container */}
+      <div className={`toast ${toast.visible ? 'show' : ''} ${toast.type}`} role="status" aria-live="polite">
+        {toast.message}
+      </div>
       {/* Welcome Section */}
       <div className="welcome-section">
         <h1>Admin Certificate Management Dashboard</h1>

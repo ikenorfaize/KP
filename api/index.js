@@ -127,15 +127,16 @@ app.get('/api/users', (req, res) => {
 // Get user by ID
 app.get('/api/users/:id', (req, res) => {
   try {
-    const db = readDB();
-    const user = db.users.find(u => u.id === req.params.id);
+  const db = readDB();
+  const targetId = String(req.params.id);
+  const user = db.users.find(u => String(u.id) === targetId);
     
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
     
     // Don't send password in response
-    const { password, ...userWithoutPassword } = user;
+  const { password, ...userWithoutPassword } = user;
     res.json(userWithoutPassword);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch user' });
@@ -313,6 +314,37 @@ app.patch('/api/users/:id', async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: 'Failed to update user' });
+  }
+});
+
+// Delete user
+app.delete('/api/users/:id', async (req, res) => {
+  try {
+    const db = readDB();
+    const targetId = String(req.params.id);
+
+    // Find user index by string comparison to support numeric/string IDs
+    const userIndex = db.users.findIndex(u => String(u.id) === targetId);
+
+    if (userIndex === -1) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const [deletedUser] = db.users.splice(userIndex, 1);
+    const success = writeDB(db);
+
+    if (!success) {
+      return res.status(500).json({ error: 'Failed to delete user' });
+    }
+
+    const { password, ...userWithoutPassword } = deletedUser || {};
+    res.json({
+      message: 'User deleted successfully',
+      user: userWithoutPassword
+    });
+  } catch (error) {
+    console.error('Delete user error:', error);
+    res.status(500).json({ error: 'Failed to delete user' });
   }
 });
 
