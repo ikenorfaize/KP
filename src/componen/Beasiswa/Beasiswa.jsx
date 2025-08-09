@@ -1,8 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 import './Beasiswa.css';
 
 const BeasiswaCard = () => {
+  const [ref, isVisible] = useScrollAnimation(0.1);
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -64,7 +66,11 @@ const BeasiswaCard = () => {
   );
 
   return (
-    <section className="beasiswa-section" id="beasiswa">
+    <section
+      className={`beasiswa-section ${isVisible ? 'animate' : ''}`}
+      id="beasiswa"
+      ref={ref}
+    >
       <div className="beasiswa-container">
         <div className="section-header">
           <span className="badge">Program Unggulan</span>

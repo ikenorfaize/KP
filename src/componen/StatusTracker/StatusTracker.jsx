@@ -1,9 +1,11 @@
 // StatusTracker Component - Komponen untuk melacak status pendaftaran
 // Memungkinkan user untuk cek status pendaftaran dengan memasukkan email
 import React, { useState } from 'react';
+import { useScrollAnimation } from '../../hooks/useScrollAnimation';
 import './StatusTracker.css';
 
 const StatusTracker = () => {
+  const [ref, isVisible] = useScrollAnimation(0.1);
   // State untuk menyimpan email yang diinput user
   const [email, setEmail] = useState('');
   
@@ -97,7 +99,7 @@ const StatusTracker = () => {
   };
 
   return (
-    <div className="status-tracker">
+    <div className={`status-tracker ${isVisible ? 'animate-in' : ''}`} ref={ref}>
       <div className="tracker-header">
         <h2>🔍 Cek Status Pendaftaran</h2>
         <p>Masukkan email yang Anda gunakan saat mendaftar</p>

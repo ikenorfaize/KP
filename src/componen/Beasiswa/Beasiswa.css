@@ -4,6 +4,47 @@
   background: linear-gradient(135deg, rgba(230, 233, 231, 0.5), white);
 }
 
+/* Scroll animation base state */
+.beasiswa-section {
+  opacity: 0;
+  transform: translateY(60px);  /* larger offset for stronger effect */
+  transition: all 1s ease-out;  /* slower and smoother */
+  will-change: opacity, transform;
+}
+
+/* Activated on intersection */
+.beasiswa-section.animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger children for readability */
+.beasiswa-section .section-header,
+.beasiswa-section .main-content,
+.beasiswa-section .cards-grid {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s ease-out;
+}
+
+.beasiswa-section.animate .section-header {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.1s;
+}
+
+.beasiswa-section.animate .main-content {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.25s;
+}
+
+.beasiswa-section.animate .cards-grid {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.4s;
+}
+
 .beasiswa-container {
   max-width: 1280px;
   margin: 0 auto;
@@ -98,12 +139,20 @@
   gap: 16px;
   width: 100%;
 }
+/* Ensure both buttons have identical dimensions */
+.btn-primary,
+.btn-secondary {
+  width: 220px;
+  height: 48px;
+  box-sizing: border-box;
+}
  
 .btn-primary {
   display: inline-flex !important;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  white-space: nowrap; /* keep phrase on one line */
   padding: 24px 32px !important;
   background-color: #0F7536 !important;
   color: white !important;
@@ -114,8 +163,6 @@
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none !important;
-  min-width: 200px;
-  flex: 1;
 }
 
 .btn-primary:hover {
@@ -129,6 +176,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+  white-space: nowrap; /* keep phrase on one line */
   padding: 24px 32px !important;
   background-color: transparent !important;
   color: #0F7536 !important;
@@ -139,8 +187,6 @@
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none !important;
-  min-width: 200px;
-  flex: 1;
 }
 
 .btn-secondary:hover {
@@ -226,8 +272,12 @@
   right: -16px;
   background-color: #77A686;
   color: white;
-  padding: 12px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
@@ -237,8 +287,12 @@
   left: -16px;
   background-color: #97BDA2;
   color: white;
-  padding: 12px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
@@ -247,6 +301,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 32px;
+  align-items: stretch; /* ensure grid items take equal row height */
 }
 
 .program-card {
@@ -257,6 +312,9 @@
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
+  display: flex;              /* allow vertical layout */
+  flex-direction: column;     /* stack content */
+  height: 100%;               /* fill grid row height */
 }
 
 .program-card:hover {
@@ -330,6 +388,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   background: transparent;
+  margin-top: auto;           /* push button to bottom for alignment */
 }
 
 .card-button.green {
