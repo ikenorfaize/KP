@@ -149,3 +149,44 @@
   transform: translateY(0) scale(1);
   transition-delay: 0.4s;
 }
+
+/* Berita grid navigation buttons */
+.berita-nav-btn {
+  transition: all 0.3s ease;
+}
+
+.berita-nav-btn:hover {
+  background: #1e7e34 !important;
+  color: white !important;
+  transform: translateY(-50%) scale(1.1) !important;
+  box-shadow: 0 4px 12px rgba(30, 126, 52, 0.3) !important;
+}
+
+.berita-nav-btn:active {
+  transform: translateY(-50%) scale(0.95) !important;
+}
+
+.berita-grid-container {
+  position: relative;
+  padding: 0 60px; /* Add space for navigation arrows */
+}
+
+@media (max-width: 768px) {
+  .berita-grid-container {
+    padding: 0 30px; /* Smaller padding on mobile */
+  }
+  
+  .berita-nav-left {
+    left: -25px !important;
+    width: 35px !important;
+    height: 35px !important;
+    font-size: 14px !important;
+  }
+  
+  .berita-nav-right {
+    right: -25px !important;
+    width: 35px !important;
+    height: 35px !important;
+    font-size: 14px !important;
+  }
+}

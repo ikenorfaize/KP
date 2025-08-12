@@ -17,15 +17,24 @@ const app = express();
 const PORT = process.env.FILE_PORT || 3002;
 
 // ===== MIDDLEWARE =====
-app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:5174', 
-    'http://localhost:3000',
-    'https://your-frontend-domain.vercel.app'
-  ],
+// Flexible CORS: allow localhost/127.0.0.1 on any port in development
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    try {
+      const url = new URL(origin);
+      const isLocalhost = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
+      if (isLocalhost) return callback(null, true);
+      const allowList = new Set([
+        'https://your-frontend-domain.vercel.app'
+      ]);
+      if (allowList.has(origin)) return callback(null, true);
+    } catch {}
+    return callback(null, false);
+  },
   credentials: true
-}));
+};
+app.use(cors(corsOptions));
 
 app.use(express.json({ limit: '50mb' }));
 

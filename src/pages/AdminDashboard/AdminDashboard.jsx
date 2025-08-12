@@ -15,6 +15,7 @@ import { apiService } from '../../services/apiService';            // Import API
 import { ApplicationService } from '../../services/ApplicationService';
 import { usePendingApplications } from '../../context/PendingApplicationsContext';
 import ApplicationManager from '../../componen/ApplicationManager/ApplicationManager'; // Komponen untuk manage aplikasi
+import NewsManager from '../../componen/NewsManager';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -130,6 +131,18 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
+
+  // Ensure we don't stick to local fallback for applications when API is available
+  useEffect(() => {
+    (async () => {
+      try {
+        await apiService.init();
+        if (apiService.isServerAvailable) {
+          try { localStorage.removeItem('applications_mode'); } catch {}
+        }
+      } catch {}
+    })();
+  }, []);
 
   // Stable callback to receive pending count from ApplicationManager without causing re-render loops
   const handlePendingCountChange = useCallback((count) => {
@@ -1227,6 +1240,12 @@ const AdminDashboard = () => {
           >
             Analytics
           </button>
+          <button
+            className={`nav-item ${activeTab === 'news' ? 'active' : ''}`}
+            onClick={() => setActiveTab('news')}
+          >
+            News
+          </button>
         </div>
       </nav>
 
@@ -1237,6 +1256,11 @@ const AdminDashboard = () => {
         {activeTab === 'applications' && renderApplications()}
         {activeTab === 'certificates' && renderCertificates()}
         {activeTab === 'analytics' && renderAnalytics()}
+        {activeTab === 'news' && (
+          <div className="card">
+            <NewsManager />
+          </div>
+        )}
       </main>
 
       {/* Edit User Modal */}

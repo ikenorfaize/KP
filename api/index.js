@@ -19,15 +19,26 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // ===== MIDDLEWARE =====
-app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:5174', 
-    'http://localhost:3000',
-    'https://your-frontend-domain.vercel.app' // Update this with your frontend URL
-  ],
+// Flexible CORS: allow localhost/127.0.0.1 on any port in development
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, or same-origin)
+    if (!origin) return callback(null, true);
+    try {
+      const url = new URL(origin);
+      const isLocalhost = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
+      if (isLocalhost) return callback(null, true);
+      // Allow specific production origins here if needed
+      const allowList = new Set([
+        'https://your-frontend-domain.vercel.app'
+      ]);
+      if (allowList.has(origin)) return callback(null, true);
+    } catch {}
+    return callback(null, false);
+  },
   credentials: true
-}));
+};
+app.use(cors(corsOptions));
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
@@ -86,6 +97,7 @@ const writeDB = (data) => {
     return false;
   }
 };
+
 
 // ===== API ROUTES =====
 
@@ -354,7 +366,12 @@ app.delete('/api/users/:id', async (req, res) => {
 app.get('/api/news', (req, res) => {
   try {
     const db = readDB();
-    res.json(db.news || []);
+    const all = db.news || [];
+    const limit = Number.parseInt(req.query.limit, 10);
+    if (!Number.isNaN(limit) && limit > 0) {
+      return res.json(all.slice(0, limit));
+    }
+    res.json(all);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch news' });
   }
@@ -376,10 +393,23 @@ app.get('/api/news/:id', (req, res) => {
   }
 });
 
+// Get featured news
+app.get('/api/news/featured', (req, res) => {
+  try {
+    const db = readDB();
+    const list = db.news || [];
+    const featured = list.find(n => n.featured === true) || null;
+    if (!featured) return res.status(404).json({ error: 'No featured news' });
+    res.json(featured);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch featured news' });
+  }
+});
+
 // Create news (admin only)
 app.post('/api/news', (req, res) => {
   try {
-    const { title, content, author, category } = req.body;
+    const { title, content, author, category, featured, slug, imageUrl, publishDate, summary, tags } = req.body || {};
     
     if (!title || !content) {
       return res.status(400).json({ error: 'Title and content are required' });
@@ -394,10 +424,19 @@ app.post('/api/news', (req, res) => {
       content,
       author: author || 'Admin',
       category: category || 'general',
+      featured: !!featured,
+      slug: slug || undefined,
+      imageUrl: imageUrl || undefined,
+      publishDate: publishDate || new Date().toISOString(),
+      summary: summary || undefined,
+      tags: Array.isArray(tags) ? tags : undefined,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
-    
+    // Enforce single featured item
+    if (newNews.featured) {
+      db.news = db.news.map(n => ({ ...n, featured: false }));
+    }
     db.news.push(newNews);
     const success = writeDB(db);
     
@@ -411,6 +450,85 @@ app.post('/api/news', (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: 'Failed to create news' });
+  }
+});
+
+// Update news (admin only)
+app.patch('/api/news/:id', (req, res) => {
+  try {
+    const targetId = String(req.params.id);
+    const { title, content, author, category, slug, imageUrl, featured, publishDate, summary, tags } = req.body || {};
+
+    const db = readDB();
+    if (!db.news) db.news = [];
+
+    const idx = db.news.findIndex(n => String(n.id) === targetId);
+    if (idx === -1) {
+      return res.status(404).json({ error: 'News not found' });
+    }
+
+    const current = db.news[idx];
+    const updated = {
+      ...current,
+      ...(title !== undefined ? { title } : {}),
+      ...(content !== undefined ? { content } : {}),
+      ...(author !== undefined ? { author } : {}),
+      ...(category !== undefined ? { category } : {}),
+      ...(slug !== undefined ? { slug } : {}),
+      ...(imageUrl !== undefined ? { imageUrl } : {}),
+      ...(publishDate !== undefined ? { publishDate } : {}),
+      ...(summary !== undefined ? { summary } : {}),
+      ...(Array.isArray(tags) ? { tags } : {}),
+      updatedAt: new Date().toISOString()
+    };
+
+    // Enforce single featured item if toggled to true
+    if (featured === true) {
+      db.news = db.news.map((n, i) => (i === idx ? { ...updated, featured: true } : { ...n, featured: false }));
+    } else if (featured === false) {
+      db.news[idx] = { ...updated, featured: false };
+    } else {
+      db.news[idx] = updated;
+    }
+    const success = writeDB(db);
+    if (!success) {
+      return res.status(500).json({ error: 'Failed to update news' });
+    }
+
+    const responseItem = db.news.find(n => String(n.id) === targetId);
+    res.json({
+      message: 'News updated successfully',
+      news: responseItem
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update news' });
+  }
+});
+
+// Delete news (admin only)
+app.delete('/api/news/:id', (req, res) => {
+  try {
+    const targetId = String(req.params.id);
+    const db = readDB();
+    if (!db.news) db.news = [];
+
+    const idx = db.news.findIndex(n => String(n.id) === targetId);
+    if (idx === -1) {
+      return res.status(404).json({ error: 'News not found' });
+    }
+
+    const [deleted] = db.news.splice(idx, 1);
+    const success = writeDB(db);
+    if (!success) {
+      return res.status(500).json({ error: 'Failed to delete news' });
+    }
+
+    res.json({
+      message: 'News deleted successfully',
+      news: deleted
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete news' });
   }
 });
 

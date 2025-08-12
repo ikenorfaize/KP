@@ -250,7 +250,8 @@
         "marketing",
         "guru",
         "pelatihan"
-      ]
+      ],
+      "updatedAt": "2025-08-12T23:01:51.870Z"
     },
     {
       "id": "news2",
@@ -283,6 +284,17 @@
         "pendidikan",
         "digital"
       ]
+    },
+    {
+      "id": "1755041224968",
+      "title": "coba coba saja2",
+      "content": "dawdadw",
+      "author": "Fuad",
+      "category": "education",
+      "featured": false,
+      "publishDate": "2025-08-12T23:27:04.968Z",
+      "createdAt": "2025-08-12T23:27:04.968Z",
+      "updatedAt": "2025-08-12T23:27:04.968Z"
     }
   ],
   "sessions": [],
