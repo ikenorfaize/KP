@@ -11,9 +11,7 @@ export default function NewsManager() {
 	const [error, setError] = useState('');
 	const [success, setSuccess] = useState('');
 
-	// Admin UI pagination (4 per page)
-	const [page, setPage] = useState(0);
-	const pageSize = 4;
+	// Admin UI now uses vertical scrolling
 
 	const [isCreating, setIsCreating] = useState(false);
 	const [editingId, setEditingId] = useState(null);
@@ -98,46 +96,48 @@ export default function NewsManager() {
 		setFormData({
 			title: news.title,
 			content: news.content,
-			author: news.author || '',
-			category: news.category || 'general',
-			featured: !!news.featured
+			author: news.author,
+			category: news.category
 		});
 		setEditingId(news.id);
 		setIsCreating(true);
 		setEditorMode('write');
 	};
 
-	const makeFeatured = async (newsId) => {
-		setIsLoading(true);
-		setError('');
-		setSuccess('');
+	const handleDelete = async (id) => {
+		if (!confirm('Yakin hapus berita ini?')) return;
+		
 		try {
-			const response = await fetch(`${API_BASE}/news/${newsId}`, {
-				method: 'PATCH',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ featured: true })
-			});
-			if (!response.ok) {
-				const err = await response.json().catch(() => ({}));
-				throw new Error(err.error || 'Gagal menjadikan berita utama');
+			const response = await fetch(`${API_BASE}/news/${id}`, { method: 'DELETE' });
+			if (response.ok) {
+				setSuccess('Berita berhasil dihapus!');
+				await fetchNews();
+			} else {
+				setError('Gagal menghapus berita');
 			}
-			setSuccess('✅ Berita dijadikan utama (akan muncul di homepage)');
-			await fetchNews();
-		} catch (e) {
-			setError(e.message || 'Gagal menjadikan berita utama');
-		} finally { setIsLoading(false); }
-	};
-
-	const handleDelete = async (newsId) => {
-		if (!window.confirm('Apakah Anda yakin ingin menghapus berita ini?')) return;
-		setIsLoading(true);
-		try {
-			const response = await fetch(`${API_BASE}/news/${newsId}`, { method: 'DELETE' });
-			if (response.ok) { setSuccess('Berita berhasil dihapus!'); await fetchNews(); }
-			else setError('Gagal menghapus berita');
 		} catch {
 			setError('Error koneksi ke server');
-		} finally { setIsLoading(false); }
+		}
+	};
+
+	// New function to set featured news
+	const makeFeatured = async (newsId) => {
+		try {
+			const response = await fetch(`${API_BASE}/news/${newsId}/feature`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' }
+			});
+			
+			if (response.ok) {
+				setSuccess('Berita utama berhasil diubah!');
+				await fetchNews(); // Refresh to get updated data
+			} else {
+				const errorData = await response.json();
+				setError(errorData.error || 'Gagal mengubah berita utama');
+			}
+		} catch {
+			setError('Error koneksi ke server');
+		}
 	};
 
 	const handleView = (newsId) => { window.open(`/berita/${newsId}`, '_blank'); };
@@ -181,24 +181,7 @@ export default function NewsManager() {
 		);
 	};
 
-	// Featured in-list: page 0 shows 1 featured + 3 others; next pages show 4 per page
-	const featuredNews = (newsList || []).find(n => n.featured);
-	const nonFeatured = featuredNews ? (newsList || []).filter(n => n.id !== featuredNews.id) : (newsList || []);
-	const itemsOnFirstPage = featuredNews ? 3 : 4;
-	const remaining = Math.max(0, nonFeatured.length - itemsOnFirstPage);
-	const additionalPages = remaining > 0 ? Math.ceil(remaining / pageSize) : 0;
-	const totalPages = 1 + additionalPages;
-	const pageClamped = Math.max(0, Math.min(page, totalPages - 1));
-	let currentPageItems = [];
-	if (pageClamped === 0) {
-		currentPageItems = nonFeatured.slice(0, itemsOnFirstPage);
-	} else {
-		const offset = itemsOnFirstPage + (pageClamped - 1) * pageSize;
-		currentPageItems = nonFeatured.slice(offset, offset + pageSize);
-	}
-
-	const goPrev = () => setPage(p => Math.max(0, p - 1));
-	const goNext = () => setPage(p => Math.min(totalPages - 1, p + 1));
+	// All news data available for vertical scrolling
 
 	return (
 		<div className="news-manager">
@@ -295,42 +278,17 @@ Paragraf baru dengan baris kosong di antaranya.`} />
 			<div className="admin-news-list">
 				<div className="admin-news-list__header">
 					<h3>📋 Daftar Berita ({newsList.length}) - Sinkron dengan Homepage</h3>
-					{totalPages > 1 && (
-						<div className="admin-news-pagination">
-							<button className="admin-news-pagination__btn" disabled={pageClamped === 0} onClick={goPrev} aria-label="Previous page">◀</button>
-							<span className="admin-news-pagination__info">Hal {pageClamped + 1} / {totalPages}</span>
-							<button className="admin-news-pagination__btn" disabled={pageClamped >= totalPages - 1} onClick={goNext} aria-label="Next page">▶</button>
-						</div>
-					)}
 				</div>
-
 
 				{isLoading && <div className="loading">⏳ Memuat data...</div>}
 				{newsList.length === 0 && !isLoading ? (
 					<div className="empty-state"><p>📰 Belum ada berita. Buat berita pertama Anda!</p></div>
 				) : (
-					<div className="admin-news-grid-wrapper">
-						<button className="admin-news-nav__btn" disabled={pageClamped === 0} onClick={goPrev} aria-label="Previous page">◀</button>
+					<div className="admin-news-scrollable-container">
 						<div className="admin-news-grid">
-							{/* Featured hero inside admin list (first item on page 0) */}
-							{featuredNews && pageClamped === 0 && (
-								<div className="berita-utama-card" style={{gridColumn: '1 / -1', marginBottom: '16px'}}>
-									<div className="berita-utama-content">
-										<small style={{color: '#0f7536', fontSize: '0.75rem', fontWeight: '600'}}>📍 Berita Utama (Featured)</small>
-										<h3>{featuredNews.title}</h3>
-										<p>{featuredNews.summary || (featuredNews.content || '').slice(0,180)}</p>
-										<div style={{display: 'flex', gap: '8px', alignItems: 'center', marginTop: '8px'}}>
-											<button type="button" style={{padding: '6px 12px', background: '#1e7e34', color: 'white', border: 'none', borderRadius: '6px', fontSize: '0.85rem'}}>
-												baca selengkapnya
-											</button>
-											<button className="btn-edit" onClick={() => handleEdit(featuredNews)} style={{fontSize: '0.85rem'}}>✏️ Edit</button>
-											<button className="btn-delete" onClick={() => handleDelete(featuredNews.id)} style={{fontSize: '0.85rem'}}>🗑️ Hapus</button>
-										</div>
-									</div>
-								</div>
-							)}
-						{currentPageItems.map((news) => {
-							const dateForDisplay = news.createdAt || news.publishDate;
+							{/* All news items in grid format */}
+							{newsList.map((news) => {
+								const dateForDisplay = news.createdAt || news.publishDate;
 								return (
 									<div
 										key={news.id}
@@ -338,29 +296,28 @@ Paragraf baru dengan baris kosong di antaranya.`} />
 										data-news-id={String(news.id)}
 										className={`admin-news-card ${news.featured ? 'admin-news-card--featured' : ''}`}
 									>
-									<div className="admin-news-card__header">
-										<h4 className="admin-news-card__title">{news.title}</h4>
-										<span className="admin-news-card__category">{categories.find(c => c.value === news.category)?.label || news.category}</span>
+										<div className="admin-news-card__header">
+											<h4 className="admin-news-card__title">{news.title}</h4>
+											<span className="admin-news-card__category">{categories.find(c => c.value === news.category)?.label || news.category}</span>
+										</div>
+										<div className="admin-news-card__meta">
+											<span>👤 {news.author || 'Admin'}</span>
+											<span>📅 {formatDate(dateForDisplay)}</span>
+										</div>
+										<div className="admin-news-card__content">{(news.content || '').substring(0, 150)}...</div>
+										<div className="admin-news-card__actions">
+											{news.featured && <span className="admin-news-card__badge">⭐ Utama</span>}
+											<button className="btn-edit" onClick={() => handleEdit(news)}>✏️ Edit</button>
+											<button className="btn-delete" onClick={() => handleDelete(news.id)}>🗑️ Hapus</button>
+											<button className="btn-view" onClick={() => handleView(news.id)}>👁️ Lihat</button>
+											{!news.featured && (
+												<button className="btn-feature" onClick={() => makeFeatured(news.id)} title="Jadikan Berita Utama">⭐ Jadikan Utama</button>
+											)}
+										</div>
 									</div>
-									<div className="admin-news-card__meta">
-										<span>👤 {news.author || 'Admin'}</span>
-										<span>📅 {formatDate(dateForDisplay)}</span>
-									</div>
-									<div className="admin-news-card__content">{(news.content || '').substring(0, 150)}...</div>
-									<div className="admin-news-card__actions">
-										{news.featured && <span className="admin-news-card__badge">Utama</span>}
-										<button className="btn-edit" onClick={() => handleEdit(news)}>✏️ Edit</button>
-										<button className="btn-delete" onClick={() => handleDelete(news.id)}>🗑️ Hapus</button>
-										<button className="btn-view" onClick={() => handleView(news.id)}>👁️ Lihat</button>
-										{!news.featured && (
-											<button className="btn-feature" onClick={() => makeFeatured(news.id)} title="Jadikan Berita Utama">⭐ Jadikan Utama</button>
-										)}
-									</div>
-								</div>
-							);
-						})}
+								);
+							})}
 						</div>
-						<button className="admin-news-nav__btn" disabled={pageClamped >= totalPages - 1} onClick={goNext} aria-label="Next page">▶</button>
 					</div>
 				)}
 			</div>

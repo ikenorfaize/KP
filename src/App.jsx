@@ -18,10 +18,11 @@ import Footer from "./componen/Footer/Footer";           // Footer website
 import StatusTracker from "./componen/StatusTracker/StatusTracker"; // Cek status pendaftaran
 
 // Import halaman-halaman terpisah (pages) yang memiliki route sendiri
-import BeritaUtama from "./pages/Berita/BeritaUtama";     // Detail berita utama
+import Berita4 from "./pages/Berita/Berita4";     // Detail berita 4
 import Berita1 from "./pages/Berita/Berita1";             // Detail berita 1
 import Berita2 from "./pages/Berita/Berita2";             // Detail berita 2
 import Berita3 from "./pages/Berita/Berita3";             // Detail berita 3
+import BeritaDetail from "./pages/Berita/BeritaDetail";   // Dynamic news detail page
 import Login from "./pages/Login/Login";                  // Halaman login user/admin
 import RegisterForm from "./pages/RegisterForm/RegisterForm"; // Form pendaftaran anggota
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard"; // Dashboard admin
@@ -103,10 +104,13 @@ const App = () => {
         
         {/* ROUTES BERITA - Halaman artikel berita detail terpisah */}
         {/* Setiap berita memiliki halaman tersendiri dengan konten lengkap */}
-        <Route path="/berita-utama" element={<><Navbar /><BeritaUtama /></>} />
+        <Route path="/berita4" element={<><Navbar /><Berita4 /></>} />
         <Route path="/berita-1" element={<><Navbar /><Berita1 /></>} />
         <Route path="/berita-2" element={<><Navbar /><Berita2 /></>} />
         <Route path="/berita-3" element={<><Navbar /><Berita3 /></>} />
+        
+        {/* Dynamic route for news detail based on ID */}
+        <Route path="/berita/:id" element={<><Navbar /><BeritaDetail /></>} />
         
         {/* ROUTES HALAMAN SECTION - Versi halaman penuh dari section homepage */}
         {/* Untuk user yang ingin fokus pada satu section tertentu */}

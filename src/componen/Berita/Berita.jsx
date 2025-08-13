@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"; // Hook untuk navigasi programma
 import "./Berita.css";
 import { useScrollAnimation } from "../../hooks/useScrollAnimation"; // Custom hook scroll animation
 // Import gambar-gambar berita
-import beritaUtamaImg from "../../assets/BeritaUtama.png";
+import berita4Img from "../../assets/Berita4.png";
 import berita1Img from "../../assets/Berita1.png";
 import berita2Img from "../../assets/Berita2.png";
 import berita3Img from "../../assets/Berita3.png";
@@ -18,7 +18,8 @@ const Berita = () => {
   const [featured, setFeatured] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
-  const [gridPage, setGridPage] = React.useState(0); // Navigation for berita-grid
+  const [rotatedItems, setRotatedItems] = React.useState([]); // Array yang akan diputar untuk carousel
+  const [isTransitioning, setIsTransitioning] = React.useState(false); // State untuk animasi
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:3001/api";
 
@@ -27,6 +28,7 @@ const Berita = () => {
     "/src/assets/Berita1.png": berita1Img,
     "/src/assets/Berita2.png": berita2Img,
     "/src/assets/Berita3.png": berita3Img,
+    "/src/assets/Berita4.png": berita4Img,
   }), []);
 
   React.useEffect(() => {
@@ -37,57 +39,187 @@ const Berita = () => {
         // fetch list first
         const listResp = await fetch(`${API_BASE}/news`);
         if (listResp.ok) {
-          const data = await listResp.json();
+          let data = await listResp.json();
           if (isMounted && Array.isArray(data)) {
+            
+            // Ensure minimum 4 items for proper display (1 featured + 3 regular)
+            if (data.length < 4) {
+              const placeholders = generatePlaceholders(4 - data.length);
+              data = [...data, ...placeholders];
+            }
+            
             setItems(data);
             // check if any item is featured in the list
             const featuredItem = data.find(n => n.featured === true);
             if (featuredItem && isMounted) {
               setFeatured(featuredItem);
+            } else if (data.length > 0 && isMounted) {
+              // Auto-set first item as featured if none exists
+              setFeatured(data[0]);
             }
+          }
+        } else {
+          // If API fails, use default items
+          const defaultItems = getDefaultNewsItems();
+          if (isMounted) {
+            setItems(defaultItems);
+            setFeatured(defaultItems.find(n => n.featured) || defaultItems[0]);
           }
         }
       } catch (e) {
         setError(e?.message || "Gagal memuat berita");
+        // Fallback to default items on error
+        const defaultItems = getDefaultNewsItems();
+        if (isMounted) {
+          setItems(defaultItems);
+          setFeatured(defaultItems.find(n => n.featured) || defaultItems[0]);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     })();
     return () => { isMounted = false; };
   }, [API_BASE]);
 
-  // top 3 excluding featured if present + navigation
+  // Generate placeholder news items to fill minimum requirement
+  const generatePlaceholders = (count) => {
+    const placeholderTitles = [
+      'Pelatihan Digital Marketing untuk Guru',
+      'Sertifikasi Profesi Guru Tahun 2025', 
+      'Kongres Nasional PERGUNU 2025',
+      'Workshop Teknologi Pendidikan Modern',
+      'Seminar Nasional Pendidikan Karakter'
+    ];
+    
+    return Array.from({ length: count }, (_, index) => ({
+      id: `placeholder-${Date.now()}-${index}`,
+      title: placeholderTitles[index % placeholderTitles.length],
+      summary: 'Informasi lebih lanjut akan segera tersedia. Tetap pantau portal berita PERGUNU untuk update terbaru.',
+      content: 'Konten berita sedang dalam persiapan. Silakan kembali lagi nanti untuk informasi lengkap.',
+      author: 'Tim PERGUNU',
+      category: 'Pengumuman',
+      image: '/src/assets/Berita1.png',
+      featured: false,
+      isPlaceholder: true,
+      createdAt: new Date(Date.now() - (index * 86400000)).toISOString()
+    }));
+  };
+  
+  // Default news items if API completely fails
+  const getDefaultNewsItems = () => [
+    {
+      id: 'default-featured',
+      title: 'RUU Sistem Pendidikan Nasional - Kontribusi, Aspirasi dan Inspirasi',
+      summary: 'Diskusi mengenai RUU Sisdiknas yang menyoroti kontribusi, aspirasi, dan inspirasi dari berbagai elemen pendidikan.',
+      content: 'Portal berita resmi Persatuan Guru Nahdlatul Ulama menyajikan informasi terkini seputar pendidikan.',
+      author: 'Tim PERGUNU',
+      category: 'Kebijakan',
+      image: '/src/assets/Berita4.png',
+      featured: true,
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 'default-1',
+      title: 'Penyerahan Sertifikat Hak Atas Tanah (SeHAT)',
+      summary: 'Program sertifikasi tanah untuk masyarakat sebagai bagian dari peningkatan kesejahteraan.',
+      author: 'Tim Editorial',
+      category: 'Program',
+      image: '/src/assets/Berita1.png',
+      featured: false,
+      createdAt: new Date(Date.now() - 86400000).toISOString()
+    },
+    {
+      id: 'default-2', 
+      title: 'Pelatihan Teknologi Penangkapan Ikan oleh DKP Situbondo',
+      summary: 'Upaya peningkatan kapasitas nelayan melalui teknologi modern dan berkelanjutan.',
+      author: 'DKP Situbondo',
+      category: 'Pelatihan',
+      image: '/src/assets/Berita2.png',
+      featured: false,
+      createdAt: new Date(Date.now() - 172800000).toISOString()
+    },
+    {
+      id: 'default-3',
+      title: 'Bupati & Wakil Bupati Situbondo bersama DKP',
+      summary: 'Koordinasi program pembangunan sektor kelautan dan perikanan daerah.',
+      author: 'Pemerintah Situbondo',
+      category: 'Pemerintahan',
+      image: '/src/assets/Berita3.png',
+      featured: false,
+      createdAt: new Date(Date.now() - 259200000).toISOString()
+    }
+  ];
+
+  // top 3 excluding featured if present + carousel rotation
   const topThree = React.useMemo(() => {
     const list = Array.isArray(items) ? items : [];
     const filtered = featured ? list.filter(n => n.id !== featured.id) : list;
-    return filtered;
-  }, [items, featured]);
-
-  // Grid navigation (3 items per page with looping)
-  const itemsPerPage = 3;
-  const totalGridPages = Math.max(1, Math.ceil(topThree.length / itemsPerPage));
-  
-  // Create current grid items with looping support
-  const currentGridItems = React.useMemo(() => {
-    if (topThree.length === 0) return [];
     
-    const result = [];
-    const startIndex = gridPage * itemsPerPage;
-    
-    for (let i = 0; i < itemsPerPage; i++) {
-      const index = (startIndex + i) % topThree.length;
-      result.push(topThree[index]);
+    // Ensure minimum 4 items for proper carousel with placeholders if needed
+    let finalList = [...filtered];
+    if (finalList.length < 4) {
+      const placeholderCount = 4 - finalList.length;
+      const placeholders = generatePlaceholders(placeholderCount);
+      finalList = [...finalList, ...placeholders];
     }
     
-    return result;
-  }, [topThree, gridPage, itemsPerPage]);
+    return finalList;
+  }, [items, featured]);
 
+  // Initialize rotated items when topThree changes
+  React.useEffect(() => {
+    if (topThree.length > 0) {
+      setRotatedItems([...topThree]);
+    }
+  }, [topThree]);
+
+  // Carousel navigation dengan rotasi array
+  const itemsPerPage = 3;
+  
+  // Ambil 3 item pertama dari rotated array untuk ditampilkan
+  const currentGridItems = React.useMemo(() => {
+    return rotatedItems.slice(0, itemsPerPage);
+  }, [rotatedItems, itemsPerPage]);
+
+  // Navigation functions - array rotation carousel dengan animasi
   const goToPrevGrid = () => {
-    setGridPage(p => p === 0 ? totalGridPages - 1 : p - 1);
+    if (isTransitioning) return; // Prevent multiple clicks during transition
+    
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setRotatedItems(prevItems => {
+        if (prevItems.length === 0) return prevItems;
+        
+        // Tombol KIRI: Pindahkan elemen pertama ke belakang (shift → push)
+        const newItems = [...prevItems];
+        const firstItem = newItems.shift();
+        if (firstItem) {
+          newItems.push(firstItem);
+        }
+        return newItems;
+      });
+      setIsTransitioning(false);
+    }, 100);
   };
   
   const goToNextGrid = () => {
-    setGridPage(p => (p + 1) % totalGridPages);
+    if (isTransitioning) return; // Prevent multiple clicks during transition
+    
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setRotatedItems(prevItems => {
+        if (prevItems.length === 0) return prevItems;
+        
+        // Tombol KANAN: Pindahkan elemen terakhir ke depan (pop → unshift)
+        const newItems = [...prevItems];
+        const lastItem = newItems.pop();
+        if (lastItem) {
+          newItems.unshift(lastItem);
+        }
+        return newItems;
+      });
+      setIsTransitioning(false);
+    }, 100);
   };
 
   return (
@@ -100,7 +232,7 @@ const Berita = () => {
         <p className="berita-label">Berita</p>
 
         {/* Berita utama - Featured article dengan layout khusus */}
-        <div className="berita-utama-card" onClick={() => navigate('/berita-utama')}>
+        <div className="berita-utama-card" onClick={() => navigate(featured?.id ? `/berita/${featured.id}` : '/berita4')}>
           <div className="berita-utama-content">
             <h3>
               {featured?.title || (
@@ -117,13 +249,13 @@ const Berita = () => {
               baca selengkapnya
             </button>
           </div>
-          <img src={featured ? (imageMap[featured.image || featured.imageUrl] || beritaUtamaImg) : beritaUtamaImg} alt="Berita utama" />
+          <img src={featured ? (imageMap[featured.image || featured.imageUrl] || berita4Img) : berita4Img} alt="Berita utama" />
         </div>
 
         {/* Grid berita lainnya dengan navigasi - Layout grid untuk multiple articles*/}
         <div className="berita-grid-container" style={{position: 'relative'}}>
-          {/* Navigation arrows - Always show if there are items */}
-          {topThree.length > 0 && (
+          {/* Navigation arrows - selalu aktif untuk carousel looping */}
+          {rotatedItems.length > 0 && (
             <>
               <button 
                 className="berita-nav-btn berita-nav-left" 
@@ -146,7 +278,16 @@ const Berita = () => {
                   justifyContent: 'center',
                   boxShadow: '0 2px 8px rgba(30, 126, 52, 0.2)',
                   fontSize: '16px',
-                  fontWeight: 'bold'
+                  fontWeight: 'bold',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.background = '#1e7e34';
+                  e.target.style.color = 'white';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background = 'white';
+                  e.target.style.color = '#1e7e34';
                 }}
               >
                 ◀
@@ -172,7 +313,16 @@ const Berita = () => {
                   justifyContent: 'center',
                   boxShadow: '0 2px 8px rgba(30, 126, 52, 0.2)',
                   fontSize: '16px',
-                  fontWeight: 'bold'
+                  fontWeight: 'bold',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.background = '#1e7e34';
+                  e.target.style.color = 'white';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background = 'white';
+                  e.target.style.color = '#1e7e34';
                 }}
               >
                 ▶
@@ -180,13 +330,25 @@ const Berita = () => {
             </>
           )}
           
-          <div className="berita-grid">
+          <div className={`berita-grid ${isTransitioning ? 'sliding' : ''}`}>
             {/* Jika API tersedia, tampilkan 3 berita per halaman; jika tidak, fallback ke konten statis */}
-            {currentGridItems.length >= 3 && !loading && !error ? (
+            {currentGridItems.length > 0 && !loading && !error ? (
               currentGridItems.map((n, idx) => {
-                const imgSrc = imageMap[n.image || n.imageUrl] || (idx === 0 ? berita1Img : idx === 1 ? berita2Img : berita3Img);
-                // Sementara, rute detail tetap yang lama (berita-1/2/3) agar kompatibel dengan halaman yang sudah ada
-                const to = idx === 0 ? "/berita-1" : idx === 1 ? "/berita-2" : "/berita-3";
+                // Penanganan gambar: jika berita tidak punya gambar, tampilkan placeholder kosong
+                let imgSrc = null;
+                
+                if (n.image || n.imageUrl) {
+                  // Jika ada image/imageUrl, coba map ke import gambar
+                  imgSrc = imageMap[n.image || n.imageUrl];
+                }
+                
+                // Jika masih null, gunakan placeholder kosong
+                if (!imgSrc) {
+                  imgSrc = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMGYwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzk5OTk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
+                }
+                
+                // Dynamic routing berdasarkan ID berita
+                const to = `/berita/${n.id}`;
                 return (
                   <div key={n.id || idx} className="berita-card" onClick={() => navigate(to)}>
                     <img src={imgSrc} alt={n.title || `Berita ${idx + 1}`} />

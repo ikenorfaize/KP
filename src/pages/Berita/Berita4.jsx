@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Berita4.css"; // Using shared styles
-import Berita2Img from "../../assets/Berita2.png";
+import "./Berita4.css";
 import Berita4Img from "../../assets/Berita4.png";
 import Berita1Img from "../../assets/Berita1.png";
+import Berita2Img from "../../assets/Berita2.png";
 import Berita3Img from "../../assets/Berita3.png";
 
-const Berita2 = () => {
+const Berita4 = () => {
   const navigate = useNavigate();
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
@@ -20,27 +20,27 @@ const Berita2 = () => {
             <span className="breadcrumb-separator">→</span>
             <span onClick={() => navigate('/berita')} className="breadcrumb-link">Berita</span>
             <span className="breadcrumb-separator">→</span>
-            <span className="breadcrumb-current">Pelatihan Teknologi Penangkapan Ikan</span>
+            <span className="breadcrumb-current">RUU Sistem Pendidikan Nasional</span>
           </div>
           
           <div className="berita-hero-content">
-            <div className="badge category">Pelatihan</div>
+            <div className="badge category">Pendidikan</div>
             <h1 className="berita-title">
-              Pelatihan Teknologi Penangkapan Ikan oleh Dinas Perikanan Situbondo
+              RUU Sistem Pendidikan Nasional "Kontribusi, Aspirasi dan Inspirasi Perguruan Tinggi, PAI, PJJ, Madrasah dan Pondok Pesantren"
             </h1>
             
             <div className="berita-meta">
               <div className="meta-item">
                 <span>📅</span>
-                <span>15 Januari 2024</span>
+                <span>20 Januari 2024</span>
               </div>
               <div className="meta-item">
                 <span>⏱️</span>
-                <span>4 min read</span>
+                <span>5 min read</span>
               </div>
               <div className="meta-item">
                 <span>👤</span>
-                <span>Dinas Perikanan Situbondo</span>
+                <span>Tim Redaksi PERGUNU</span>
               </div>
             </div>
           </div>
@@ -52,8 +52,8 @@ const Berita2 = () => {
         <div className="container">
           <div className="image-container">
             <img 
-              src={Berita2Img} 
-              alt="Pelatihan Teknologi Penangkapan Ikan" 
+              src={Berita4Img} 
+              alt="RUU Sistem Pendidikan Nasional" 
               className="featured-img interactive-img"
               onClick={() => setIsImageModalOpen(true)}
             />
@@ -71,64 +71,51 @@ const Berita2 = () => {
           <div className="content-wrapper">
             <article className="article-content">
               <div className="article-lead">
-                Program pelatihan untuk meningkatkan kemampuan teknologi penangkapan ikan bagi nelayan lokal dengan teknik ramah lingkungan dan teknologi modern yang diselenggarakan Dinas Perikanan Kabupaten Situbondo.
+                Diskusi mengenai Rancangan Undang-Undang Sistem Pendidikan Nasional (RUU Sisdiknas) yang menyoroti kontribusi, aspirasi, dan inspirasi dari berbagai elemen pendidikan seperti perguruan tinggi, Pendidikan Agama Islam (PAI), Pendidikan Jarak Jauh (PJJ), madrasah, dan pondok pesantren.
               </div>
 
               <div className="article-body">
                 <p>
-                  Dinas Perikanan Kabupaten Situbondo menggelar program pelatihan teknologi penangkapan ikan yang bertujuan untuk meningkatkan kemampuan dan keterampilan nelayan lokal. Program ini merupakan bagian dari upaya pemerintah daerah dalam mengembangkan sektor perikanan yang berkelanjutan dan ramah lingkungan.
+                  Rancangan Undang-Undang Sistem Pendidikan Nasional (RUU Sisdiknas) merupakan sebuah inisiatif penting yang bertujuan untuk memperkuat dan mengintegrasikan berbagai komponen pendidikan di Indonesia. Dalam konteks ini, peran perguruan tinggi, Pendidikan Agama Islam (PAI), Pendidikan Jarak Jauh (PJJ), madrasah, dan pondok pesantren menjadi sangat strategis.
                 </p>
 
-                <h3>Teknologi Modern untuk Nelayan</h3>
+                <h3>Kontribusi Perguruan Tinggi</h3>
                 <p>
-                  Pelatihan ini memperkenalkan berbagai teknologi modern dalam penangkapan ikan, termasuk penggunaan GPS untuk navigasi, fish finder untuk deteksi ikan, dan teknik penangkapan yang efisien. Para peserta juga dibekali dengan pengetahuan tentang penggunaan alat tangkap yang ramah lingkungan untuk menjaga kelestarian ekosistem laut.
+                  Perguruan tinggi memiliki peran vital dalam menghasilkan sumber daya manusia yang berkualitas dan kompeten. Melalui RUU Sisdiknas, perguruan tinggi diharapkan dapat lebih optimal dalam memberikan kontribusi terhadap pembangunan nasional melalui tri dharma perguruan tinggi: pendidikan, penelitian, dan pengabdian kepada masyarakat.
                 </p>
 
-                <h3>Materi Pelatihan Komprehensif</h3>
+                <h3>Aspirasi Pendidikan Agama Islam (PAI)</h3>
                 <p>
-                  Program pelatihan yang berlangsung selama tiga hari ini mencakup berbagai materi penting, antara lain:
-                </p>
-                <ul>
-                  <li>Pengenalan teknologi fish finder dan GPS</li>
-                  <li>Teknik penangkapan ikan yang efektif dan berkelanjutan</li>
-                  <li>Manajemen hasil tangkapan dan penanganan pasca panen</li>
-                  <li>Keselamatan kerja di laut</li>
-                  <li>Konservasi lingkungan laut</li>
-                  <li>Kewirausahaan bidang perikanan</li>
-                </ul>
-
-                <h3>Partisipasi Aktif Nelayan</h3>
-                <p>
-                  Pelatihan ini diikuti oleh 40 nelayan dari berbagai desa pesisir di Kabupaten Situbondo. Para peserta menunjukkan antusiasme yang tinggi dalam mengikuti setiap sesi pelatihan. Mereka aktif bertanya dan berdiskusi tentang penerapan teknologi modern dalam aktivitas penangkapan ikan sehari-hari.
+                  Pendidikan Agama Islam memiliki aspirasi untuk membentuk karakter peserta didik yang berakhlak mulia dan memiliki keimanan yang kuat. Dalam RUU Sisdiknas, PAI diposisikan sebagai mata pelajaran wajib yang harus diberikan pada setiap jenjang pendidikan, dari pendidikan dasar hingga pendidikan tinggi.
                 </p>
 
-                <h3>Praktik Lapangan</h3>
+                <h3>Inspirasi dari Pendidikan Jarak Jauh (PJJ)</h3>
                 <p>
-                  Selain teori, pelatihan ini juga dilengkapi dengan praktik lapangan langsung di laut. Para nelayan mendapat kesempatan untuk mencoba sendiri penggunaan berbagai alat teknologi modern yang telah dipelajari. Instruktur berpengalaman mendampingi setiap peserta untuk memastikan mereka dapat menguasai teknologi tersebut dengan baik.
+                  Pandemi COVID-19 telah memberikan inspirasi besar terhadap pengembangan Pendidikan Jarak Jauh (PJJ). Model pembelajaran ini terbukti efektif dalam menjangkau peserta didik di daerah terpencil dan memberikan fleksibilitas dalam proses pembelajaran. RUU Sisdiknas mengakomodasi pengembangan PJJ sebagai salah satu modalitas pembelajaran yang sah dan diakui.
                 </p>
 
-                <h3>Dampak Positif yang Diharapkan</h3>
+                <h3>Peran Madrasah dan Pondok Pesantren</h3>
                 <p>
-                  Dengan adanya pelatihan ini, diharapkan para nelayan dapat meningkatkan produktivitas penangkapan ikan mereka. Penggunaan teknologi modern akan membantu nelayan dalam menemukan lokasi ikan dengan lebih efisien, sehingga menghemat waktu dan bahan bakar. Selain itu, teknik penangkapan yang ramah lingkungan akan membantu menjaga kelestarian sumber daya laut.
+                  Madrasah dan pondok pesantren merupakan lembaga pendidikan yang memiliki karakteristik unik dalam sistem pendidikan nasional. Keduanya tidak hanya memberikan pendidikan umum, tetapi juga pendidikan agama yang mendalam. Dalam RUU Sisdiknas, kedua lembaga ini diakui sebagai bagian integral dari sistem pendidikan nasional.
                 </p>
 
-                <h3>Komitmen Berkelanjutan</h3>
+                <h3>Integrasi dan Sinergi</h3>
                 <p>
-                  Kepala Dinas Perikanan menyampaikan bahwa program pelatihan seperti ini akan terus dilaksanakan secara berkala. Pihaknya juga berkomitmen untuk terus mendampingi para nelayan dalam menerapkan teknologi yang telah dipelajari. "Kami akan terus memberikan dukungan teknis dan bantuan yang diperlukan untuk meningkatkan kesejahteraan nelayan," ujarnya.
+                  RUU Sisdiknas menekankan pentingnya integrasi dan sinergi antara berbagai komponen pendidikan. Hal ini bertujuan untuk menciptakan sistem pendidikan yang komprehensif, berkualitas, dan mampu menghasilkan lulusan yang siap menghadapi tantangan zaman.
                 </p>
 
                 <p>
-                  Program pelatihan teknologi penangkapan ikan ini merupakan investasi jangka panjang untuk mengembangkan sektor perikanan di Kabupaten Situbondo, sekaligus meningkatkan kesejahteraan masyarakat nelayan.
+                  Dengan adanya RUU Sisdiknas ini, diharapkan sistem pendidikan nasional dapat lebih terstruktur, terintegrasi, dan mampu memberikan layanan pendidikan yang berkualitas bagi seluruh rakyat Indonesia, sesuai dengan amanat Undang-Undang Dasar 1945.
                 </p>
               </div>
 
               <div className="article-footer">
                 <div className="tags">
-                  <span className="tag">Pelatihan</span>
-                  <span className="tag">Teknologi Perikanan</span>
-                  <span className="tag">Nelayan</span>
-                  <span className="tag">Situbondo</span>
-                  <span className="tag">Dinas Perikanan</span>
+                  <span className="tag">Pendidikan</span>
+                  <span className="tag">RUU Sisdiknas</span>
+                  <span className="tag">Perguruan Tinggi</span>
+                  <span className="tag">PAI</span>
+                  <span className="tag">Madrasah</span>
                 </div>
                 
                 <div className="share-buttons">
@@ -145,19 +132,19 @@ const Berita2 = () => {
               <div className="sidebar-widget">
                 <h4>Berita Terkait</h4>
                 <div className="related-news">
-                  <div className="related-item" onClick={() => navigate('/berita4')}>
-                    <img src={Berita4Img} alt="Related news" />
-                    <div className="related-content">
-                      <h5>RUU Sistem Pendidikan Nasional</h5>
-                      <span className="related-date">20 Jan 2024</span>
-                    </div>
-                  </div>
-                  
                   <div className="related-item" onClick={() => navigate('/berita-1')}>
                     <img src={Berita1Img} alt="Related news" />
                     <div className="related-content">
-                      <h5>Penyerahan Sertifikat SeHAT Nelayan</h5>
+                      <h5>Penyerahan Sertifikat Hak Atas Tanah (SeHAT) Nelayan</h5>
                       <span className="related-date">18 Jan 2024</span>
+                    </div>
+                  </div>
+                  
+                  <div className="related-item" onClick={() => navigate('/berita-2')}>
+                    <img src={Berita2Img} alt="Related news" />
+                    <div className="related-content">
+                      <h5>Pelatihan Teknologi Penangkapan Ikan</h5>
+                      <span className="related-date">15 Jan 2024</span>
                     </div>
                   </div>
                   
@@ -189,7 +176,7 @@ const Berita2 = () => {
           }}>
             <input 
               type="email" 
-              id="newsletter-email-berita2"
+              id="newsletter-email-utama"
               name="newsletter-email"
               className="newsletter-input" 
               placeholder="Masukkan email Anda" 
@@ -209,13 +196,13 @@ const Berita2 = () => {
               ✕
             </button>
             <img 
-              src={Berita2Img} 
-              alt="Pelatihan Teknologi Penangkapan Ikan" 
+              src={Berita4Img} 
+              alt="RUU Sistem Pendidikan Nasional" 
               className="modal-image"
             />
             <div className="modal-caption">
-              <h4>Pelatihan Teknologi Penangkapan Ikan</h4>
-              <p>Program pelatihan teknologi penangkapan ikan yang ramah lingkungan untuk meningkatkan produktivitas dan keberlanjutan usaha nelayan.</p>
+              <h4>RUU Sistem Pendidikan Nasional</h4>
+              <p>Kontribusi, Aspirasi dan Inspirasi Perguruan Tinggi, PAI, PJJ, Madrasah dan Pondok Pesantren dalam pembentukan sistem pendidikan nasional.</p>
             </div>
           </div>
         </div>
@@ -224,4 +211,4 @@ const Berita2 = () => {
   );
 };
 
-export default Berita2;
+export default Berita4;

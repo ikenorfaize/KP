@@ -366,7 +366,23 @@ app.delete('/api/users/:id', async (req, res) => {
 app.get('/api/news', (req, res) => {
   try {
     const db = readDB();
-    const all = db.news || [];
+    let all = db.news || [];
+    
+    // Auto-set featured if none exists and there are news items
+    if (all.length > 0 && !all.some(news => news.featured)) {
+      const randomIndex = Math.floor(Math.random() * all.length);
+      all[randomIndex].featured = true;
+      all[randomIndex].updatedAt = new Date().toISOString();
+      writeDB(db); // Save the change
+    }
+    
+    // Sort by featured first, then by date (newest first)
+    all = all.sort((a, b) => {
+      if (a.featured && !b.featured) return -1;
+      if (!a.featured && b.featured) return 1;
+      return new Date(b.createdAt || b.publishDate) - new Date(a.createdAt || a.publishDate);
+    });
+    
     const limit = Number.parseInt(req.query.limit, 10);
     if (!Number.isNaN(limit) && limit > 0) {
       return res.json(all.slice(0, limit));
@@ -502,6 +518,76 @@ app.patch('/api/news/:id', (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: 'Failed to update news' });
+  }
+});
+
+// Set featured news (only one can be featured at a time)
+app.put('/api/news/:id/feature', (req, res) => {
+  try {
+    const targetId = String(req.params.id);
+    const db = readDB();
+    
+    if (!db.news) db.news = [];
+    
+    // Remove featured flag from all news
+    db.news.forEach(news => {
+      news.featured = false;
+    });
+    
+    // Set featured flag for the selected news
+    const newsToFeature = db.news.find(news => String(news.id) === targetId);
+    if (!newsToFeature) {
+      return res.status(404).json({ error: 'News not found' });
+    }
+    
+    newsToFeature.featured = true;
+    newsToFeature.updatedAt = new Date().toISOString();
+    
+    const success = writeDB(db);
+    if (!success) {
+      return res.status(500).json({ error: 'Failed to set featured news' });
+    }
+    
+    res.json({ 
+      message: 'Featured news updated successfully', 
+      featuredNews: newsToFeature 
+    });
+  } catch (error) {
+    console.error('Error setting featured news:', error);
+    res.status(500).json({ error: 'Failed to set featured news' });
+  }
+});
+
+// Auto-set random featured if none exists
+app.post('/api/news/ensure-featured', (req, res) => {
+  try {
+    const db = readDB();
+    
+    if (!db.news) db.news = [];
+    
+    const hasFeatured = db.news.some(news => news.featured);
+    
+    if (!hasFeatured && db.news.length > 0) {
+      // Pick random news as featured
+      const randomIndex = Math.floor(Math.random() * db.news.length);
+      db.news[randomIndex].featured = true;
+      db.news[randomIndex].updatedAt = new Date().toISOString();
+      
+      const success = writeDB(db);
+      if (!success) {
+        return res.status(500).json({ error: 'Failed to ensure featured news' });
+      }
+      
+      return res.json({ 
+        message: 'Random featured news set', 
+        featuredNews: db.news[randomIndex] 
+      });
+    }
+    
+    res.json({ message: 'Featured news already exists or no news available' });
+  } catch (error) {
+    console.error('Error ensuring featured news:', error);
+    res.status(500).json({ error: 'Failed to ensure featured news' });
   }
 });
 

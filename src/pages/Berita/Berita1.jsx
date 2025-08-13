@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./BeritaUtama.css"; // Using shared styles
+import "./Berita4.css"; // Using shared styles
 import Berita1Img from "../../assets/Berita1.png";
-import BeritaUtamaImg from "../../assets/BeritaUtama.png";
+import Berita4Img from "../../assets/Berita4.png";
 import Berita2Img from "../../assets/Berita2.png";
 import Berita3Img from "../../assets/Berita3.png";
 
@@ -139,8 +139,8 @@ const Berita1 = () => {
               <div className="sidebar-widget">
                 <h4>Berita Terkait</h4>
                 <div className="related-news">
-                  <div className="related-item" onClick={() => navigate('/berita-utama')}>
-                    <img src={BeritaUtamaImg} alt="Related news" />
+                  <div className="related-item" onClick={() => navigate('/berita4')}>
+                    <img src={Berita4Img} alt="Related news" />
                     <div className="related-content">
                       <h5>RUU Sistem Pendidikan Nasional</h5>
                       <span className="related-date">20 Jan 2024</span>

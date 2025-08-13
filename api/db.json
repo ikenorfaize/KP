@@ -238,63 +238,87 @@
   "news": [
     {
       "id": "news1",
-      "title": "Pelatihan Digital Marketing untuk Guru",
-      "summary": "Workshop komprehensif tentang pemasaran digital untuk meningkatkan kemampuan guru dalam era digital.",
-      "content": "Program pelatihan digital marketing yang dirancang khusus untuk para pendidik. Materi mencakup strategi media sosial, content marketing, dan tools digital terkini.",
-      "author": "Tim PERGUNU",
+      "title": "Penyerahan Simbolis Sertifikat Hak Atas Tanah (SeHAT) Nelayan",
+      "summary": "Program sertifikasi tanah untuk masyarakat nelayan sebagai bagian dari peningkatan kesejahteraan dan kepastian hukum atas aset mereka.",
+      "content": "Dalam upaya meningkatkan kesejahteraan masyarakat nelayan dan memberikan kepastian hukum atas aset tanah mereka, pemerintah melakukan penyerahan simbolis Sertifikat Hak Atas Tanah (SeHAT) kepada para nelayan. Program ini merupakan bagian dari komitmen pemerintah untuk memberikan perlindungan hukum dan meningkatkan taraf hidup masyarakat pesisir.\n\nPenyerahan sertifikat ini dilakukan secara simbolis oleh pejabat terkait kepada perwakilan nelayan di daerah pesisir. Program sertifikasi tanah ini diharapkan dapat memberikan rasa aman kepada masyarakat nelayan dalam mengelola dan memanfaatkan tanah mereka untuk berbagai kegiatan ekonomi produktif.\n\nDengan adanya sertifikat hak atas tanah ini, para nelayan dapat menggunakan tanah tersebut sebagai jaminan untuk mengakses kredit perbankan, sehingga dapat mengembangkan usaha perikanan mereka lebih lanjut.",
+      "author": "Tim Redaksi",
       "publishDate": "2025-08-01T10:00:00Z",
-      "category": "Pelatihan",
+      "category": "Sosial",
       "image": "/src/assets/Berita1.png",
       "tags": [
-        "digital",
-        "marketing",
-        "guru",
-        "pelatihan"
+        "sertifikat",
+        "tanah",
+        "nelayan",
+        "kesejahteraan"
       ],
-      "updatedAt": "2025-08-12T23:01:51.870Z"
+      "updatedAt": "2025-08-13T11:23:53.197Z",
+      "featured": false
     },
     {
       "id": "news2",
-      "title": "Sertifikasi Profesi Guru Tahun 2025",
-      "summary": "Program sertifikasi profesi guru dengan standar internasional untuk meningkatkan kualitas pendidikan.",
-      "content": "Dapatkan sertifikasi profesi guru yang diakui secara internasional. Program ini mencakup pedagogi modern, teknologi pendidikan, dan assessment learning.",
-      "author": "Dewan Sertifikasi",
+      "title": "Pelatihan Teknologi Penangkapan Ikan oleh Dinas Perikanan Situbondo",
+      "summary": "Program pelatihan untuk meningkatkan keterampilan nelayan dalam menggunakan teknologi modern",
+      "content": "Dinas Perikanan Kabupaten Situbondo mengadakan program pelatihan teknologi penangkapan ikan untuk para nelayan setempat.",
+      "author": "Dinas Perikanan Situbondo",
       "publishDate": "2025-08-05T14:30:00Z",
-      "category": "Sertifikasi",
+      "category": "Pelatihan",
       "image": "/src/assets/Berita2.png",
       "tags": [
-        "sertifikasi",
-        "profesi",
-        "guru",
-        "internasional"
-      ]
+        "pelatihan",
+        "teknologi",
+        "perikanan",
+        "nelayan"
+      ],
+      "featured": false,
+      "updatedAt": "2025-08-13T11:24:25.702Z"
     },
     {
       "id": "news3",
-      "title": "Kongres Nasional PERGUNU 2025",
-      "summary": "Acara tahunan terbesar untuk para educator Indonesia dengan tema 'Pendidikan Digital untuk Masa Depan'.",
-      "content": "Bergabunglah dalam Kongres Nasional PERGUNU 2025 dengan berbagai workshop, seminar, dan networking session bersama para ahli pendidikan terkemuka.",
-      "author": "Panitia Kongres",
+      "title": "Bupati dan Wakil Bupati Situbondo Bersama Dinas Perikanan",
+      "summary": "Kunjungan kerja Bupati dan Wakil Bupati Situbondo untuk meninjau program pengembangan sektor perikanan",
+      "content": "Bupati dan Wakil Bupati Situbondo melakukan kunjungan kerja bersama Dinas Perikanan untuk meninjau berbagai program pengembangan sektor perikanan di wilayah Situbondo.",
+      "author": "Humas Pemkab Situbondo",
       "publishDate": "2025-08-03T09:15:00Z",
-      "category": "Event",
+      "category": "Pemerintahan",
       "image": "/src/assets/Berita3.png",
       "tags": [
-        "kongres",
-        "nasional",
-        "pendidikan",
-        "digital"
-      ]
+        "bupati",
+        "pemerintahan",
+        "perikanan",
+        "situbondo"
+      ],
+      "featured": false,
+      "updatedAt": "2025-08-13T11:24:53.304Z"
     },
     {
-      "id": "1755041224968",
-      "title": "coba coba saja2",
-      "content": "dawdadw",
+      "id": "1755081803082",
+      "title": "RUU Sistem Pendidikan Nasional - Kontribusi, Aspirasi dan Inspirasi Perguruan Tinggi, PAI, PJJ, Madrasah dan Pondok Pesantren",
+      "content": "Rancangan Undang-Undang Sistem Pendidikan Nasional (RUU Sisdiknas) merupakan sebuah inisiatif penting yang bertujuan untuk memperkuat dan mengintegrasikan berbagai komponen pendidikan di Indonesia. Dalam konteks ini, peran perguruan tinggi, Pendidikan Agama Islam (PAI), Pendidikan Jarak Jauh (PJJ), madrasah, dan pondok pesantren menjadi sangat strategis.",
+      "author": "Tim PERGUNU",
+      "category": "Pendidikan",
+      "featured": true,
+      "publishDate": "2025-08-13T10:43:23.082Z",
+      "summary": "Diskusi mengenai RUU Sisdiknas yang menyoroti kontribusi, aspirasi, dan inspirasi dari berbagai elemen pendidikan",
+      "tags": [
+        "RUU",
+        "pendidikan",
+        "sisdiknas",
+        "perguruan tinggi"
+      ],
+      "createdAt": "2025-08-13T10:43:23.082Z",
+      "updatedAt": "2025-08-13T11:25:06.410Z",
+      "imageUrl": "/src/assets/Berita4.png"
+    },
+    {
+      "id": "1755085576526",
+      "title": "coba coba saja",
+      "content": "# dawdadw\n## coba saja\n\n- fafaw\n- adawda \n- fafafae",
       "author": "Fuad",
-      "category": "education",
+      "category": "general",
       "featured": false,
-      "publishDate": "2025-08-12T23:27:04.968Z",
-      "createdAt": "2025-08-12T23:27:04.968Z",
-      "updatedAt": "2025-08-12T23:27:04.968Z"
+      "publishDate": "2025-08-13T11:46:16.526Z",
+      "createdAt": "2025-08-13T11:46:16.526Z",
+      "updatedAt": "2025-08-13T11:46:16.526Z"
     }
   ],
   "sessions": [],

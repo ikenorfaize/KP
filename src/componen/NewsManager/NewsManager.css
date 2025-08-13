@@ -1,30 +1,81 @@
 /* Admin NewsManager styles (namespaced to avoid clash with public Berita components) */
 .admin-news-list__header{display:flex;align-items:center;justify-content:space-between;margin:12px 0}
-.admin-news-pagination{display:flex;align-items:center;gap:8px}
-.admin-news-pagination__btn{padding:6px 10px;border:1px solid #ddd;border-radius:6px;background:#fff;cursor:pointer}
-.admin-news-pagination__btn:disabled{opacity:.5;cursor:not-allowed}
-.admin-news-pagination__info{font-size:.9rem;color:#555}
 
-.admin-news-grid{display:grid;grid-template-columns:repeat(1,minmax(0,1fr));gap:12px}
+/* Scrollable container for all news items */
+.admin-news-scrollable-container {
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #0f7536 #f1f1f1;
+}
+
+.admin-news-scrollable-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.admin-news-scrollable-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.admin-news-scrollable-container::-webkit-scrollbar-thumb {
+  background: #0f7536;
+  border-radius: 4px;
+}
+
+.admin-news-scrollable-container::-webkit-scrollbar-thumb:hover {
+  background: #0d5e2a;
+}
+
+.admin-news-grid{display:grid;grid-template-columns:repeat(1,minmax(0,1fr));gap:16px}
 @media (min-width:640px){.admin-news-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (min-width:1024px){.admin-news-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:1280px){.admin-news-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 
-.admin-news-card{border:1px solid #e5e7eb;border-radius:10px;padding:12px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.admin-news-card{border:1px solid #e5e7eb;border-radius:10px;padding:12px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.04);transition:all 0.2s ease}
+.admin-news-card:hover{box-shadow:0 4px 8px rgba(0,0,0,.08);transform:translateY(-1px)}
 .admin-news-card__header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
 .admin-news-card__title{font-size:1rem;font-weight:600;margin:0}
 .admin-news-card__category{font-size:.75rem;background:#0f7536;color:#fff;padding:2px 8px;border-radius:999px}
 .admin-news-card__meta{display:flex;gap:12px;color:#555;font-size:.85rem;margin-bottom:6px}
 .admin-news-card__content{color:#333;font-size:.95rem;margin-bottom:8px}
-.admin-news-card__actions{display:flex;gap:8px}
+.admin-news-card__actions{display:flex;gap:8px;flex-wrap:wrap}
 .admin-news-card__badge{background:#f59e0b;color:#fff;border-radius:999px;padding:2px 8px;font-size:.75rem;align-self:center}
-.btn-feature{padding:6px 10px;border:1px solid #f59e0b;border-radius:8px;background:#fff;color:#b45309;cursor:pointer}
-.btn-feature:hover{background:#fff7ed}
+.btn-feature{padding:6px 10px;border:1px solid #f59e0b;border-radius:8px;background:#fff;color:#b45309;cursor:pointer;transition:all 0.2s ease}
+.btn-feature:hover{background:#fff7ed;transform:translateY(-1px)}
 
-.admin-news-grid-wrapper{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px}
-.admin-news-nav__btn{padding:8px 10px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer}
-
-/* Featured preview card inside admin (reuses public class but scoped) */
 /* Featured variant for admin news card */
 .admin-news-card.admin-news-card--featured{border-color:#f59e0b;box-shadow:0 2px 6px rgba(245,158,11,.2)}
 .admin-news-card.admin-news-card--featured .admin-news-card__badge{background:#d97706}
-.admin-news-nav__btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* Remove old pagination and grid wrapper styles */
+.admin-news-pagination{display:none}
+.admin-news-grid-wrapper{display:block}
+.admin-news-nav__btn{display:none}
+
+/* Button styles */
+.btn-edit, .btn-delete, .btn-view {
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.btn-edit:hover {
+  background: #f0f9ff;
+  border-color: #0ea5e9;
+}
+
+.btn-delete:hover {
+  background: #fef2f2;
+  border-color: #dc2626;
+}
+
+.btn-view:hover {
+  background: #f7fee7;
+  border-color: #65a30d;
+}
