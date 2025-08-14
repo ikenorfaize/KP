@@ -1,5 +1,7 @@
 // NewsManager.jsx - Komponen untuk mengelola berita dengan editor seperti GitHub
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import Quill from 'quill';
+import 'quill/dist/quill.snow.css';
 import './NewsManager.css';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
@@ -23,6 +25,10 @@ export default function NewsManager() {
 
   // States untuk editor mode (Write / Preview seperti GitHub)
   const [editorMode, setEditorMode] = useState('write'); // 'write' atau 'preview'
+
+  // Ref dan state untuk Quill editor
+  const quillRef = useRef(null);
+  const quillInstance = useRef(null);
 
   // Categories untuk berita
   const categories = [
@@ -66,6 +72,121 @@ export default function NewsManager() {
       return () => clearTimeout(timer);
     }
   }, [error, success]);
+
+  // Initialize Quill editor
+  useEffect(() => {
+    if (quillRef.current && !quillInstance.current && editorMode === 'write') {
+      try {
+        // Konfigurasi toolbar Quill
+        const toolbarOptions = [
+          // Format teks dasar
+          ['bold', 'italic', 'underline', 'strike'],
+          
+          // Header dan font
+          [{ 'header': [1, 2, 3, false] }],
+          [{ 'font': [] }],
+          [{ 'size': ['small', false, 'large', 'huge'] }],
+          
+          // Warna
+          [{ 'color': [] }, { 'background': [] }],
+          
+          // Alignment
+          [{ 'align': [] }],
+          
+          // Lists dan indentasi
+          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          [{ 'indent': '-1'}, { 'indent': '+1' }],
+          
+          // Quote dan code
+          ['blockquote', 'code-block'],
+          
+          // Link dan image
+          ['link', 'image'],
+          
+          // Clean formatting
+          ['clean']
+        ];
+
+        quillInstance.current = new Quill(quillRef.current, {
+          theme: 'snow',
+          modules: {
+            toolbar: toolbarOptions
+          },
+          placeholder: 'Tulis konten berita di sini...',
+          formats: [
+            'header', 'font', 'size',
+            'bold', 'italic', 'underline', 'strike',
+            'color', 'background',
+            'list', 'bullet', 'indent',
+            'align',
+            'link', 'image', 'blockquote', 'code-block'
+          ]
+        });
+
+        // Event handler untuk perubahan konten
+        quillInstance.current.on('text-change', () => {
+          const html = quillInstance.current.root.innerHTML;
+          setFormData(prev => ({
+            ...prev,
+            content: html
+          }));
+        });
+
+        // Set konten awal jika ada
+        if (formData.content) {
+          quillInstance.current.root.innerHTML = formData.content;
+        }
+
+        console.log('✅ Quill editor initialized successfully');
+      } catch (error) {
+        console.error('❌ Error initializing Quill editor:', error);
+      }
+    }
+
+    // Cleanup saat component unmount atau mode berubah
+    return () => {
+      if (quillInstance.current && editorMode !== 'write') {
+        quillInstance.current = null;
+        console.log('🧹 Quill editor cleaned up');
+      }
+    };
+  }, [editorMode, isCreating]);
+
+  // Update Quill content ketika formData.content berubah dari luar
+  useEffect(() => {
+    if (quillInstance.current && formData.content !== quillInstance.current.root.innerHTML) {
+      // Avoid infinite loop by checking if content actually differs
+      const currentContent = quillInstance.current.root.innerHTML;
+      if (currentContent === '<p><br></p>' && !formData.content) {
+        return; // Skip update for empty state
+      }
+      quillInstance.current.root.innerHTML = formData.content || '';
+    }
+  }, [formData.content]);
+
+  // Function untuk reset Quill editor
+  const resetQuillEditor = () => {
+    if (quillInstance.current) {
+      quillInstance.current.setText('');
+      setFormData(prev => ({ ...prev, content: '' }));
+    }
+  };
+
+  // Function untuk memaksa re-render Quill saat tab berubah
+  const handleTabChange = (mode) => {
+    setEditorMode(mode);
+    
+    // Jika kembali ke write mode dan Quill belum ada, tunggu sebentar lalu init
+    if (mode === 'write' && !quillInstance.current) {
+      setTimeout(() => {
+        if (quillRef.current && !quillInstance.current) {
+          // Force re-initialization
+          setEditorMode('preview');
+          setTimeout(() => setEditorMode('write'), 50);
+        }
+      }, 100);
+    }
+  };
 
   // Handle perubahan input form
   const handleInputChange = (e) => {
@@ -126,6 +247,13 @@ export default function NewsManager() {
     setEditingId(news.id);
     setIsCreating(true);
     setEditorMode('write');
+    
+    // Update Quill editor setelah state update
+    setTimeout(() => {
+      if (quillInstance.current) {
+        quillInstance.current.root.innerHTML = news.content || '';
+      }
+    }, 100);
   };
 
   // Delete berita
@@ -164,6 +292,7 @@ export default function NewsManager() {
     setEditingId(null);
     setFormData({ title: '', content: '', author: '', category: 'general' });
     setEditorMode('write');
+    resetQuillEditor();
   };
 
   // Render konten dengan format markdown lengkap
@@ -284,14 +413,14 @@ export default function NewsManager() {
                   <button
                     type="button"
                     className={`tab ${editorMode === 'write' ? 'active' : ''}`}
-                    onClick={() => setEditorMode('write')}
+                    onClick={() => handleTabChange('write')}
                   >
                     ✏️ Write
                   </button>
                   <button
                     type="button"
                     className={`tab ${editorMode === 'preview' ? 'active' : ''}`}
-                    onClick={() => setEditorMode('preview')}
+                    onClick={() => handleTabChange('preview')}
                   >
                     👁️ Preview
                   </button>
@@ -301,42 +430,21 @@ export default function NewsManager() {
                 <div className="editor-content">
                   {editorMode === 'write' ? (
                     <div className="write-mode">
+                      {/* Quill Rich Text Editor */}
+                      <div ref={quillRef} className="quill-editor"></div>
+                      
+                      {/* Hidden textarea untuk form submission */}
                       <textarea
                         name="content"
                         value={formData.content}
-                        onChange={handleInputChange}
-                        placeholder="Tulis konten berita di sini... 
-
-Gunakan format Markdown lengkap:
-
-# Judul Besar
-## Judul Sedang  
-### Judul Kecil
-
-Paragraf pertama akan otomatis menjadi article-lead (pengantar artikel).
-
-**Teks Tebal** dan *Teks Miring* atau ***Tebal dan Miring***
-
-Daftar dengan tanda minus:
-- Item pertama
-- Item kedua  
-- Item ketiga
-
-Daftar dengan bintang:
-* Item A
-* Item B
-* Item C
-
-[Teks Link](https://example.com)
-
-Paragraf baru dengan baris kosong di antaranya.
-"
-                        rows="15"
+                        onChange={() => {}} // Controlled by Quill
+                        style={{ display: 'none' }}
                         required
                       />
+                      
                       <div className="editor-help">
                         <small>
-                          💡 <strong>Tips:</strong> Gunakan Markdown untuk format teks. 
+                          💡 <strong>Tips:</strong> Gunakan toolbar di atas untuk memformat teks. 
                           Klik tab "Preview" untuk melihat hasil.
                         </small>
                       </div>
@@ -347,7 +455,7 @@ Paragraf baru dengan baris kosong di antaranya.
                         <h4>{formData.title || 'Judul Berita'}</h4>
                         {formData.author && <p className="preview-author">Oleh: {formData.author}</p>}
                       </div>
-                      {renderPreview(formData.content)}
+                      <div className="preview-content" dangerouslySetInnerHTML={{ __html: formData.content || '<p>Belum ada konten...</p>' }}></div>
                     </div>
                   )}
                 </div>

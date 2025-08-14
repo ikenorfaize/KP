@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Quill Editor</title>
+  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #editor { height: 300px; margin: 20px 0; }
+    #output { margin-top: 20px; padding: 10px; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+  <h1>Test Quill Rich Text Editor</h1>
+  <div id="editor"></div>
+  <button onclick="getHTML()">Get HTML Content</button>
+  <div id="output"></div>
+
+  <script>
+    // Toolbar configuration
+    const toolbarOptions = [
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'header': [1, 2, 3, false] }],
+      [{ 'font': [] }],
+      [{ 'size': ['small', false, 'large', 'huge'] }],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'align': [] }],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      ['blockquote', 'code-block'],
+      ['link', 'image'],
+      ['clean']
+    ];
+
+    // Initialize Quill
+    const quill = new Quill('#editor', {
+      theme: 'snow',
+      modules: {
+        toolbar: toolbarOptions
+      },
+      placeholder: 'Type something...'
+    });
+
+    // Function to get HTML content
+    function getHTML() {
+      const html = quill.root.innerHTML;
+      document.getElementById('output').innerHTML = html;
+      console.log('HTML Content:', html);
+    }
+
+    // Listen for text changes
+    quill.on('text-change', function() {
+      console.log('Content changed');
+    });
+  </script>
+</body>
+</html>
