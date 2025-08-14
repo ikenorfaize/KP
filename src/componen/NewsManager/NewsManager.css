@@ -33,62 +33,156 @@
 @media (min-width:1024px){.admin-news-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (min-width:1280px){.admin-news-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 
-.admin-news-card{border:1px solid #e5e7eb;border-radius:10px;padding:12px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.04);transition:all 0.2s ease}
-.admin-news-card:hover{box-shadow:0 4px 8px rgba(0,0,0,.08);transform:translateY(-1px)}
-.admin-news-card__header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
-.admin-news-card__title{font-size:1rem;font-weight:600;margin:0}
-.admin-news-card__category{font-size:.75rem;background:#0f7536;color:#fff;padding:2px 8px;border-radius:999px}
-.admin-news-card__meta{display:flex;gap:12px;color:#555;font-size:.85rem;margin-bottom:6px}
-.admin-news-card__content{color:#333;font-size:.95rem;margin-bottom:8px}
-.admin-news-card__actions{display:flex;gap:8px;flex-wrap:wrap}
-.admin-news-card__badge{background:#f59e0b;color:#fff;border-radius:999px;padding:2px 8px;font-size:.75rem;align-self:center}
-.btn-feature{padding:6px 10px;border:1px solid #f59e0b;border-radius:8px;background:#fff;color:#b45309;cursor:pointer;transition:all 0.2s ease}
-.btn-feature:hover{background:#fff7ed;transform:translateY(-1px)}
+/* Admin news card styling - Higher specificity to prevent conflicts */
+.admin-news-grid .admin-news-card {
+  border: 1px solid #e5e7eb !important;
+  border-radius: 10px !important;
+  padding: 12px !important;
+  background: #fff !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04) !important;
+  transition: all 0.2s ease;
+  font-family: 'Poppins', sans-serif !important;
+}
+
+.admin-news-grid .admin-news-card:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,.08) !important;
+  transform: translateY(-1px);
+}
+
+.admin-news-grid .admin-news-card__header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  margin-bottom: 6px !important;
+}
+
+.admin-news-grid .admin-news-card__title {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  margin: 0 !important;
+  color: #111827 !important;
+  line-height: 1.4 !important;
+}
+
+.admin-news-grid .admin-news-card__category {
+  font-size: .75rem !important;
+  background: #0f7536 !important;
+  color: #fff !important;
+  padding: 2px 8px !important;
+  border-radius: 999px !important;
+  font-weight: 500 !important;
+}
+
+.admin-news-grid .admin-news-card__meta {
+  display: flex !important;
+  gap: 12px !important;
+  color: #555 !important;
+  font-size: .85rem !important;
+  margin-bottom: 6px !important;
+}
+
+.admin-news-grid .admin-news-card__content {
+  color: #333 !important;
+  font-size: .95rem !important;
+  margin-bottom: 8px !important;
+  line-height: 1.5 !important;
+}
+
+.admin-news-grid .admin-news-card__actions {
+  display: flex !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+}
+
+.admin-news-grid .admin-news-card__badge {
+  background: #f59e0b !important;
+  color: #fff !important;
+  border-radius: 999px !important;
+  padding: 2px 8px !important;
+  font-size: .75rem !important;
+  align-self: center !important;
+  font-weight: 500 !important;
+}
 
 /* Featured variant for admin news card */
-.admin-news-card.admin-news-card--featured{border-color:#f59e0b;box-shadow:0 2px 6px rgba(245,158,11,.2)}
-.admin-news-card.admin-news-card--featured .admin-news-card__badge{background:#d97706}
+.admin-news-grid .admin-news-card.admin-news-card--featured {
+  border-color: #f59e0b !important;
+  box-shadow: 0 2px 6px rgba(245,158,11,.2) !important;
+}
+
+.admin-news-grid .admin-news-card.admin-news-card--featured .admin-news-card__badge {
+  background: #d97706 !important;
+}
+
+/* Button feature styling */
+.admin-news-grid .admin-news-card .btn-feature {
+  padding: 6px 10px !important;
+  border: 1px solid #f59e0b !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  color: #b45309 !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.85rem !important;
+  font-weight: 400 !important;
+  font-family: inherit !important;
+}
+
+.admin-news-grid .admin-news-card .btn-feature:hover {
+  background: #fff7ed !important;
+  transform: translateY(-1px);
+}
 
 /* Remove old pagination and grid wrapper styles */
 .admin-news-pagination{display:none}
 .admin-news-grid-wrapper{display:block}
 .admin-news-nav__btn{display:none}
 
-/* Button styles */
-.btn-edit, .btn-delete, .btn-view {
-  padding: 4px 8px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background: #fff;
+/* Button styles - More specific to override global button styles */
+.admin-news-card .btn-edit, 
+.admin-news-card .btn-delete, 
+.admin-news-card .btn-view {
+  padding: 4px 8px !important;
+  border: 1px solid #ddd !important;
+  border-radius: 6px !important;
+  background: #fff !important;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.85rem !important;
   transition: all 0.2s ease;
+  color: #374151 !important;
+  font-weight: 400 !important;
+  font-family: inherit;
 }
 
-.btn-edit:hover {
-  background: #f0f9ff;
-  border-color: #0ea5e9;
+.admin-news-card .btn-edit:hover {
+  background: #f0f9ff !important;
+  border-color: #0ea5e9 !important;
+  color: #0ea5e9 !important;
 }
 
-.btn-delete:hover {
-  background: #fef2f2;
-  border-color: #dc2626;
+.admin-news-card .btn-delete:hover {
+  background: #fef2f2 !important;
+  border-color: #dc2626 !important;
+  color: #dc2626 !important;
 }
 
-.btn-view:hover {
-  background: #f7fee7;
-  border-color: #65a30d;
+.admin-news-card .btn-view:hover {
+  background: #f7fee7 !important;
+  border-color: #65a30d !important;
+  color: #65a30d !important;
 }
 
-/* Quill Editor Styling */
-.quill-editor {
+/* Quill Editor Styling - Isolated to editor container only */
+.editor-container .quill-editor {
   min-height: 300px;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   background: #fff;
 }
 
-.quill-editor .ql-toolbar {
+.editor-container .quill-editor .ql-toolbar {
   border-top: 1px solid #e5e7eb;
   border-left: 1px solid #e5e7eb;
   border-right: 1px solid #e5e7eb;
@@ -98,7 +192,7 @@
   padding: 8px 12px;
 }
 
-.quill-editor .ql-container {
+.editor-container .quill-editor .ql-container {
   border-top: none;
   border-left: 1px solid #e5e7eb;
   border-right: 1px solid #e5e7eb;
@@ -109,44 +203,48 @@
   min-height: 250px;
 }
 
-.quill-editor .ql-editor {
+.editor-container .quill-editor .ql-editor {
   min-height: 250px;
   padding: 16px;
   line-height: 1.6;
 }
 
-.quill-editor .ql-editor.ql-blank::before {
+.editor-container .quill-editor .ql-editor.ql-blank::before {
   color: #9ca3af;
   font-style: normal;
 }
 
-/* Toolbar button styling */
-.quill-editor .ql-toolbar .ql-formats {
+/* Toolbar button styling - Only inside editor container */
+.editor-container .quill-editor .ql-toolbar .ql-formats {
   margin-right: 12px;
 }
 
-.quill-editor .ql-toolbar button {
-  border: 1px solid transparent;
-  border-radius: 4px;
-  padding: 4px;
-  margin: 1px;
-  transition: all 0.2s ease;
+.editor-container .quill-editor .ql-toolbar button {
+  border: 1px solid transparent !important;
+  border-radius: 4px !important;
+  padding: 4px !important;
+  margin: 1px !important;
+  transition: all 0.2s ease !important;
+  background: transparent !important;
+  color: #374151 !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
 }
 
-.quill-editor .ql-toolbar button:hover {
-  background: #e5e7eb;
-  border-color: #d1d5db;
+.editor-container .quill-editor .ql-toolbar button:hover {
+  background: #e5e7eb !important;
+  border-color: #d1d5db !important;
 }
 
-.quill-editor .ql-toolbar button.ql-active {
-  background: #0f7536;
-  color: white;
-  border-color: #0d5e2a;
+.editor-container .quill-editor .ql-toolbar button.ql-active {
+  background: #0f7536 !important;
+  color: white !important;
+  border-color: #0d5e2a !important;
 }
 
-/* Custom color picker */
-.quill-editor .ql-toolbar .ql-color .ql-picker-label,
-.quill-editor .ql-toolbar .ql-background .ql-picker-label {
+/* Custom color picker - Only inside editor */
+.editor-container .quill-editor .ql-toolbar .ql-color .ql-picker-label,
+.editor-container .quill-editor .ql-toolbar .ql-background .ql-picker-label {
   border: 1px solid #d1d5db;
   border-radius: 4px;
   padding: 2px;
@@ -232,6 +330,33 @@
 .editor-help small {
   color: #6b7280;
   font-size: 12px;
+}
+
+/* Empty state and loading styles */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #0f7536;
+  font-weight: 500;
+}
+
+/* News list header */
+.news-list {
+  margin-top: 24px;
+}
+
+.admin-news-list__header h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
 }
 
 /* ===== QUILL RICH TEXT EDITOR STYLING ===== */

@@ -480,29 +480,40 @@ export default function NewsManager() {
 
       {/* Daftar berita yang sudah ada */}
       <div className="news-list">
-        <h3>📋 Daftar Berita ({newsList.length})</h3>
+        <div className="admin-news-list__header">
+          <h3>📋 Daftar Berita ({newsList.length})</h3>
+        </div>
         {isLoading && <div className="loading">⏳ Memuat data...</div>}
         
-        {newsList.length === 0 && !isLoading ? (
-          <div className="empty-state">
-            <p>📰 Belum ada berita. Buat berita pertama Anda!</p>
-          </div>
-        ) : (
-          <div className="news-cards">
+        <div className="admin-news-scrollable-container">
+          {newsList.length === 0 && !isLoading ? (
+            <div className="empty-state">
+              <p>📰 Belum ada berita. Buat berita pertama Anda!</p>
+            </div>
+          ) : (
+          <div className="admin-news-grid">
             {newsList.map((news) => (
-              <div key={news.id} className="news-card">
-                <div className="news-card-header">
-                  <h4>{news.title}</h4>
-                  <span className="news-category">{categories.find(c => c.value === news.category)?.label || news.category}</span>
+              <div 
+                key={news.id} 
+                id={`admin-news-card-${news.id}`}
+                data-news-id={news.id}
+                className={`admin-news-card ${news.featured ? 'admin-news-card--featured' : ''}`}
+              >
+                <div className="admin-news-card__header">
+                  <h4 className="admin-news-card__title">{news.title}</h4>
+                  <span className="admin-news-card__category">{categories.find(c => c.value === news.category)?.label || news.category}</span>
                 </div>
-                <div className="news-card-meta">
-                  <span>👤 {news.author || 'Admin'}</span>
+                <div className="admin-news-card__meta">
+                  <span>👤 {news.author || 'Tim Redaksi PERGUNU'}</span>
                   <span>📅 {formatDate(news.createdAt)}</span>
                 </div>
-                <div className="news-card-content">
+                <div className="admin-news-card__content">
                   {news.content.substring(0, 150)}...
                 </div>
-                <div className="news-card-actions">
+                <div className="admin-news-card__actions">
+                  {news.featured && (
+                    <span className="admin-news-card__badge">⭐ Utama</span>
+                  )}
                   <button 
                     className="btn-edit"
                     onClick={() => handleEdit(news)}
@@ -525,7 +536,8 @@ export default function NewsManager() {
               </div>
             ))}
           </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
