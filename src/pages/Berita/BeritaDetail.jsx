@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./Berita4.css"; // Using shared styles
+import SidebarWidget from "../../componen/SidebarWidget";
 import Berita1Img from "../../assets/Berita1.png";
 import Berita2Img from "../../assets/Berita2.png";
 import Berita3Img from "../../assets/Berita3.png";
@@ -230,27 +231,14 @@ const BeritaDetail = () => {
 
             {/* Right Sidebar */}
             <aside className="sidebar">
-              <div className="sidebar-widget">
-                <h4>Berita Terkait</h4>
-                <div className="related-news">
-                  {relatedNews.map((news, idx) => {
-                    const relatedImgSrc = imageMap[news.image || news.imageUrl] || 
-                      (idx === 0 ? Berita1Img : idx === 1 ? Berita2Img : Berita3Img);
-                    
-                    return (
-                      <div key={news.id} className="related-item" onClick={() => navigate(`/berita/${news.id}`)}>
-                        <img src={relatedImgSrc} alt={news.title} />
-                        <div className="related-content">
-                          <h5>{news.title}</h5>
-                          <span className="related-date">
-                            {formatDate(news.publishDate || news.createdAt)}
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
+              <SidebarWidget 
+                title="Berita Terkait"
+                maxItems={8}
+                currentNewsId={id}
+                autoUpdate={true}
+                updateInterval={30000}
+                showViewAllButton={true}
+              />
             </aside>
           </div>
         </div>

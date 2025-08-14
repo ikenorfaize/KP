@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Berita4.css"; // Using shared styles
+import SidebarWidget from "../../componen/SidebarWidget";
 import Berita1Img from "../../assets/Berita1.png";
 import Berita4Img from "../../assets/Berita4.png";
 import Berita2Img from "../../assets/Berita2.png";
@@ -136,34 +137,14 @@ const Berita1 = () => {
 
             {/* Sidebar */}
             <aside className="sidebar">
-              <div className="sidebar-widget">
-                <h4>Berita Terkait</h4>
-                <div className="related-news">
-                  <div className="related-item" onClick={() => navigate('/berita4')}>
-                    <img src={Berita4Img} alt="Related news" />
-                    <div className="related-content">
-                      <h5>RUU Sistem Pendidikan Nasional</h5>
-                      <span className="related-date">20 Jan 2024</span>
-                    </div>
-                  </div>
-                  
-                  <div className="related-item" onClick={() => navigate('/berita-2')}>
-                    <img src={Berita2Img} alt="Related news" />
-                    <div className="related-content">
-                      <h5>Pelatihan Teknologi Penangkapan Ikan</h5>
-                      <span className="related-date">15 Jan 2024</span>
-                    </div>
-                  </div>
-                  
-                  <div className="related-item" onClick={() => navigate('/berita-3')}>
-                    <img src={Berita3Img} alt="Related news" />
-                    <div className="related-content">
-                      <h5>Kunjungan Bupati dan Wakil Bupati</h5>
-                      <span className="related-date">12 Jan 2024</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <SidebarWidget 
+                title="Berita Terkait"
+                maxItems={6}
+                currentNewsId="default-1"
+                autoUpdate={true}
+                updateInterval={30000}
+                showViewAllButton={true}
+              />
             </aside>
           </div>
         </div>

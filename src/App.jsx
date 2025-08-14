@@ -23,6 +23,7 @@ import Berita1 from "./pages/Berita/Berita1";             // Detail berita 1
 import Berita2 from "./pages/Berita/Berita2";             // Detail berita 2
 import Berita3 from "./pages/Berita/Berita3";             // Detail berita 3
 import BeritaDetail from "./pages/Berita/BeritaDetail";   // Dynamic news detail page
+import NewsDetailLayout from "./componen/NewsDetailLayout/NewsDetailLayout"; // New enhanced layout
 import Login from "./pages/Login/Login";                  // Halaman login user/admin
 import RegisterForm from "./pages/RegisterForm/RegisterForm"; // Form pendaftaran anggota
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard"; // Dashboard admin
@@ -111,6 +112,9 @@ const App = () => {
         
         {/* Dynamic route for news detail based on ID */}
         <Route path="/berita/:id" element={<><Navbar /><BeritaDetail /></>} />
+        
+        {/* Enhanced news detail layout with image overlay and sidebar */}
+        <Route path="/news/:id" element={<><Navbar /><NewsDetailLayout /></>} />
         
         {/* ROUTES HALAMAN SECTION - Versi halaman penuh dari section homepage */}
         {/* Untuk user yang ingin fokus pada satu section tertentu */}
