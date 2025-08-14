@@ -198,8 +198,8 @@
           "downloadCount": 1
         }
       ],
-      "downloads": 2,
-      "lastDownload": "10/8/2025, 03.43.45",
+      "downloads": 3,
+      "lastDownload": "2025-08-14T10:15:51.952Z",
       "downloadHistory": [
         {
           "id": "1754772225654",
@@ -212,6 +212,12 @@
           "certificateTitle": "Copy of Modul Construct 3 (1).pdf",
           "downloadDate": "24/7/2025, 22.58.27",
           "fileName": "Copy of Modul Construct 3 (1).pdf"
+        },
+        {
+          "id": 1755166551952,
+          "certificateTitle": "Symmetry+Explained.pdf",
+          "downloadDate": "2025-08-14T10:15:51.952Z",
+          "fileName": "Symmetry+Explained.pdf"
         }
       ],
       "profileImage": "https://ui-avatars.com/api/?name=akbar%20maulana&background=0F7536&color=fff"
@@ -251,8 +257,8 @@
         "nelayan",
         "kesejahteraan"
       ],
-      "updatedAt": "2025-08-13T11:23:53.197Z",
-      "featured": false
+      "updatedAt": "2025-08-14T09:13:38.611Z",
+      "featured": true
     },
     {
       "id": "news2",
@@ -296,7 +302,7 @@
       "content": "Rancangan Undang-Undang Sistem Pendidikan Nasional (RUU Sisdiknas) merupakan sebuah inisiatif penting yang bertujuan untuk memperkuat dan mengintegrasikan berbagai komponen pendidikan di Indonesia. Dalam konteks ini, peran perguruan tinggi, Pendidikan Agama Islam (PAI), Pendidikan Jarak Jauh (PJJ), madrasah, dan pondok pesantren menjadi sangat strategis.",
       "author": "Tim PERGUNU",
       "category": "Pendidikan",
-      "featured": true,
+      "featured": false,
       "publishDate": "2025-08-13T10:43:23.082Z",
       "summary": "Diskusi mengenai RUU Sisdiknas yang menyoroti kontribusi, aspirasi, dan inspirasi dari berbagai elemen pendidikan",
       "tags": [
@@ -321,7 +327,38 @@
       "updatedAt": "2025-08-13T11:46:16.526Z"
     }
   ],
-  "sessions": [],
+  "sessions": [
+    {
+      "id": "17551661083930.xyfwwg3xtrd",
+      "userId": "bdef",
+      "createdAt": "2025-08-14T10:08:28.393Z",
+      "expiresAt": "2025-08-15T10:08:28.393Z"
+    },
+    {
+      "id": "17551661161050.neap467v1l",
+      "userId": "2",
+      "createdAt": "2025-08-14T10:08:36.105Z",
+      "expiresAt": "2025-08-15T10:08:36.105Z"
+    },
+    {
+      "id": "17551664473510.0w0k9f4n9xvn",
+      "userId": "67de",
+      "createdAt": "2025-08-14T10:14:07.351Z",
+      "expiresAt": "2025-08-15T10:14:07.351Z"
+    },
+    {
+      "id": "17551665342540.y5h2icjm2sf",
+      "userId": "bdef",
+      "createdAt": "2025-08-14T10:15:34.254Z",
+      "expiresAt": "2025-08-15T10:15:34.254Z"
+    },
+    {
+      "id": "17551665493520.i2h7tsgaqh",
+      "userId": "c3a3",
+      "createdAt": "2025-08-14T10:15:49.352Z",
+      "expiresAt": "2025-08-15T10:15:49.352Z"
+    }
+  ],
   "applications": [
     {
       "id": "app1",

@@ -11,12 +11,31 @@ import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
-// ES module compatibility
+// Initialize Express app
+const app = express();
+
+// Store SSE clients
+const sseClients = new Set();
+
+// Get directory path for ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const app = express();
+// Server configuration
 const PORT = process.env.PORT || 3001;
+
+// Helper function to broadcast to all SSE clients
+const broadcastToClients = (event, data) => {
+  const message = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+  sseClients.forEach(client => {
+    try {
+      client.write(message);
+    } catch (error) {
+      // Remove dead connections
+      sseClients.delete(client);
+    }
+  });
+};
 
 // ===== MIDDLEWARE =====
 // Flexible CORS: allow localhost/127.0.0.1 on any port in development
@@ -43,6 +62,32 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
+// ===== SSE ENDPOINT =====
+app.get('/api/news/events', (req, res) => {
+  console.log('🔔 New SSE client connected');
+  
+  // Set SSE headers
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive',
+    'Access-Control-Allow-Origin': req.headers.origin || '*',
+    'Access-Control-Allow-Credentials': 'true'
+  });
+
+  // Add client to the set
+  sseClients.add(res);
+
+  // Send initial connection message
+  res.write(`event: connected\ndata: {"message": "SSE connection established"}\n\n`);
+
+  // Handle client disconnect
+  req.on('close', () => {
+    console.log('🔔 SSE client disconnected');
+    sseClients.delete(res);
+  });
+});
+
 // ===== DATABASE FUNCTIONS =====
 const DB_PATH = join(__dirname, 'db.json');
 
@@ -59,31 +104,18 @@ const readDB = () => {
         users: [],
         news: [],
         sessions: [],
-        applications: [],
-        statistics: {}
+        applications: []
       };
       writeFileSync(DB_PATH, JSON.stringify(defaultDB, null, 2));
-      console.log('✅ Created new database file');
       return defaultDB;
     }
     
     const data = readFileSync(DB_PATH, 'utf8');
-    console.log('📄 File size:', data.length, 'characters');
-    
-    const parsed = JSON.parse(data);
-    console.log('✅ Database loaded successfully');
-    console.log('📊 Database keys:', Object.keys(parsed));
-    console.log(`📊 Users: ${parsed.users?.length || 0}, News: ${parsed.news?.length || 0}, Applications: ${parsed.applications?.length || 0}`);
-    
-    if (parsed.users && parsed.users.length > 0) {
-      console.log('👤 Sample users:', parsed.users.slice(0, 3).map(u => ({ id: u.id, username: u.username, role: u.role })));
-    }
-    
-    return parsed;
+    console.log('✅ Database read successfully, size:', data.length, 'characters');
+    return JSON.parse(data);
   } catch (error) {
-    console.error('❌ Error reading database:', error);
-    console.error('❌ Error details:', error.message);
-    return { users: [], news: [], sessions: [], applications: [], statistics: {} };
+    console.error('❌ Database read error:', error.message);
+    return { users: [], news: [], sessions: [], applications: [] };
   }
 };
 
@@ -91,704 +123,441 @@ const readDB = () => {
 const writeDB = (data) => {
   try {
     writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
+    console.log('✅ Database written successfully');
     return true;
   } catch (error) {
-    console.error('Error writing database:', error);
+    console.error('❌ Database write error:', error.message);
     return false;
   }
 };
 
+// ===== NEWS ENDPOINTS =====
 
-// ===== API ROUTES =====
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'OK',
-    message: 'PERGUNU API Server is running',
-    timestamp: new Date().toISOString(),
-    version: '1.0.0'
-  });
-});
-
-// ===== USER ROUTES =====
-
-// Get all users
-app.get('/api/users', (req, res) => {
-  try {
-    console.log('📊 GET /api/users - Reading database...');
-    const db = readDB();
-    console.log('📊 Database structure:', Object.keys(db));
-    console.log('📊 Users found:', db.users?.length || 0);
-    
-    if (db.users && db.users.length > 0) {
-      console.log('📊 First user preview:', {
-        id: db.users[0].id,
-        username: db.users[0].username,
-        email: db.users[0].email
-      });
-    }
-    
-    res.json(db.users || []);
-  } catch (error) {
-    console.error('❌ Error in GET /api/users:', error);
-    res.status(500).json({ error: 'Failed to fetch users' });
-  }
-});
-
-// Get user by ID
-app.get('/api/users/:id', (req, res) => {
-  try {
-  const db = readDB();
-  const targetId = String(req.params.id);
-  const user = db.users.find(u => String(u.id) === targetId);
-    
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    
-    // Don't send password in response
-  const { password, ...userWithoutPassword } = user;
-    res.json(userWithoutPassword);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch user' });
-  }
-});
-
-// User authentication/login
-app.post('/api/auth/login', async (req, res) => {
-  try {
-    const { username, password } = req.body;
-    
-    if (!username || !password) {
-      return res.status(400).json({ error: 'Username and password are required' });
-    }
-    
-    const db = readDB();
-    const user = db.users.find(u => 
-      u.username === username || u.email === username
-    );
-    
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-    
-    // Check password
-    const isValidPassword = await bcrypt.compare(password, user.password);
-    if (!isValidPassword) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-    
-    // Don't send password in response
-    const { password: _, ...userWithoutPassword } = user;
-    
-    res.json({
-      message: 'Login successful',
-      user: userWithoutPassword,
-      token: `user_${user.id}_${Date.now()}` // Simple token for demo
-    });
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Login failed' });
-  }
-});
-
-// User registration
-app.post('/api/auth/register', async (req, res) => {
-  try {
-    const { fullName, email, username, password, position, address, phone } = req.body;
-    
-    if (!fullName || !email || !username || !password) {
-      return res.status(400).json({ error: 'All required fields must be provided' });
-    }
-    
-    const db = readDB();
-    
-    // Check if user already exists
-    const existingUser = db.users.find(u => 
-      u.username === username || u.email === email
-    );
-    
-    if (existingUser) {
-      return res.status(409).json({ error: 'User already exists' });
-    }
-    
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
-    
-    // Create new user
-    const newUser = {
-      id: Date.now().toString(),
-      fullName,
-      email,
-      username,
-      password: hashedPassword,
-      position: position || '',
-      address: address || '',
-      phone: phone || '',
-      status: 'active',
-      role: 'user',
-      createdAt: new Date().toISOString(),
-      certificates: [],
-      downloads: 0,
-      lastDownload: null,
-      downloadHistory: [],
-      profileImage: `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=0F7536&color=fff`
-    };
-    
-    db.users.push(newUser);
-    const success = writeDB(db);
-    
-    if (!success) {
-      return res.status(500).json({ error: 'Failed to save user' });
-    }
-    
-    // Don't send password in response
-    const { password: _, ...userWithoutPassword } = newUser;
-    
-    res.status(201).json({
-      message: 'User registered successfully',
-      user: userWithoutPassword
-    });
-  } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ error: 'Registration failed' });
-  }
-});
-
-// Update user
-app.put('/api/users/:id', async (req, res) => {
-  try {
-    const db = readDB();
-    const userIndex = db.users.findIndex(u => u.id === req.params.id);
-    
-    if (userIndex === -1) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    
-    const updates = req.body;
-    
-    // If password is being updated, hash it
-    if (updates.password) {
-      updates.password = await bcrypt.hash(updates.password, 12);
-    }
-    
-    // Update user
-    db.users[userIndex] = { ...db.users[userIndex], ...updates };
-    const success = writeDB(db);
-    
-    if (!success) {
-      return res.status(500).json({ error: 'Failed to update user' });
-    }
-    
-    // Don't send password in response
-    const { password, ...userWithoutPassword } = db.users[userIndex];
-    res.json({
-      message: 'User updated successfully',
-      user: userWithoutPassword
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to update user' });
-  }
-});
-
-// PATCH user (partial update) - untuk update certificates tanpa touch password
-app.patch('/api/users/:id', async (req, res) => {
-  try {
-    const db = readDB();
-    const userIndex = db.users.findIndex(u => u.id === req.params.id);
-    
-    if (userIndex === -1) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    
-    const updates = req.body;
-    
-    // For PATCH, NEVER auto-hash password - only if explicitly requested
-    if (updates.password && updates.hashPassword === true) {
-      updates.password = await bcrypt.hash(updates.password, 12);
-      delete updates.hashPassword; // Remove the flag
-    }
-    
-    // Merge updates (partial update)
-    db.users[userIndex] = { ...db.users[userIndex], ...updates };
-    const success = writeDB(db);
-    
-    if (!success) {
-      return res.status(500).json({ error: 'Failed to update user' });
-    }
-    
-    // Don't send password in response
-    const { password, ...userWithoutPassword } = db.users[userIndex];
-    res.json({
-      message: 'User updated successfully',
-      user: userWithoutPassword
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to update user' });
-  }
-});
-
-// Delete user
-app.delete('/api/users/:id', async (req, res) => {
-  try {
-    const db = readDB();
-    const targetId = String(req.params.id);
-
-    // Find user index by string comparison to support numeric/string IDs
-    const userIndex = db.users.findIndex(u => String(u.id) === targetId);
-
-    if (userIndex === -1) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    const [deletedUser] = db.users.splice(userIndex, 1);
-    const success = writeDB(db);
-
-    if (!success) {
-      return res.status(500).json({ error: 'Failed to delete user' });
-    }
-
-    const { password, ...userWithoutPassword } = deletedUser || {};
-    res.json({
-      message: 'User deleted successfully',
-      user: userWithoutPassword
-    });
-  } catch (error) {
-    console.error('Delete user error:', error);
-    res.status(500).json({ error: 'Failed to delete user' });
-  }
-});
-
-// ===== NEWS ROUTES =====
-
-// Get all news
+// GET /api/news - Get all news
 app.get('/api/news', (req, res) => {
-  try {
-    const db = readDB();
-    let all = db.news || [];
-    
-    // Auto-set featured if none exists and there are news items
-    if (all.length > 0 && !all.some(news => news.featured)) {
-      const randomIndex = Math.floor(Math.random() * all.length);
-      all[randomIndex].featured = true;
-      all[randomIndex].updatedAt = new Date().toISOString();
-      writeDB(db); // Save the change
-    }
-    
-    // Sort by featured first, then by date (newest first)
-    all = all.sort((a, b) => {
-      if (a.featured && !b.featured) return -1;
-      if (!a.featured && b.featured) return 1;
-      return new Date(b.createdAt || b.publishDate) - new Date(a.createdAt || a.publishDate);
-    });
-    
-    const limit = Number.parseInt(req.query.limit, 10);
-    if (!Number.isNaN(limit) && limit > 0) {
-      return res.json(all.slice(0, limit));
-    }
-    res.json(all);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch news' });
-  }
+  const db = readDB();
+  console.log('📰 Returning', db.news.length, 'news items');
+  res.json(db.news || []);
 });
 
-// Get news by ID
+// GET /api/news/:id - Get news by ID
 app.get('/api/news/:id', (req, res) => {
-  try {
-    const db = readDB();
-    const news = (db.news || []).find(n => n.id === req.params.id);
-    
-    if (!news) {
-      return res.status(404).json({ error: 'News not found' });
-    }
-    
-    res.json(news);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch news' });
+  const db = readDB();
+  const news = db.news.find(n => n.id === req.params.id);
+  if (!news) {
+    return res.status(404).json({ error: 'News not found' });
   }
+  res.json(news);
 });
 
-// Get featured news
-app.get('/api/news/featured', (req, res) => {
-  try {
-    const db = readDB();
-    const list = db.news || [];
-    const featured = list.find(n => n.featured === true) || null;
-    if (!featured) return res.status(404).json({ error: 'No featured news' });
-    res.json(featured);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch featured news' });
-  }
-});
-
-// Create news (admin only)
+// POST /api/news - Create new news
 app.post('/api/news', (req, res) => {
-  try {
-    const { title, content, author, category, featured, slug, imageUrl, publishDate, summary, tags } = req.body || {};
-    
-    if (!title || !content) {
-      return res.status(400).json({ error: 'Title and content are required' });
-    }
-    
-    const db = readDB();
-    if (!db.news) db.news = [];
-    
-    const newNews = {
-      id: Date.now().toString(),
-      title,
-      content,
-      author: author || 'Admin',
-      category: category || 'general',
-      featured: !!featured,
-      slug: slug || undefined,
-      imageUrl: imageUrl || undefined,
-      publishDate: publishDate || new Date().toISOString(),
-      summary: summary || undefined,
-      tags: Array.isArray(tags) ? tags : undefined,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    // Enforce single featured item
-    if (newNews.featured) {
-      db.news = db.news.map(n => ({ ...n, featured: false }));
-    }
-    db.news.push(newNews);
-    const success = writeDB(db);
-    
-    if (!success) {
-      return res.status(500).json({ error: 'Failed to save news' });
-    }
-    
-    res.status(201).json({
-      message: 'News created successfully',
-      news: newNews
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to create news' });
+  const db = readDB();
+  const newNews = {
+    id: Date.now().toString(),
+    title: req.body.title,
+    content: req.body.content,
+    image: req.body.image,
+    featured: req.body.featured || false,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  
+  db.news.push(newNews);
+  if (writeDB(db)) {
+    broadcastToClients('news-added', newNews);
+    res.status(201).json(newNews);
+  } else {
+    res.status(500).json({ error: 'Failed to save news' });
   }
 });
 
-// Update news (admin only)
-app.patch('/api/news/:id', (req, res) => {
-  try {
-    const targetId = String(req.params.id);
-    const { title, content, author, category, slug, imageUrl, featured, publishDate, summary, tags } = req.body || {};
-
-    const db = readDB();
-    if (!db.news) db.news = [];
-
-    const idx = db.news.findIndex(n => String(n.id) === targetId);
-    if (idx === -1) {
-      return res.status(404).json({ error: 'News not found' });
-    }
-
-    const current = db.news[idx];
-    const updated = {
-      ...current,
-      ...(title !== undefined ? { title } : {}),
-      ...(content !== undefined ? { content } : {}),
-      ...(author !== undefined ? { author } : {}),
-      ...(category !== undefined ? { category } : {}),
-      ...(slug !== undefined ? { slug } : {}),
-      ...(imageUrl !== undefined ? { imageUrl } : {}),
-      ...(publishDate !== undefined ? { publishDate } : {}),
-      ...(summary !== undefined ? { summary } : {}),
-      ...(Array.isArray(tags) ? { tags } : {}),
-      updatedAt: new Date().toISOString()
-    };
-
-    // Enforce single featured item if toggled to true
-    if (featured === true) {
-      db.news = db.news.map((n, i) => (i === idx ? { ...updated, featured: true } : { ...n, featured: false }));
-    } else if (featured === false) {
-      db.news[idx] = { ...updated, featured: false };
-    } else {
-      db.news[idx] = updated;
-    }
-    const success = writeDB(db);
-    if (!success) {
-      return res.status(500).json({ error: 'Failed to update news' });
-    }
-
-    const responseItem = db.news.find(n => String(n.id) === targetId);
-    res.json({
-      message: 'News updated successfully',
-      news: responseItem
-    });
-  } catch (error) {
+// PUT /api/news/:id - Update news
+app.put('/api/news/:id', (req, res) => {
+  const db = readDB();
+  const newsIndex = db.news.findIndex(n => n.id === req.params.id);
+  
+  if (newsIndex === -1) {
+    return res.status(404).json({ error: 'News not found' });
+  }
+  
+  const updatedNews = {
+    ...db.news[newsIndex],
+    ...req.body,
+    updatedAt: new Date().toISOString()
+  };
+  
+  db.news[newsIndex] = updatedNews;
+  
+  if (writeDB(db)) {
+    broadcastToClients('news-updated', updatedNews);
+    res.json(updatedNews);
+  } else {
     res.status(500).json({ error: 'Failed to update news' });
   }
 });
 
-// Set featured news (only one can be featured at a time)
-app.put('/api/news/:id/feature', (req, res) => {
-  try {
-    const targetId = String(req.params.id);
-    const db = readDB();
-    
-    if (!db.news) db.news = [];
-    
-    // Remove featured flag from all news
-    db.news.forEach(news => {
-      news.featured = false;
-    });
-    
-    // Set featured flag for the selected news
-    const newsToFeature = db.news.find(news => String(news.id) === targetId);
-    if (!newsToFeature) {
-      return res.status(404).json({ error: 'News not found' });
-    }
-    
-    newsToFeature.featured = true;
-    newsToFeature.updatedAt = new Date().toISOString();
-    
-    const success = writeDB(db);
-    if (!success) {
-      return res.status(500).json({ error: 'Failed to set featured news' });
-    }
-    
-    res.json({ 
-      message: 'Featured news updated successfully', 
-      featuredNews: newsToFeature 
-    });
-  } catch (error) {
-    console.error('Error setting featured news:', error);
-    res.status(500).json({ error: 'Failed to set featured news' });
-  }
-});
-
-// Auto-set random featured if none exists
-app.post('/api/news/ensure-featured', (req, res) => {
-  try {
-    const db = readDB();
-    
-    if (!db.news) db.news = [];
-    
-    const hasFeatured = db.news.some(news => news.featured);
-    
-    if (!hasFeatured && db.news.length > 0) {
-      // Pick random news as featured
-      const randomIndex = Math.floor(Math.random() * db.news.length);
-      db.news[randomIndex].featured = true;
-      db.news[randomIndex].updatedAt = new Date().toISOString();
-      
-      const success = writeDB(db);
-      if (!success) {
-        return res.status(500).json({ error: 'Failed to ensure featured news' });
-      }
-      
-      return res.json({ 
-        message: 'Random featured news set', 
-        featuredNews: db.news[randomIndex] 
-      });
-    }
-    
-    res.json({ message: 'Featured news already exists or no news available' });
-  } catch (error) {
-    console.error('Error ensuring featured news:', error);
-    res.status(500).json({ error: 'Failed to ensure featured news' });
-  }
-});
-
-// Delete news (admin only)
+// DELETE /api/news/:id - Delete news
 app.delete('/api/news/:id', (req, res) => {
-  try {
-    const targetId = String(req.params.id);
-    const db = readDB();
-    if (!db.news) db.news = [];
-
-    const idx = db.news.findIndex(n => String(n.id) === targetId);
-    if (idx === -1) {
-      return res.status(404).json({ error: 'News not found' });
-    }
-
-    const [deleted] = db.news.splice(idx, 1);
-    const success = writeDB(db);
-    if (!success) {
-      return res.status(500).json({ error: 'Failed to delete news' });
-    }
-
-    res.json({
-      message: 'News deleted successfully',
-      news: deleted
-    });
-  } catch (error) {
+  const db = readDB();
+  const newsIndex = db.news.findIndex(n => n.id === req.params.id);
+  
+  if (newsIndex === -1) {
+    return res.status(404).json({ error: 'News not found' });
+  }
+  
+  const deletedNews = db.news[newsIndex];
+  db.news.splice(newsIndex, 1);
+  
+  if (writeDB(db)) {
+    broadcastToClients('news-deleted', { id: req.params.id });
+    res.json({ message: 'News deleted successfully', deletedNews });
+  } else {
     res.status(500).json({ error: 'Failed to delete news' });
   }
 });
 
-// ===== APPLICATION ROUTES =====
-
-// Get all applications
-app.get('/api/applications', (req, res) => {
-  try {
-    const db = readDB();
-    res.json(db.applications || []);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch applications' });
+// PUT /api/news/:id/feature - Set featured status
+app.put('/api/news/:id/feature', (req, res) => {
+  const db = readDB();
+  const newsIndex = db.news.findIndex(n => n.id === req.params.id);
+  
+  if (newsIndex === -1) {
+    return res.status(404).json({ error: 'News not found' });
+  }
+  
+  db.news[newsIndex].featured = req.body.featured;
+  db.news[newsIndex].updatedAt = new Date().toISOString();
+  
+  if (writeDB(db)) {
+    broadcastToClients('news-featured', db.news[newsIndex]);
+    res.json(db.news[newsIndex]);
+  } else {
+    res.status(500).json({ error: 'Failed to update featured status' });
   }
 });
 
-// Get application by ID
-app.get('/api/applications/:id', (req, res) => {
-  try {
-    const db = readDB();
-    const appItem = (db.applications || []).find(a => a.id === req.params.id);
-    if (!appItem) return res.status(404).json({ error: 'Application not found' });
-    res.json(appItem);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch application' });
+// ===== USER ENDPOINTS =====
+
+// POST /api/register - User registration
+app.post('/api/register', async (req, res) => {
+  const db = readDB();
+  const { email, password, fullName } = req.body;
+  
+  // Check if user already exists
+  const existingUser = db.users.find(u => u.email === email);
+  if (existingUser) {
+    return res.status(400).json({ error: 'User already exists' });
+  }
+  
+  // Hash password
+  const hashedPassword = await bcrypt.hash(password, 10);
+  
+  const newUser = {
+    id: Date.now().toString(),
+    email,
+    password: hashedPassword,
+    fullName,
+    role: 'user',
+    createdAt: new Date().toISOString()
+  };
+  
+  db.users.push(newUser);
+  
+  if (writeDB(db)) {
+    const { password, ...userWithoutPassword } = newUser;
+    res.status(201).json(userWithoutPassword);
+  } else {
+    res.status(500).json({ error: 'Failed to create user' });
   }
 });
 
-// Create application
-app.post('/api/applications', (req, res) => {
-  try {
-    const applicationData = req.body;
-    
-    const db = readDB();
-    if (!db.applications) db.applications = [];
-    
-    const newApplication = {
-      id: Date.now().toString(),
-      ...applicationData,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    
-    db.applications.push(newApplication);
-    const success = writeDB(db);
-    
-    if (!success) {
-      return res.status(500).json({ error: 'Failed to save application' });
-    }
-    
+// POST /api/login - User login (email only)
+app.post('/api/login', async (req, res) => {
+  const db = readDB();
+  const { email, password } = req.body;
+  
+  const user = db.users.find(u => u.email === email);
+  if (!user) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+  
+  const validPassword = await bcrypt.compare(password, user.password);
+  if (!validPassword) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+  
+  // Create session
+  const sessionId = Date.now().toString() + Math.random().toString(36);
+  const session = {
+    id: sessionId,
+    userId: user.id,
+    createdAt: new Date().toISOString(),
+    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours
+  };
+  
+  if (!db.sessions) db.sessions = [];
+  db.sessions.push(session);
+  writeDB(db);
+  
+  const { password: _, ...userWithoutPassword } = user;
+  res.json({ user: userWithoutPassword, sessionId });
+});
+
+// ===== AUTH ENDPOINTS =====
+
+// POST /api/auth/login - User login (username or email)
+app.post('/api/auth/login', async (req, res) => {
+  console.log('🔐 Login attempt:', req.body);
+  const db = readDB();
+  const { username, password } = req.body;
+  
+  // Find user by username or email
+  const user = db.users.find(u => 
+    u.username === username || 
+    u.email === username
+  );
+  
+  if (!user) {
+    console.log('❌ User not found:', username);
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+  
+  console.log('👤 Found user:', user.username, 'Email:', user.email);
+  
+  const validPassword = await bcrypt.compare(password, user.password);
+  if (!validPassword) {
+    console.log('❌ Invalid password for user:', user.username);
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+  
+  console.log('✅ Password valid for user:', user.username);
+  
+  // Create session
+  const sessionId = Date.now().toString() + Math.random().toString(36);
+  const session = {
+    id: sessionId,
+    userId: user.id,
+    createdAt: new Date().toISOString(),
+    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours
+  };
+  
+  if (!db.sessions) db.sessions = [];
+  db.sessions.push(session);
+  writeDB(db);
+  
+  const { password: _, ...userWithoutPassword } = user;
+  res.json({ 
+    success: true,
+    user: userWithoutPassword, 
+    token: sessionId,
+    message: `Welcome back, ${user.fullName}!`
+  });
+});
+
+// POST /api/auth/register - User registration
+app.post('/api/auth/register', async (req, res) => {
+  console.log('📝 Registration attempt:', req.body);
+  const db = readDB();
+  const { email, password, fullName, username } = req.body;
+  
+  // Check if user already exists
+  const existingUser = db.users.find(u => u.email === email || u.username === username);
+  if (existingUser) {
+    return res.status(400).json({ error: 'User already exists' });
+  }
+  
+  // Hash password
+  const hashedPassword = await bcrypt.hash(password, 10);
+  
+  const newUser = {
+    id: Date.now().toString(),
+    fullName,
+    email,
+    username,
+    password: hashedPassword,
+    createdAt: new Date().toISOString(),
+    role: 'user',
+    certificates: [],
+    downloads: 0,
+    lastDownload: null,
+    downloadHistory: [],
+    profileImage: `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=0F7536&color=fff`
+  };
+  
+  db.users.push(newUser);
+  const success = writeDB(db);
+  
+  if (success) {
+    const { password: _, ...userWithoutPassword } = newUser;
     res.status(201).json({
-      message: 'Application submitted successfully',
-      application: newApplication
+      success: true,
+      user: userWithoutPassword,
+      message: 'User registered successfully'
     });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to create application' });
+  } else {
+    res.status(500).json({ error: 'Failed to create user' });
   }
 });
 
-// Update (partial) application e.g. approve/reject
-app.patch('/api/applications/:id', (req, res) => {
-  try {
-    const updates = req.body || {};
-    const db = readDB();
-    if (!db.applications) db.applications = [];
-    const idx = db.applications.findIndex(a => a.id === req.params.id);
-    if (idx === -1) return res.status(404).json({ error: 'Application not found' });
+// ===== APPLICATION ENDPOINTS =====
 
-    // Auto set processedAt if status transitions away from pending and not provided
-    const prev = db.applications[idx];
-    const nextStatus = updates.status ?? prev.status;
-    const isProcessed = nextStatus !== 'pending';
-    const patch = { ...updates };
-    if (isProcessed && !patch.processedAt) {
-      patch.processedAt = new Date().toISOString();
-    }
-
-    db.applications[idx] = { ...prev, ...patch, updatedAt: new Date().toISOString() };
-    const success = writeDB(db);
-    if (!success) return res.status(500).json({ error: 'Failed to update application' });
-
-    res.json({
-      message: 'Application updated successfully',
-      application: db.applications[idx]
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to update application' });
+// POST /api/applications - Submit application
+app.post('/api/applications', (req, res) => {
+  const db = readDB();
+  
+  const newApplication = {
+    id: Date.now().toString(),
+    ...req.body,
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  
+  if (!db.applications) db.applications = [];
+  db.applications.push(newApplication);
+  
+  if (writeDB(db)) {
+    res.status(201).json(newApplication);
+  } else {
+    res.status(500).json({ error: 'Failed to submit application' });
   }
 });
 
-// Delete application
-app.delete('/api/applications/:id', (req, res) => {
-  try {
-    const db = readDB();
-    if (!db.applications) db.applications = [];
-    const before = db.applications.length;
-    db.applications = db.applications.filter(a => a.id !== req.params.id);
-    const after = db.applications.length;
-    const success = writeDB(db);
-    if (!success) return res.status(500).json({ error: 'Failed to delete application' });
-    if (before === after) return res.status(404).json({ error: 'Application not found' });
-    res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to delete application' });
+// GET /api/applications - Get all applications (admin only)
+app.get('/api/applications', (req, res) => {
+  const db = readDB();
+  res.json(db.applications || []);
+});
+
+// GET /api/applications/user/:userId - Get applications by user
+app.get('/api/applications/user/:userId', (req, res) => {
+  const db = readDB();
+  const userApplications = (db.applications || []).filter(app => app.userId === req.params.userId);
+  res.json(userApplications);
+});
+
+// PUT /api/applications/:id/status - Update application status
+app.put('/api/applications/:id/status', (req, res) => {
+  const db = readDB();
+  const appIndex = db.applications.findIndex(app => app.id === req.params.id);
+  
+  if (appIndex === -1) {
+    return res.status(404).json({ error: 'Application not found' });
+  }
+  
+  db.applications[appIndex].status = req.body.status;
+  db.applications[appIndex].updatedAt = new Date().toISOString();
+  
+  if (writeDB(db)) {
+    res.json(db.applications[appIndex]);
+  } else {
+    res.status(500).json({ error: 'Failed to update application status' });
   }
 });
 
-// ===== STATISTICS ROUTES =====
+// ===== USER MANAGEMENT ENDPOINTS =====
 
-// Get statistics
-app.get('/api/statistics', (req, res) => {
-  try {
-    const db = readDB();
-    
-    const stats = {
-      totalUsers: db.users ? db.users.length : 0,
-      totalNews: db.news ? db.news.length : 0,
-      totalApplications: db.applications ? db.applications.length : 0,
-      activeUsers: db.users ? db.users.filter(u => u.status === 'active').length : 0,
-      ...db.statistics
-    };
-    
-    res.json(stats);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch statistics' });
+// GET /api/users - Get all users (for admin dashboard)
+app.get('/api/users', (req, res) => {
+  const db = readDB();
+  console.log('👥 Returning', db.users.length, 'users');
+  
+  // Remove passwords from response
+  const usersWithoutPasswords = db.users.map(user => {
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  });
+  
+  res.json(usersWithoutPasswords);
+});
+
+// GET /api/users/:id - Get user by ID
+app.get('/api/users/:id', (req, res) => {
+  const db = readDB();
+  const user = db.users.find(u => u.id === req.params.id);
+  
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  
+  // Remove password from response
+  const { password, ...userWithoutPassword } = user;
+  res.json(userWithoutPassword);
+});
+
+// PUT /api/users/:id - Update user
+app.put('/api/users/:id', async (req, res) => {
+  const db = readDB();
+  const userIndex = db.users.findIndex(u => u.id === req.params.id);
+  
+  if (userIndex === -1) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  
+  const updatedUser = {
+    ...db.users[userIndex],
+    ...req.body,
+    updatedAt: new Date().toISOString()
+  };
+  
+  // If password is being updated, hash it
+  if (req.body.password) {
+    updatedUser.password = await bcrypt.hash(req.body.password, 10);
+  }
+  
+  db.users[userIndex] = updatedUser;
+  
+  if (writeDB(db)) {
+    const { password, ...userWithoutPassword } = updatedUser;
+    res.json(userWithoutPassword);
+  } else {
+    res.status(500).json({ error: 'Failed to update user' });
   }
 });
 
-// ===== ERROR HANDLING =====
+// DELETE /api/users/:id - Delete user
+app.delete('/api/users/:id', (req, res) => {
+  const db = readDB();
+  const userIndex = db.users.findIndex(u => u.id === req.params.id);
+  
+  if (userIndex === -1) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+  
+  const deletedUser = db.users[userIndex];
+  db.users.splice(userIndex, 1);
+  
+  if (writeDB(db)) {
+    const { password, ...userWithoutPassword } = deletedUser;
+    res.json({ message: 'User deleted successfully', deletedUser: userWithoutPassword });
+  } else {
+    res.status(500).json({ error: 'Failed to delete user' });
+  }
+});
 
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({
-    error: 'Endpoint not found',
-    message: `The endpoint ${req.method} ${req.originalUrl} does not exist`,
-    availableEndpoints: {
-      health: 'GET /api/health',
-      users: 'GET /api/users',
-      login: 'POST /api/auth/login',
-      register: 'POST /api/auth/register',
-      news: 'GET /api/news',
-      applications: 'GET /api/applications',
-      statistics: 'GET /api/statistics'
-    }
+// ===== HEALTH CHECK =====
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'healthy', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
   });
 });
 
-// Global error handler
-app.use((error, req, res, next) => {
-  console.error('API Error:', error);
-  res.status(500).json({
-    error: 'Internal server error',
-    message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
-  });
+// ===== SERVER START =====
+app.listen(PORT, () => {
+  console.log('🚀 ===== PERGUNU API SERVER STARTED =====');
+  console.log(`📡 Server running on http://localhost:${PORT}`);
+  console.log(`🔔 SSE endpoint: http://localhost:${PORT}/api/news/events`);
+  console.log('📰 News API endpoints:');
+  console.log('  GET /api/news - Get all news');
+  console.log('  GET /api/news/:id - Get news by ID');
+  console.log('  POST /api/news - Create new news');
+  console.log('  PUT /api/news/:id - Update news');
+  console.log('  DELETE /api/news/:id - Delete news');
+  console.log('  PUT /api/news/:id/feature - Set as featured');
+  console.log('🌟 Ready to serve!');
 });
 
-// ===== SERVER STARTUP =====
-
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log('🚀 === PERGUNU EXPRESS API SERVER ===');
-    console.log(`🌐 Server running on: http://localhost:${PORT}`);
-    console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
-    console.log('📋 Available endpoints:');
-    console.log('  GET  /api/health - Health check');
-    console.log('  GET  /api/users - Get all users');
-    console.log('  POST /api/auth/login - User login');
-    console.log('  POST /api/auth/register - User registration');
-    console.log('  GET  /api/news - Get all news');
-    console.log('  GET  /api/applications - Get applications');
-    console.log('  GET  /api/statistics - Get statistics');
-    console.log('\n✨ Ready for requests!\n');
-  });
-}
-
-// Export for Vercel
 export default app;
