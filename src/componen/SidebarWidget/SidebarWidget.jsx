@@ -145,7 +145,7 @@ const SidebarWidget = ({
   // Data berita default sebagai fallback
   const getDefaultNews = () => [
     {
-      id: 'default-1',
+      id: '1755000000001',
       title: 'Penyerahan Sertifikat Hak Atas Tanah (SeHAT) Nelayan',
       summary: 'Program sertifikasi tanah untuk meningkatkan kesejahteraan nelayan di wilayah pesisir.',
       author: 'PERGUNU Situbondo',
@@ -154,7 +154,7 @@ const SidebarWidget = ({
       createdAt: new Date(Date.now() - 86400000).toISOString()
     },
     {
-      id: 'default-2',
+      id: '1755000000002',
       title: 'Pelatihan Teknologi Penangkapan Ikan Modern',
       summary: 'Upaya peningkatan kapasitas nelayan melalui teknologi modern dan berkelanjutan.',
       author: 'DKP Situbondo',
@@ -163,7 +163,7 @@ const SidebarWidget = ({
       createdAt: new Date(Date.now() - 172800000).toISOString()
     },
     {
-      id: 'default-3',
+      id: '1755000000003',
       title: 'Kunjungan Bupati & Wakil Bupati Situbondo',
       summary: 'Koordinasi program pembangunan sektor kelautan dan perikanan daerah.',
       author: 'Pemerintah Situbondo',
@@ -202,11 +202,11 @@ const SidebarWidget = ({
   // Handle click pada berita
   const handleNewsClick = (news) => {
     if (news.id.startsWith('default-')) {
-      // Navigate ke halaman berita statis untuk item default
+      // Navigate ke halaman berita dinamis untuk item default - UPDATED MAPPING
       const routeMap = {
-        'default-1': '/berita-1',
-        'default-2': '/berita-2',
-        'default-3': '/berita-3'
+        'default-1': '/berita/1755000000001',
+        'default-2': '/berita/1755000000002',
+        'default-3': '/berita/1755000000003'
       };
       navigate(routeMap[news.id] || '/berita');
     } else {

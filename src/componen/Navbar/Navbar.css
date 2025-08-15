@@ -242,3 +242,37 @@
   font-size: 0.8rem;
   display: inline-block;
 }
+
+/* Override global CSS yang mempengaruhi navbar */
+.navbar ul {
+  list-style: none;
+}
+
+.navbar ul > li {
+  list-style: none !important;
+  padding-left: 0 !important;
+  position: static !important;
+}
+
+.navbar ul > li:before {
+  content: none !important;
+  display: none !important;
+}
+
+.navbar ol > li:before {
+  content: none !important;
+  display: none !important;
+}
+
+/* Ensure navbar list items have proper styling */
+.navbar-right ul li {
+  list-style: none;
+  padding-left: 0;
+  position: relative;
+  margin: 0;
+}
+
+.navbar-right ul li:before {
+  content: none;
+  display: none;
+}

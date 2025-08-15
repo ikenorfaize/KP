@@ -87,16 +87,16 @@ const NewsDetailLayout = () => {
 
         const allNews = await response.json();
         
-        // Find news by ID (support both news1, news2, etc and dynamic IDs)
+        // Find news by ID (supports unified ID format like 1755000000001, etc)
         let foundNews = allNews.find(n => String(n.id) === String(id));
         
         // Fallback for static routes
         if (!foundNews) {
           const staticRouteMap = {
-            'berita-1': 'news1',
-            'berita-2': 'news2', 
-            'berita-3': 'news3',
-            'berita4': '1755081803082'
+            'berita-1': '1755000000001',
+            'berita-2': '1755000000002', 
+            'berita-3': '1755000000003',
+            'berita4': '1755000000004'
           };
           
           const mappedId = staticRouteMap[id];

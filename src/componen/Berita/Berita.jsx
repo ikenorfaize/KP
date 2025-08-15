@@ -233,7 +233,7 @@ const Berita = () => {
         <p className="berita-label">Berita</p>
 
         {/* Berita utama - Featured article dengan layout khusus */}
-        <div className="berita-utama-card" onClick={() => navigate(featured?.id ? `/berita/${featured.id}` : '/berita4')}>
+        <div className="berita-utama-card" onClick={() => navigate(featured?.id ? `/berita/${featured.id}` : '/berita/1755000000004')}>
           <div className="berita-utama-content">
             <h3>
               {featured?.title || (
@@ -359,15 +359,15 @@ const Berita = () => {
               })
             ) : (
               <>
-                <div className="berita-card" onClick={() => navigate("/berita-1")}>
+                <div className="berita-card" onClick={() => navigate("/berita/1755000000001")}>
                   <img src={berita1Img} alt="Berita 1" />
                   <p>Penyerahan Sertifikat Hak Atas Tanah (SeHAT)...</p>
                 </div>
-                <div className="berita-card" onClick={() => navigate("/berita-2")}>
+                <div className="berita-card" onClick={() => navigate("/berita/1755000000002")}>
                   <img src={berita2Img} alt="Berita 2" />
                   <p>Pelatihan Teknologi Penangkapan Ikan oleh DKP Situbondo</p>
                 </div>
-                <div className="berita-card" onClick={() => navigate("/berita-3")}>
+                <div className="berita-card" onClick={() => navigate("/berita/1755000000003")}>
                   <img src={berita3Img} alt="Berita 3" />
                   <p>Bupati & Wakil Bupati Situbondo bersama DKP</p>
                 </div>

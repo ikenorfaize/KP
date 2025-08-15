@@ -138,3 +138,109 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* ===== GLOBAL QUILL CONTENT STYLING ===== */
+/* Support for Quill editor features in article content */
+
+/* Text Alignment */
+.ql-align-center,
+[data-align="center"],
+*[style*="text-align: center"] {
+  text-align: center !important;
+}
+
+.ql-align-right,
+[data-align="right"],
+*[style*="text-align: right"] {
+  text-align: right !important;
+}
+
+.ql-align-justify,
+[data-align="justify"],
+*[style*="text-align: justify"] {
+  text-align: justify !important;
+}
+
+/* List Styling - Only for article content */
+.article-body ol {
+  counter-reset: list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+}
+
+.article-body ol > li {
+  list-style-type: none;
+  counter-increment: list-1;
+  padding-left: 1.5em;
+  position: relative;
+}
+
+.article-body ol > li:before {
+  content: counter(list-1, decimal) ". ";
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.article-body ul > li {
+  list-style-type: none;
+  padding-left: 1.5em;
+  position: relative;
+}
+
+.article-body ul > li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--primary);
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+/* Indentation */
+.ql-indent-1,
+[data-indent="1"],
+*[style*="padding-left: 3em"] {
+  padding-left: 3em !important;
+}
+
+.ql-indent-2,
+[data-indent="2"],
+*[style*="padding-left: 6em"] {
+  padding-left: 6em !important;
+}
+
+.ql-indent-3,
+[data-indent="3"],
+*[style*="padding-left: 9em"] {
+  padding-left: 9em !important;
+}
+
+.ql-indent-4,
+[data-indent="4"],
+*[style*="padding-left: 12em"] {
+  padding-left: 12em !important;
+}
+
+.ql-indent-5,
+[data-indent="5"],
+*[style*="padding-left: 15em"] {
+  padding-left: 15em !important;
+}
+
+.ql-indent-6,
+[data-indent="6"],
+*[style*="padding-left: 18em"] {
+  padding-left: 18em !important;
+}
+
+.ql-indent-7,
+[data-indent="7"],
+*[style*="padding-left: 21em"] {
+  padding-left: 21em !important;
+}
+
+.ql-indent-8,
+[data-indent="8"],
+*[style*="padding-left: 24em"] {
+  padding-left: 24em !important;
+}

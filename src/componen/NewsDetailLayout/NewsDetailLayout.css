@@ -383,6 +383,113 @@
   border-bottom-color: #0F7536;
 }
 
+/* Quill Editor Features Support - Text Alignment */
+.article-body .ql-align-center,
+.article-body [data-align="center"],
+.article-body p[style*="text-align: center"],
+.article-body h1[style*="text-align: center"],
+.article-body h2[style*="text-align: center"],
+.article-body h3[style*="text-align: center"] {
+  text-align: center !important;
+}
+
+.article-body .ql-align-right,
+.article-body [data-align="right"],
+.article-body p[style*="text-align: right"],
+.article-body h1[style*="text-align: right"],
+.article-body h2[style*="text-align: right"],
+.article-body h3[style*="text-align: right"] {
+  text-align: right !important;
+}
+
+.article-body .ql-align-justify,
+.article-body [data-align="justify"],
+.article-body p[style*="text-align: justify"] {
+  text-align: justify !important;
+}
+
+/* Quill Lists Support */
+.article-body ol.ql-list,
+.article-body ul.ql-list {
+  margin: 16px 0;
+  padding-left: 0;
+}
+
+.article-body ol {
+  counter-reset: list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+}
+
+.article-body ol > li {
+  list-style-type: none;
+  counter-increment: list-1;
+  padding-left: 1.5em;
+  position: relative;
+}
+
+.article-body ol > li:before {
+  content: counter(list-1, decimal) ". ";
+  position: absolute;
+  left: 0;
+  color: #0F7536;
+  font-weight: 600;
+}
+
+.article-body ul > li {
+  list-style-type: none;
+  padding-left: 1.5em;
+  position: relative;
+}
+
+.article-body ul > li:before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #0F7536;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+/* Quill Indent Support */
+.article-body .ql-indent-1,
+.article-body [data-indent="1"] {
+  padding-left: 3em !important;
+}
+
+.article-body .ql-indent-2,
+.article-body [data-indent="2"] {
+  padding-left: 6em !important;
+}
+
+.article-body .ql-indent-3,
+.article-body [data-indent="3"] {
+  padding-left: 9em !important;
+}
+
+.article-body .ql-indent-4,
+.article-body [data-indent="4"] {
+  padding-left: 12em !important;
+}
+
+.article-body .ql-indent-5,
+.article-body [data-indent="5"] {
+  padding-left: 15em !important;
+}
+
+.article-body .ql-indent-6,
+.article-body [data-indent="6"] {
+  padding-left: 18em !important;
+}
+
+.article-body .ql-indent-7,
+.article-body [data-indent="7"] {
+  padding-left: 21em !important;
+}
+
+.article-body .ql-indent-8,
+.article-body [data-indent="8"] {
+  padding-left: 24em !important;
+}
+
 .content-paragraph {
   margin-bottom: 24px;
   font-size: 16px;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import "./Berita4.css"; // Using shared styles
+import "./NewsDetail.css"; // Using shared styles
 import SidebarWidget from "../../componen/SidebarWidget";
 import Berita1Img from "../../assets/Berita1.png";
 import Berita2Img from "../../assets/Berita2.png";
@@ -9,7 +9,7 @@ import Berita4Img from "../../assets/Berita4.png";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
 
-const BeritaDetail = () => {
+const NewsDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams(); // Get news ID from URL
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
@@ -265,4 +265,4 @@ const BeritaDetail = () => {
   );
 };
 
-export default BeritaDetail;
+export default NewsDetail;
