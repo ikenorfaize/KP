@@ -225,6 +225,15 @@ app.put('/api/news/:id/feature', (req, res) => {
   if (newsIndex === -1) {
     return res.status(404).json({ error: 'News not found' });
   }
+
+  // Jika akan set featured true, maka reset yang lain menjadi false
+  if (req.body.featured === true) {
+    db.news.forEach((news, index) => {
+      if (index !== newsIndex) {
+        news.featured = false;
+      }
+    });
+  }
   
   db.news[newsIndex].featured = req.body.featured;
   db.news[newsIndex].updatedAt = new Date().toISOString();

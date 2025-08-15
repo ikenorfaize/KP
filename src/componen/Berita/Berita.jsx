@@ -31,55 +31,56 @@ const Berita = () => {
     "/src/assets/Berita4.png": berita4Img,
   }), []);
 
-  React.useEffect(() => {
-    let isMounted = true;
-    (async () => {
-      try {
-        setLoading(true);
-        // fetch list first
-        const listResp = await fetch(`${API_BASE}/news`);
-        if (listResp.ok) {
-          let data = await listResp.json();
-          if (isMounted && Array.isArray(data)) {
-            
-            // Ensure minimum 4 items for proper display (1 featured + 3 regular)
-            if (data.length < 4) {
-              const placeholders = generatePlaceholders(4 - data.length);
-              data = [...data, ...placeholders];
-            }
-            
-            setItems(data);
-            // check if any item is featured in the list
-            const featuredItem = data.find(n => n.featured === true);
-            if (featuredItem && isMounted) {
-              setFeatured(featuredItem);
-            } else if (data.length > 0 && isMounted) {
-              // Auto-set first item as featured if none exists
-              setFeatured(data[0]);
-            }
+  // Refetch logic extracted for reuse
+  const fetchBerita = React.useCallback(async (isMounted = true) => {
+    try {
+      setLoading(true);
+      const listResp = await fetch(`${API_BASE}/news`);
+      if (listResp.ok) {
+        let data = await listResp.json();
+        if (isMounted && Array.isArray(data)) {
+          if (data.length < 4) {
+            const placeholders = generatePlaceholders(4 - data.length);
+            data = [...data, ...placeholders];
           }
-        } else {
-          // If API fails, use default items
-          const defaultItems = getDefaultNewsItems();
-          if (isMounted) {
-            setItems(defaultItems);
-            setFeatured(defaultItems.find(n => n.featured) || defaultItems[0]);
+          setItems(data);
+          const featuredItem = data.find(n => n.featured === true);
+          if (featuredItem && isMounted) {
+            setFeatured(featuredItem);
+          } else if (data.length > 0 && isMounted) {
+            setFeatured(data[0]);
           }
         }
-      } catch (e) {
-        setError(e?.message || "Gagal memuat berita");
-        // Fallback to default items on error
+      } else {
         const defaultItems = getDefaultNewsItems();
         if (isMounted) {
           setItems(defaultItems);
           setFeatured(defaultItems.find(n => n.featured) || defaultItems[0]);
         }
-      } finally {
-        if (isMounted) setLoading(false);
       }
-    })();
-    return () => { isMounted = false; };
+    } catch (e) {
+      setError(e?.message || "Gagal memuat berita");
+      const defaultItems = getDefaultNewsItems();
+      if (isMounted) {
+        setItems(defaultItems);
+        setFeatured(defaultItems.find(n => n.featured) || defaultItems[0]);
+      }
+    } finally {
+      if (isMounted) setLoading(false);
+    }
   }, [API_BASE]);
+
+  React.useEffect(() => {
+    let isMounted = true;
+    fetchBerita(isMounted);
+    // Listen for live update event
+    const handler = () => fetchBerita(isMounted);
+    window.addEventListener('news-updated', handler);
+    return () => {
+      isMounted = false;
+      window.removeEventListener('news-updated', handler);
+    };
+  }, [fetchBerita]);
 
   // Generate placeholder news items to fill minimum requirement
   const generatePlaceholders = (count) => {

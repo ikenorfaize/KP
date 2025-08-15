@@ -159,8 +159,32 @@
   color: #333;
 }
 
+/* Quill HTML Content Styling for BeritaDetail */
 .article-body p {
   margin-bottom: 20px;
+}
+
+.article-body h1,
+.article-body h2,
+.article-body h3,
+.article-body h4,
+.article-body h5,
+.article-body h6 {
+  color: #0F7536;
+  font-weight: 600;
+  margin: 32px 0 16px 0;
+}
+
+.article-body h1 {
+  font-size: 2.5rem;
+  border-bottom: 3px solid #0F7536;
+  padding-bottom: 8px;
+}
+
+.article-body h2 {
+  font-size: 2rem;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 8px;
 }
 
 .article-body h3 {
@@ -170,6 +194,64 @@
   margin: 32px 0 16px;
   padding-bottom: 8px;
   border-bottom: 2px solid #E6E9E7;
+}
+
+.article-body ul,
+.article-body ol {
+  margin: 16px 0;
+  padding-left: 32px;
+}
+
+.article-body li {
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+
+.article-body strong {
+  font-weight: 600;
+  color: #0F7536;
+}
+
+.article-body em {
+  font-style: italic;
+  color: #666;
+}
+
+.article-body blockquote {
+  margin: 24px 0;
+  padding: 16px 24px;
+  background: #f8f9fa;
+  border-left: 4px solid #0F7536;
+  border-radius: 0 8px 8px 0;
+  font-style: italic;
+  color: #666;
+}
+
+.article-body pre {
+  background: #f4f4f4;
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 16px 0;
+}
+
+.article-body code {
+  background: #f4f4f4;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+}
+
+.article-body a {
+  color: #0F7536;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+.article-body a:hover {
+  border-bottom-color: #0F7536;
 }
 
 .article-footer {

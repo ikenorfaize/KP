@@ -27,5 +27,6 @@
   "extensions.autoUpdate": false,
   "git.autofetch": false,
   "files.autoSave": "onFocusChange",
-  "DockerRun.DisableDockerrc": true
+  "DockerRun.DisableDockerrc": true,
+  "DockerRun.DisableAutoGenerateConfig": true
 }

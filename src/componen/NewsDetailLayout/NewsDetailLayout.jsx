@@ -252,39 +252,7 @@ const NewsDetailLayout = () => {
               )}
 
               <div className="article-body">
-                {contentBlocks.map((block) => {
-                  switch (block.type) {
-                    case 'header':
-                      return (
-                        <h2 key={block.key} className="content-header">
-                          {block.content}
-                        </h2>
-                      );
-                    
-                    case 'list':
-                      return (
-                        <ul key={block.key} className="content-list">
-                          {block.content.map((item, idx) => (
-                            <li key={idx}>{item}</li>
-                          ))}
-                        </ul>
-                      );
-                    
-                    case 'quote':
-                      return (
-                        <blockquote key={block.key} className="content-quote">
-                          {block.content}
-                        </blockquote>
-                      );
-                    
-                    default:
-                      return (
-                        <p key={block.key} className="content-paragraph">
-                          {block.content}
-                        </p>
-                      );
-                  }
-                })}
+                <div dangerouslySetInnerHTML={{ __html: newsData.content }} />
               </div>
 
               {/* Article Footer */}

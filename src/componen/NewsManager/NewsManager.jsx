@@ -1,3 +1,24 @@
+  // Set berita sebagai featured (utama)
+  const handleSetFeatured = async (newsId) => {
+    try {
+      const response = await fetch(`${API_BASE}/news/${newsId}/feature`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ featured: true })
+      });
+      
+      if (response.ok) {
+        setSuccess('Berita dijadikan utama!');
+        await fetchNews();
+        // Trigger custom event for live update
+        window.dispatchEvent(new Event('news-updated'));
+      } else {
+        setError('Gagal menjadikan berita utama');
+      }
+    } catch (err) {
+      setError('Gagal koneksi ke server');
+    }
+  };
 // NewsManager.jsx - Komponen untuk mengelola berita dengan editor seperti GitHub
 import React, { useState, useEffect, useRef } from 'react';
 import Quill from 'quill';
@@ -73,9 +94,44 @@ export default function NewsManager() {
     }
   }, [error, success]);
 
-  // Initialize Quill editor
+  // Initialize Quill editor - FIXED VERSION untuk mencegah duplikasi toolbar
   useEffect(() => {
-    if (quillRef.current && !quillInstance.current && editorMode === 'write') {
+    // Cleanup function untuk membersihkan Quill instance yang lama
+    const cleanupQuill = () => {
+      if (quillInstance.current) {
+        try {
+          // Hapus event listeners
+          quillInstance.current.off('text-change');
+          // Hapus DOM elements yang dibuat Quill
+          const toolbar = quillRef.current?.previousSibling;
+          if (toolbar && toolbar.classList?.contains('ql-toolbar')) {
+            toolbar.remove();
+          }
+          // Reset instance
+          quillInstance.current = null;
+          console.log('🧹 Quill editor cleaned up completely');
+        } catch (error) {
+          console.warn('Warning during Quill cleanup:', error);
+          quillInstance.current = null;
+        }
+      }
+    };
+
+    // Hanya inisialisasi jika dalam mode write dan belum ada instance
+    if (quillRef.current && editorMode === 'write') {
+      // Cleanup instance lama jika ada
+      cleanupQuill();
+      
+      // Bersihkan DOM element sebelum inisialisasi
+      if (quillRef.current) {
+        quillRef.current.innerHTML = '';
+        // Hapus toolbar lama jika ada
+        const existingToolbar = quillRef.current.previousSibling;
+        if (existingToolbar && existingToolbar.classList?.contains('ql-toolbar')) {
+          existingToolbar.remove();
+        }
+      }
+
       try {
         // Konfigurasi toolbar Quill
         const toolbarOptions = [
@@ -117,7 +173,7 @@ export default function NewsManager() {
             'header', 'font', 'size',
             'bold', 'italic', 'underline', 'strike',
             'color', 'background',
-            'list', 'bullet', 'indent',
+            'list', 'indent',
             'align',
             'link', 'image', 'blockquote', 'code-block'
           ]
@@ -125,6 +181,16 @@ export default function NewsManager() {
 
         // Event handler untuk perubahan konten
         quillInstance.current.on('text-change', () => {
+          const html = quillInstance.current.root.innerHTML;
+          // Update formData dengan debounce untuk performa
+          setFormData(prev => ({
+            ...prev,
+            content: html
+          }));
+        });
+
+        // Event handler untuk saat kehilangan fokus (blur)
+        quillInstance.current.root.addEventListener('blur', () => {
           const html = quillInstance.current.root.innerHTML;
           setFormData(prev => ({
             ...prev,
@@ -141,13 +207,15 @@ export default function NewsManager() {
       } catch (error) {
         console.error('❌ Error initializing Quill editor:', error);
       }
+    } else if (editorMode !== 'write') {
+      // Cleanup saat tidak dalam write mode
+      cleanupQuill();
     }
 
-    // Cleanup saat component unmount atau mode berubah
+    // Cleanup function untuk useEffect
     return () => {
-      if (quillInstance.current && editorMode !== 'write') {
-        quillInstance.current = null;
-        console.log('🧹 Quill editor cleaned up');
+      if (editorMode !== 'write') {
+        cleanupQuill();
       }
     };
   }, [editorMode, isCreating]);
@@ -164,28 +232,25 @@ export default function NewsManager() {
     }
   }, [formData.content]);
 
-  // Function untuk reset Quill editor
+  // Function untuk reset Quill editor - IMPROVED VERSION
   const resetQuillEditor = () => {
     if (quillInstance.current) {
-      quillInstance.current.setText('');
-      setFormData(prev => ({ ...prev, content: '' }));
+      try {
+        quillInstance.current.setText('');
+        setFormData(prev => ({ ...prev, content: '' }));
+        console.log('🔄 Quill editor reset successfully');
+      } catch (error) {
+        console.warn('Warning during Quill reset:', error);
+      }
     }
   };
 
-  // Function untuk memaksa re-render Quill saat tab berubah
+  // Function untuk memaksa re-render Quill saat tab berubah - FIXED VERSION
   const handleTabChange = (mode) => {
+    console.log(`🔄 Switching editor mode from ${editorMode} to ${mode}`);
     setEditorMode(mode);
     
-    // Jika kembali ke write mode dan Quill belum ada, tunggu sebentar lalu init
-    if (mode === 'write' && !quillInstance.current) {
-      setTimeout(() => {
-        if (quillRef.current && !quillInstance.current) {
-          // Force re-initialization
-          setEditorMode('preview');
-          setTimeout(() => setEditorMode('write'), 50);
-        }
-      }, 100);
-    }
+    // Tidak perlu logic tambahan - useEffect akan handle inisialisasi/cleanup
   };
 
   // Handle perubahan input form
@@ -205,17 +270,24 @@ export default function NewsManager() {
     setSuccess('');
 
     try {
+      // Sync content dari Quill editor sebelum submit
+      let finalFormData = { ...formData };
+      if (quillInstance.current && editorMode === 'write') {
+        const quillContent = quillInstance.current.root.innerHTML;
+        finalFormData.content = quillContent;
+      }
+
       const url = editingId 
         ? `${API_BASE}/news/${editingId}`
         : `${API_BASE}/news`;
-      const method = editingId ? 'PATCH' : 'POST';
+      const method = editingId ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
         method,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(finalFormData)
       });
 
       if (response.ok) {
@@ -225,6 +297,8 @@ export default function NewsManager() {
         setEditingId(null);
         setEditorMode('write');
         await fetchNews(); // Refresh data
+        // Trigger custom event for live update
+        window.dispatchEvent(new Event('news-updated'));
       } else {
         const errorData = await response.json();
         setError(errorData.error || 'Gagal menyimpan berita');
@@ -236,8 +310,10 @@ export default function NewsManager() {
     }
   };
 
-  // Edit berita
+  // Edit berita - IMPROVED VERSION
   const handleEdit = (news) => {
+    console.log('📝 Starting edit mode for news:', news.id);
+    
     setFormData({
       title: news.title,
       content: news.content,
@@ -248,12 +324,17 @@ export default function NewsManager() {
     setIsCreating(true);
     setEditorMode('write');
     
-    // Update Quill editor setelah state update
+    // Update Quill editor setelah state update dengan timeout yang lebih aman
     setTimeout(() => {
-      if (quillInstance.current) {
-        quillInstance.current.root.innerHTML = news.content || '';
+      if (quillInstance.current && news.content) {
+        try {
+          quillInstance.current.root.innerHTML = news.content;
+          console.log('✅ Quill content updated for edit');
+        } catch (error) {
+          console.warn('Warning updating Quill content:', error);
+        }
       }
-    }, 100);
+    }, 150); // Slightly longer timeout for better reliability
   };
 
   // Delete berita
@@ -286,13 +367,19 @@ export default function NewsManager() {
     window.open(`/berita/${newsId}`, '_blank');
   };
 
-  // Cancel editing
+  // Cancel editing - IMPROVED VERSION dengan cleanup yang lebih baik
   const handleCancel = () => {
+    console.log('❌ Canceling editor');
+    
     setIsCreating(false);
     setEditingId(null);
     setFormData({ title: '', content: '', author: '', category: 'general' });
     setEditorMode('write');
-    resetQuillEditor();
+    
+    // Reset Quill editor dengan delay untuk memastikan state sudah terupdate
+    setTimeout(() => {
+      resetQuillEditor();
+    }, 50);
   };
 
   // Render konten dengan format markdown lengkap
@@ -513,6 +600,14 @@ export default function NewsManager() {
                 <div className="admin-news-card__actions">
                   {news.featured && (
                     <span className="admin-news-card__badge">⭐ Utama</span>
+                  )}
+                  {!news.featured && (
+                    <button
+                      className="btn-feature"
+                      onClick={() => handleSetFeatured(news.id)}
+                    >
+                      ⭐ Jadikan Utama
+                    </button>
                   )}
                   <button 
                     className="btn-edit"

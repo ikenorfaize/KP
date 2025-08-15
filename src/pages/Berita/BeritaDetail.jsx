@@ -181,9 +181,7 @@ const BeritaDetail = () => {
                 )}
 
                 <div className="article-body">
-                  {newsData.content.split('\n\n').map((paragraph, idx) => (
-                    <p key={idx}>{paragraph}</p>
-                  ))}
+                  <div dangerouslySetInnerHTML={{ __html: newsData.content }} />
                 </div>
 
                 {newsData.tags && newsData.tags.length > 0 && (

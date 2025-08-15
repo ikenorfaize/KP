@@ -250,9 +250,36 @@
   padding: 2px;
 }
 
-/* Form styling consistency */
+/* Form styling consistency - Enhanced untuk mencegah duplikasi toolbar */
 .editor-container {
   margin-bottom: 16px;
+}
+
+/* PENTING: CSS untuk mencegah toolbar duplikat Quill */
+.editor-container .write-mode .ql-toolbar:not(:first-child) {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Cleanup untuk mencegah toolbar duplikat */
+.editor-container .ql-container + .ql-toolbar {
+  display: none !important;
+}
+
+/* Hanya toolbar pertama yang ditampilkan */
+.editor-container .write-mode > .ql-toolbar:first-child {
+  display: block !important;
+  border: none;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fafafa;
+  padding: 12px 16px;
+}
+
+/* Force cleanup untuk multiple toolbars yang mungkin terbuat oleh Quill */
+.quill-editor .ql-toolbar ~ .ql-toolbar {
+  display: none !important;
 }
 
 .editor-tabs {

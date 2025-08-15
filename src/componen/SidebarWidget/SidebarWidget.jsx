@@ -173,25 +173,30 @@ const SidebarWidget = ({
     }
   ];
 
-  // Setup auto-update dengan polling
+  // Setup auto-update dengan polling dan event listener untuk live update
   useEffect(() => {
-    // Initial fetch
     fetchNewsData();
 
-    // Setup auto-update jika diaktifkan
+    // Listen for live update event
+    const handler = () => fetchNewsData();
+    window.addEventListener('news-updated', handler);
+
+    let intervalId;
     if (autoUpdate && updateInterval > 0) {
       console.log(`🔄 SidebarWidget: Auto-update enabled (${updateInterval / 1000}s interval)`);
-      
-      const intervalId = setInterval(() => {
+      intervalId = setInterval(() => {
         console.log('🔄 SidebarWidget: Auto-updating news data...');
         fetchNewsData();
       }, updateInterval);
+    }
 
-      return () => {
+    return () => {
+      window.removeEventListener('news-updated', handler);
+      if (intervalId) {
         console.log('🛑 SidebarWidget: Cleaning up auto-update interval');
         clearInterval(intervalId);
-      };
-    }
+      }
+    };
   }, [fetchNewsData, autoUpdate, updateInterval]);
 
   // Handle click pada berita
