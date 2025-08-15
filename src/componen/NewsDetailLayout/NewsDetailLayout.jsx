@@ -37,8 +37,22 @@ const NewsDetailLayout = () => {
   // Get correct image source
   const getImageSrc = (imageUrl) => {
     if (!imageUrl) return NoImageImg;
+    
+    // Handle base64 data URLs (from new upload system)
+    if (imageUrl.startsWith('data:image/')) {
+      return imageUrl;
+    }
+    
+    // Handle existing image mapping
     if (imageMap[imageUrl]) return imageMap[imageUrl];
+    
+    // Handle external URLs
     if (imageUrl.startsWith('http')) return imageUrl;
+    
+    // Handle asset paths
+    if (imageUrl.startsWith('/src/assets/')) return imageUrl;
+    
+    // Fallback to default
     return NoImageImg;
   };
 

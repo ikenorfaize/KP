@@ -73,7 +73,31 @@ const NewsDetail = () => {
   // Get image source
   const getImageSrc = () => {
     if (!newsData) return Berita1Img;
-    return imageMap[newsData.image || newsData.imageUrl] || Berita1Img;
+    
+    const imageUrl = newsData.image || newsData.imageUrl;
+    
+    // Handle base64 data URLs (from new upload system)
+    if (imageUrl && imageUrl.startsWith('data:image/')) {
+      return imageUrl;
+    }
+    
+    // Handle existing image mapping
+    if (imageUrl && imageMap[imageUrl]) {
+      return imageMap[imageUrl];
+    }
+    
+    // Handle external URLs
+    if (imageUrl && imageUrl.startsWith('http')) {
+      return imageUrl;
+    }
+    
+    // Handle asset paths
+    if (imageUrl && imageUrl.startsWith('/src/assets/')) {
+      return imageUrl;
+    }
+    
+    // Fallback to default
+    return Berita1Img;
   };
 
   if (loading) {

@@ -41,7 +41,9 @@ export default function NewsManager() {
     title: '',
     content: '',
     author: '',
-    category: 'general'
+    category: 'general',
+    image: '',
+    imageFile: null
   });
 
   // States untuk editor mode (Write / Preview seperti GitHub)
@@ -59,6 +61,31 @@ export default function NewsManager() {
     { value: 'announcement', label: 'Pengumuman' },
     { value: 'achievement', label: 'Prestasi' }
   ];
+
+  // Helper function untuk mendapatkan URL gambar yang benar
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return '';
+    
+    // Jika base64 data URL, gunakan langsung
+    if (imagePath.startsWith('data:image/')) return imagePath;
+    
+    // Jika blob URL (untuk preview upload), gunakan langsung
+    if (imagePath.startsWith('blob:')) return imagePath;
+    
+    // Jika sudah URL lengkap, gunakan langsung
+    if (imagePath.startsWith('http')) return imagePath;
+    
+    // Jika path dimulai dengan /src/assets, gunakan langsung (gambar existing)
+    if (imagePath.startsWith('/src/assets/') || imagePath.startsWith('src/assets/')) {
+      return imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+    }
+    
+    // Jika path dimulai dengan /, gunakan langsung
+    if (imagePath.startsWith('/')) return imagePath;
+    
+    // Default: anggap file upload di folder uploads
+    return `/uploads/${imagePath}`;
+  };
 
   // Fetch berita dari API
   const fetchNews = async () => {
@@ -262,6 +289,59 @@ export default function NewsManager() {
     }));
   };
 
+  // Handle upload gambar cover
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validasi tipe file
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        setError('Format gambar tidak didukung. Gunakan JPG, PNG, atau WebP.');
+        return;
+      }
+
+      // Validasi ukuran file (max 5MB)
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        setError('Ukuran gambar terlalu besar. Maksimal 5MB.');
+        return;
+      }
+
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      
+      // Store file and preview
+      setFormData(prev => ({
+        ...prev,
+        image: previewUrl,
+        imageFile: file
+      }));
+      
+      console.log('📷 Image uploaded successfully:', {
+        fileName: file.name,
+        previewUrl: previewUrl,
+        fileSize: file.size
+      });
+      
+      setSuccess('Gambar dipilih! Akan diupload saat menyimpan berita.');
+    }
+  };
+
+  // Remove uploaded image
+  const removeImage = () => {
+    if (formData.image && formData.image.startsWith('blob:')) {
+      URL.revokeObjectURL(formData.image);
+    }
+    setFormData(prev => ({
+      ...prev,
+      image: '',
+      imageFile: null
+    }));
+    // Reset file input
+    const fileInput = document.getElementById('image-upload');
+    if (fileInput) fileInput.value = '';
+  };
+
   // Submit form berita baru atau edit
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -272,10 +352,47 @@ export default function NewsManager() {
     try {
       // Sync content dari Quill editor sebelum submit
       let finalFormData = { ...formData };
-      if (quillInstance.current && editorMode === 'write') {
+      if (quillInstance.current && quillInstance.current.root && editorMode === 'write') {
         const quillContent = quillInstance.current.root.innerHTML;
         finalFormData.content = quillContent;
       }
+
+      // Handle image upload - convert to base64 for storage
+      if (formData.imageFile) {
+        try {
+          // Convert file to base64 for storage
+          const fileReader = new FileReader();
+          const base64Promise = new Promise((resolve, reject) => {
+            fileReader.onload = () => resolve(fileReader.result);
+            fileReader.onerror = reject;
+            fileReader.readAsDataURL(formData.imageFile);
+          });
+          
+          const base64Data = await base64Promise;
+          finalFormData.image = base64Data;
+          
+          console.log('📷 Image converted to base64 for storage');
+        } catch (uploadError) {
+          console.warn('Upload error, using existing path:', uploadError);
+          // Keep existing image if conversion fails
+          if (formData.image && !formData.image.startsWith('blob:')) {
+            finalFormData.image = formData.image;
+          } else {
+            // Remove broken blob URL
+            delete finalFormData.image;
+          }
+        }
+      } else if (formData.image && !formData.image.startsWith('blob:')) {
+        // Keep existing image (non-blob URLs)
+        finalFormData.image = formData.image;
+      } else {
+        // Remove blob URLs that won't persist
+        delete finalFormData.image;
+      }
+
+      // Remove imageFile and imagePreview from submission data
+      delete finalFormData.imageFile;
+      delete finalFormData.imagePreview;
 
       const url = editingId 
         ? `${API_BASE}/news/${editingId}`
@@ -292,7 +409,13 @@ export default function NewsManager() {
 
       if (response.ok) {
         setSuccess(editingId ? 'Berita berhasil diupdate!' : 'Berita berhasil dibuat!');
-        setFormData({ title: '', content: '', author: '', category: 'general' });
+        
+        // Clean up blob URLs
+        if (formData.image && formData.image.startsWith('blob:')) {
+          URL.revokeObjectURL(formData.image);
+        }
+        
+        setFormData({ title: '', content: '', author: '', category: 'general', image: '', imageFile: null });
         setIsCreating(false);
         setEditingId(null);
         setEditorMode('write');
@@ -318,7 +441,9 @@ export default function NewsManager() {
       title: news.title,
       content: news.content,
       author: news.author || '',
-      category: news.category || 'general'
+      category: news.category || 'general',
+      image: news.image || '',
+      imageFile: null
     });
     setEditingId(news.id);
     setIsCreating(true);
@@ -371,9 +496,14 @@ export default function NewsManager() {
   const handleCancel = () => {
     console.log('❌ Canceling editor');
     
+    // Clean up blob URLs
+    if (formData.image && formData.image.startsWith('blob:')) {
+      URL.revokeObjectURL(formData.image);
+    }
+    
     setIsCreating(false);
     setEditingId(null);
-    setFormData({ title: '', content: '', author: '', category: 'general' });
+    setFormData({ title: '', content: '', author: '', category: 'general', image: '', imageFile: null });
     setEditorMode('write');
     
     // Reset Quill editor dengan delay untuk memastikan state sudah terupdate
@@ -491,6 +621,74 @@ export default function NewsManager() {
               />
             </div>
 
+            {/* Upload Gambar Cover */}
+            <div className="form-group">
+              <label htmlFor="image-upload">🖼️ Gambar Cover</label>
+              <div className="image-upload-container">
+                {console.log('🔍 FormData.image:', formData.image)}
+                {!formData.image ? (
+                  <div className="image-upload-area">
+                    <input
+                      type="file"
+                      id="image-upload"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
+                      onChange={handleImageUpload}
+                      className="image-upload-input"
+                    />
+                    <label htmlFor="image-upload" className="image-upload-label">
+                      <div className="image-upload-content">
+                        <div className="image-upload-icon">📷</div>
+                        <div className="image-upload-text">
+                          <strong>Pilih gambar cover</strong>
+                          <p>atau drag & drop gambar di sini</p>
+                          <small>Format: JPG, PNG, WebP (Max: 5MB)</small>
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+                ) : (
+                  <div className="image-preview-container">
+                    <div className="image-preview">
+                      <img 
+                        src={getImageUrl(formData.image)} 
+                        alt="Preview cover"
+                        className="preview-image"
+                      />
+                      <div className="image-overlay">
+                        <button 
+                          type="button" 
+                          onClick={removeImage}
+                          className="remove-image-btn"
+                          title="Hapus gambar"
+                        >
+                          🗑️
+                        </button>
+                        <label 
+                          htmlFor="image-upload" 
+                          className="change-image-btn"
+                          title="Ganti gambar"
+                        >
+                          🔄
+                        </label>
+                      </div>
+                    </div>
+                    <input
+                      type="file"
+                      id="image-upload"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
+                      onChange={handleImageUpload}
+                      className="image-upload-input"
+                      style={{ display: 'none' }}
+                    />
+                    <div className="image-info">
+                      <p><strong>📁 File:</strong> {formData.imageFile?.name || 'Gambar existing'}</p>
+                      <small>✅ Gambar siap digunakan sebagai cover berita</small>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* GitHub-style editor dengan tabs */}
             <div className="form-group">
               <label>Konten Berita *</label>
@@ -542,6 +740,20 @@ export default function NewsManager() {
                         <h4>{formData.title || 'Judul Berita'}</h4>
                         {formData.author && <p className="preview-author">Oleh: {formData.author}</p>}
                       </div>
+                      {formData.image && (
+                        <div className="preview-image-container">
+                          <img 
+                            src={getImageUrl(formData.image)} 
+                            alt="Cover berita"
+                            className="preview-cover-image"
+                            onLoad={() => console.log('✅ Preview image loaded:', formData.image)}
+                            onError={(e) => {
+                              console.error('❌ Preview image failed to load:', formData.image);
+                              console.error('Error details:', e);
+                            }}
+                          />
+                        </div>
+                      )}
                       <div className="preview-content" dangerouslySetInnerHTML={{ __html: formData.content || '<p>Belum ada konten...</p>' }}></div>
                     </div>
                   )}
@@ -586,6 +798,15 @@ export default function NewsManager() {
                 data-news-id={news.id}
                 className={`admin-news-card ${news.featured ? 'admin-news-card--featured' : ''}`}
               >
+                {news.image && (
+                  <div className="admin-news-card__image">
+                    <img 
+                      src={getImageUrl(news.image)} 
+                      alt={news.title}
+                      className="admin-card-cover"
+                    />
+                  </div>
+                )}
                 <div className="admin-news-card__header">
                   <h4 className="admin-news-card__title">{news.title}</h4>
                   <span className="admin-news-card__category">{categories.find(c => c.value === news.category)?.label || news.category}</span>

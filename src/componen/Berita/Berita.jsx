@@ -7,6 +7,7 @@ import berita4Img from "../../assets/Berita4.png";
 import berita1Img from "../../assets/Berita1.png";
 import berita2Img from "../../assets/Berita2.png";
 import berita3Img from "../../assets/Berita3.png";
+import noImageImg from "../../assets/noimage.png";
 
 // KOMPONEN BERITA - Menampilkan preview berita dengan featured article dan grid
 const Berita = () => {
@@ -29,7 +30,30 @@ const Berita = () => {
     "/src/assets/Berita2.png": berita2Img,
     "/src/assets/Berita3.png": berita3Img,
     "/src/assets/Berita4.png": berita4Img,
+    "/src/assets/noimage.png": noImageImg,
   }), []);
+
+  // Helper function untuk mendapatkan gambar dengan fallback
+  const getImageWithFallback = React.useCallback((imageUrl) => {
+    if (!imageUrl) return noImageImg;
+    
+    // Handle base64 data URLs (from new upload system)
+    if (imageUrl.startsWith('data:image/')) {
+      return imageUrl;
+    }
+    
+    // Handle existing image mapping
+    if (imageMap[imageUrl]) return imageMap[imageUrl];
+    
+    // Handle external URLs
+    if (imageUrl.startsWith('http')) return imageUrl;
+    
+    // Handle asset paths
+    if (imageUrl.startsWith('/src/assets/')) return imageUrl;
+    
+    // Fallback to default
+    return noImageImg;
+  }, [imageMap]);
 
   // Refetch logic extracted for reuse
   const fetchBerita = React.useCallback(async (isMounted = true) => {
@@ -250,7 +274,13 @@ const Berita = () => {
               baca selengkapnya
             </button>
           </div>
-          <img src={featured ? (imageMap[featured.image || featured.imageUrl] || berita4Img) : berita4Img} alt="Berita utama" />
+          <img 
+            src={getImageWithFallback(featured?.image || featured?.imageUrl)} 
+            alt="Berita utama" 
+            onError={(e) => {
+              e.target.src = noImageImg;
+            }}
+          />
         </div>
 
         {/* Grid berita lainnya dengan navigasi - Layout grid untuk multiple articles*/}
@@ -335,24 +365,17 @@ const Berita = () => {
             {/* Jika API tersedia, tampilkan 3 berita per halaman; jika tidak, fallback ke konten statis */}
             {currentGridItems.length > 0 && !loading && !error ? (
               currentGridItems.map((n, idx) => {
-                // Penanganan gambar: jika berita tidak punya gambar, tampilkan placeholder kosong
-                let imgSrc = null;
-                
-                if (n.image || n.imageUrl) {
-                  // Jika ada image/imageUrl, coba map ke import gambar
-                  imgSrc = imageMap[n.image || n.imageUrl];
-                }
-                
-                // Jika masih null, gunakan placeholder kosong
-                if (!imgSrc) {
-                  imgSrc = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMGYwIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNiIgZmlsbD0iIzk5OTk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==';
-                }
-                
                 // Dynamic routing berdasarkan ID berita
                 const to = `/berita/${n.id}`;
                 return (
                   <div key={n.id || idx} className="berita-card" onClick={() => navigate(to)}>
-                    <img src={imgSrc} alt={n.title || `Berita ${idx + 1}`} />
+                    <img 
+                      src={getImageWithFallback(n.image || n.imageUrl)} 
+                      alt={n.title || `Berita ${idx + 1}`}
+                      onError={(e) => {
+                        e.target.src = noImageImg;
+                      }}
+                    />
                     <p>{n.title || "Berita"}</p>
                   </div>
                 );

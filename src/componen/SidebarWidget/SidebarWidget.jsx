@@ -7,6 +7,7 @@ import berita1Img from '../../assets/Berita1.png';
 import berita2Img from '../../assets/Berita2.png';
 import berita3Img from '../../assets/Berita3.png';
 import berita4Img from '../../assets/Berita4.png';
+import noImageImg from '../../assets/noimage.png';
 
 const SidebarWidget = ({ 
   title = "Berita Terbaru", 
@@ -75,16 +76,24 @@ const SidebarWidget = ({
 
   // Mendapatkan URL gambar yang benar
   const getImageSrc = (imageUrl) => {
-    if (!imageUrl) return berita1Img;
+    if (!imageUrl) return noImageImg;
+    
+    // Handle base64 data URLs (from new upload system)
+    if (imageUrl.startsWith('data:image/')) {
+      return imageUrl;
+    }
     
     // Cek apakah sudah ada mapping
     if (imageMap[imageUrl]) return imageMap[imageUrl];
     
-    // Jika URL lengkap, gunakan langsung
+    // Handle external URLs
     if (imageUrl.startsWith('http')) return imageUrl;
     
+    // Handle asset paths
+    if (imageUrl.startsWith('/src/assets/')) return imageUrl;
+    
     // Fallback ke gambar default
-    return berita1Img;
+    return noImageImg;
   };
 
   // Fetch data berita dari API yang sama dengan admin-news-list
@@ -280,6 +289,9 @@ const SidebarWidget = ({
                     src={getImageSrc(news.image || news.imageUrl)} 
                     alt={news.title}
                     loading="lazy"
+                    onError={(e) => {
+                      e.target.src = noImageImg;
+                    }}
                   />
                   {news.featured && (
                     <span className="featured-badge">⭐</span>

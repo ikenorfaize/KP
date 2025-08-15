@@ -101,10 +101,15 @@
   grid-template-columns: 1fr 300px;
   gap: 48px;
   align-items: start;
+  overflow: hidden; /* Prevent horizontal overflow */
+  min-width: 0; /* Allow grid items to shrink */
 }
 
 .content-area {
   background: white;
+  min-width: 0; /* Allow flexbox/grid to shrink below content size */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .content-area .image-container {
@@ -135,10 +140,17 @@
   display: grid;
   grid-template-columns: 1fr 300px;
   gap: 48px;
+  overflow: hidden; /* Prevent horizontal overflow */
+  min-width: 0; /* Allow grid items to shrink */
 }
 
 .article-content {
   background: white;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .article-lead {
@@ -157,6 +169,9 @@
   font-size: 16px;
   line-height: 1.8;
   color: #333;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  max-width: 100%;
 }
 
 /* Quill HTML Content Styling for NewsDetail */
@@ -252,6 +267,32 @@
 
 .article-body a:hover {
   border-bottom-color: #0F7536;
+}
+
+/* Fix for images in content that cause overflow */
+.article-body img {
+  max-width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin: 16px auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure inline images don't break layout */
+.article-body p img {
+  max-width: 100% !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+/* Fix for linked images */
+.article-body a img {
+  max-width: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  display: block;
+  margin: 16px auto;
 }
 
 /* Quill Editor Features Support - Text Alignment */
