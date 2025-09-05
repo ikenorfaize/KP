@@ -9,7 +9,6 @@ import Navbar from "./componen/Navbar/Navbar";           // Navigation bar
 import Hero from "./componen/Hero/Hero";                 // Hero section dengan animasi
 import Tentang from "./componen/Tentang/Tentang";        // Section tentang PERGUNU
 import Berita from "./componen/Berita/Berita";           // Grid berita terbaru
-import StatsSection from "./componen/Stats/StatsSection"; // Statistik organisasi
 import Anggota from "./componen/Anggota/Anggota";        // Tim dan anggota
 import Layanan from "./componen/Layanan/Layanan";        // Layanan yang ditawarkan
 import Sponsor from "./componen/Sponsor/Sponsor";        // Partner dan sponsor
@@ -85,7 +84,6 @@ const App = () => {
                 <Hero />  {/* Section banner utama dengan CTA dan animasi typing */}
               </div>
               <Tentang />       {/* Section tentang organisasi PERGUNU */}
-              <StatsSection />  {/* Section statistik (jumlah anggota, achievement) */}
               <Anggota />       {/* Section tim inti dan keanggotaan */}
               <Berita />        {/* Section berita terbaru (3 artikel) */}
               <BeasiswaCard />  {/* Section program beasiswa dan bantuan */}
