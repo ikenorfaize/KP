@@ -1441,6 +1441,33 @@ app.get('/api/admin/db-status', async (req, res) => {
   }
 });
 
+// POST /api/admin/clear-collection - Clear a specific collection
+app.post('/api/admin/clear-collection', async (req, res) => {
+  try {
+    const { collectionName } = req.body;
+    
+    if (!collectionName) {
+      return res.status(400).json({ error: 'collectionName is required' });
+    }
+    
+    const db = getDB();
+    if (!db) {
+      return res.status(500).json({ error: 'MongoDB not connected' });
+    }
+    
+    const result = await db.collection(collectionName).deleteMany({});
+    
+    res.json({ 
+      success: true, 
+      collectionName,
+      deletedCount: result.deletedCount 
+    });
+  } catch (error) {
+    console.error('❌ Clear collection error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // ===== HEALTH CHECK =====
 app.get('/api/health', (req, res) => {
   res.json({ 
