@@ -357,16 +357,25 @@ app.post('/api/news', async (req, res) => {
     // Get image path from request body (uploaded via file-server)
     const imagePath = req.body.image || null;
     
+    // Use provided ID (for import) or generate new one (for user creation)
+    const newsId = req.body.id || Date.now().toString();
+    
+    // Check for duplicate ID
+    const existingIndex = news.findIndex(n => n.id === newsId);
+    if (existingIndex !== -1) {
+      return res.status(409).json({ error: 'News with this ID already exists', id: newsId });
+    }
+    
     const newNews = {
-      id: Date.now().toString(),
+      id: newsId,
       title: req.body.title,
       content: req.body.content,
       author: req.body.author || '',
       category: req.body.category || 'general',
       image: imagePath,
       featured: req.body.featured || false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      createdAt: req.body.createdAt || new Date().toISOString(),
+      updatedAt: req.body.updatedAt || new Date().toISOString()
     };
     
     console.log('📰 Creating new news:', {
@@ -748,21 +757,31 @@ app.post('/api/beasiswa', async (req, res) => {
       }
     }
     
+    // Use provided ID (for import) or generate new one (for user creation)
+    const beasiswaId = req.body.id || Date.now().toString();
+    
+    const beasiswa = await getCollection('beasiswa');
+    
+    // Check for duplicate ID
+    const existingIndex = beasiswa.findIndex(b => b.id === beasiswaId);
+    if (existingIndex !== -1) {
+      return res.status(409).json({ error: 'Beasiswa with this ID already exists', id: beasiswaId });
+    }
+    
     const newBeasiswa = {
-      id: Date.now().toString(),
+      id: beasiswaId,
       judul: req.body.judul,
       nominal: req.body.nominal,
       deadline: req.body.deadline,
       tanggal_mulai: req.body.tanggal_mulai,
-      status: calculateBeasiswaStatus(req.body.tanggal_mulai, req.body.deadline), // Auto-calculate
+      status: req.body.status || calculateBeasiswaStatus(req.body.tanggal_mulai, req.body.deadline),
       deskripsi: req.body.deskripsi,
       persyaratan: Array.isArray(req.body.persyaratan) ? req.body.persyaratan : [req.body.persyaratan],
       kategori: req.body.kategori,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      createdAt: req.body.createdAt || new Date().toISOString(),
+      updatedAt: req.body.updatedAt || new Date().toISOString()
     };
     
-    const beasiswa = await getCollection('beasiswa');
     beasiswa.push(newBeasiswa);
     await saveCollection('beasiswa', beasiswa);
     
@@ -956,12 +975,21 @@ app.post('/api/applications', async (req, res) => {
   try {
     const applications = await getCollection('applications');
     
+    // Use provided ID (for import) or generate new one (for user submission)
+    const appId = req.body.id || Date.now().toString();
+    
+    // Check for duplicate ID
+    const existingIndex = applications.findIndex(a => a.id === appId);
+    if (existingIndex !== -1) {
+      return res.status(409).json({ error: 'Application with this ID already exists', id: appId });
+    }
+    
     const newApplication = {
-      id: Date.now().toString(),
+      id: appId,
       ...req.body,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      status: req.body.status || 'pending',
+      createdAt: req.body.createdAt || new Date().toISOString(),
+      updatedAt: req.body.updatedAt || new Date().toISOString()
     };
     
     applications.push(newApplication);
