@@ -215,11 +215,22 @@ const saveCollection = async (collectionName, items) => {
   const db = getDB();
   if (db) {
     try {
-      await db.collection(collectionName).deleteMany({});
-      if (items.length > 0) {
-        await db.collection(collectionName).insertMany(items);
+      // ATOMIC UPSERT OPERATIONS - Prevents race conditions
+      // Instead of delete+insert, we upsert each document individually
+      const bulkOps = items.map(item => ({
+        replaceOne: {
+          filter: { _id: item._id },
+          replacement: item,
+          upsert: true
+        }
+      }));
+      
+      if (bulkOps.length > 0) {
+        const result = await db.collection(collectionName).bulkWrite(bulkOps);
+        console.log(`✅ Saved ${items.length} items to MongoDB collection: ${collectionName} (${result.upsertedCount} inserted, ${result.modifiedCount} updated)`);
+      } else {
+        console.log(`✅ No items to save for collection: ${collectionName}`);
       }
-      console.log(`✅ Saved ${items.length} items to MongoDB collection: ${collectionName}`);
       return;
     } catch (error) {
       console.error('MongoDB write error, falling back to JSON:', error.message);
@@ -1464,6 +1475,61 @@ app.post('/api/admin/clear-collection', async (req, res) => {
     });
   } catch (error) {
     console.error('❌ Clear collection error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST /api/admin/deduplicate - Remove duplicates from a collection
+app.post('/api/admin/deduplicate', async (req, res) => {
+  try {
+    const { collectionName } = req.body;
+    
+    if (!collectionName) {
+      return res.status(400).json({ error: 'collectionName is required' });
+    }
+    
+    const db = getDB();
+    if (!db) {
+      return res.status(500).json({ error: 'MongoDB not connected' });
+    }
+    
+    // Get all documents
+    const collection = db.collection(collectionName);
+    const allDocs = await collection.find({}).toArray();
+    
+    // Group by _id (as string)
+    const grouped = {};
+    allDocs.forEach(doc => {
+      const id = doc._id.toString();
+      if (!grouped[id]) {
+        grouped[id] = [];
+      }
+      grouped[id].push(doc);
+    });
+    
+    let duplicatesRemoved = 0;
+    
+    // For each _id group with duplicates, keep only the first one
+    for (const [id, docs] of Object.entries(grouped)) {
+      if (docs.length > 1) {
+        // Delete all duplicates except the first one
+        const duplicateIds = docs.slice(1).map(d => d._id);
+        const result = await collection.deleteMany({ _id: { $in: duplicateIds } });
+        duplicatesRemoved += result.deletedCount;
+      }
+    }
+    
+    const finalCount = await collection.countDocuments();
+    
+    res.json({ 
+      success: true, 
+      collectionName,
+      originalCount: allDocs.length,
+      duplicatesRemoved,
+      finalCount
+    });
+  } catch (error) {
+    console.error('❌ Deduplicate error:', error);
     res.status(500).json({ error: error.message });
   }
 });
