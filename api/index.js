@@ -215,7 +215,7 @@ const saveCollection = async (collectionName, items) => {
   const db = getDB();
   if (db) {
     try {
-      // ATOMIC UPSERT OPERATIONS - Prevents race conditions
+      // ATOMIC UPSERT OPERATIONS with WRITE CONCERN - Prevents race conditions
       // Instead of delete+insert, we upsert each document individually
       const bulkOps = items.map(item => ({
         replaceOne: {
@@ -226,17 +226,31 @@ const saveCollection = async (collectionName, items) => {
       }));
       
       if (bulkOps.length > 0) {
-        const result = await db.collection(collectionName).bulkWrite(bulkOps);
-        console.log(`✅ Saved ${items.length} items to MongoDB collection: ${collectionName} (${result.upsertedCount} inserted, ${result.modifiedCount} updated)`);
+        // Add write concern to ensure data is written to MongoDB
+        const result = await db.collection(collectionName).bulkWrite(bulkOps, { 
+          writeConcern: { w: 'majority', j: true, wtimeout: 5000 }
+        });
+        console.log(`✅ Saved ${items.length} items to MongoDB collection: ${collectionName}`);
+        console.log(`   - Inserted: ${result.upsertedCount}`);
+        console.log(`   - Updated: ${result.modifiedCount}`);
+        console.log(`   - Matched: ${result.matchedCount}`);
+        
+        // Verify write succeeded
+        const count = await db.collection(collectionName).countDocuments();
+        console.log(`   - Verified count in DB: ${count}`);
       } else {
-        console.log(`✅ No items to save for collection: ${collectionName}`);
+        console.log(`⚠️ No items to save for collection: ${collectionName}`);
       }
       return;
     } catch (error) {
-      console.error('MongoDB write error, falling back to JSON:', error.message);
+      console.error(`❌ MongoDB write error for ${collectionName}:`, error.message);
+      console.error('   Full error:', error);
+      throw error; // Re-throw to let caller know write failed
     }
   }
-  // Fallback to JSON
+  
+  // Fallback to JSON if MongoDB not available
+  console.log(`⚠️ MongoDB not available, using JSON fallback for ${collectionName}`);
   const data = readDB();
   data[collectionName] = items;
   writeDB(data);
