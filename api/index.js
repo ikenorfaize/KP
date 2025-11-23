@@ -581,24 +581,28 @@ app.put('/api/news/:id/feature', async (req, res) => {
 app.post('/api/register', async (req, res) => {
   try {
     const users = await getCollection('users');
-    const { email, password, fullName } = req.body;
+    const { email, password, fullName, name, role, id, createdAt } = req.body;
+    
+    // Use provided ID (for import) or generate new
+    const userId = id || Date.now().toString();
     
     // Check if user already exists
-    const existingUser = users.find(u => u.email === email);
+    const existingUser = users.find(u => u.email === email || u.id === userId);
     if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' });
+      return res.status(409).json({ error: 'User already exists', id: userId });
     }
     
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Hash password if not already hashed (import may have pre-hashed passwords)
+    const hashedPassword = password && password.startsWith('$2') ? password : await bcrypt.hash(password, 10);
     
     const newUser = {
-      id: Date.now().toString(),
+      id: userId,
       email,
       password: hashedPassword,
-      fullName,
-      role: 'user',
-      createdAt: new Date().toISOString()
+      name: name || fullName || '', // Support both 'name' and 'fullName' fields
+      fullName: fullName || name || '', // Keep both for compatibility
+      role: role || 'user',
+      createdAt: createdAt || new Date().toISOString()
     };
     
     users.push(newUser);
