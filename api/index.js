@@ -210,6 +210,58 @@ const getCollection = async (collectionName) => {
 };
 
 // Helper: Save collection to MongoDB or JSON
+// Update a single document by ID (SAFE - doesn't affect other documents)
+const updateDocument = async (collectionName, documentId, updates) => {
+  const db = getDB();
+  if (db) {
+    try {
+      const result = await db.collection(collectionName).updateOne(
+        { id: documentId },
+        { $set: { ...updates, updatedAt: new Date().toISOString() } },
+        { writeConcern: { w: 'majority', j: true, wtimeout: 5000 } }
+      );
+      console.log(`✅ Updated document in ${collectionName}: id=${documentId}, matched=${result.matchedCount}, modified=${result.modifiedCount}`);
+      return result;
+    } catch (error) {
+      console.error(`❌ MongoDB update error for ${collectionName}:`, error.message);
+      throw error;
+    }
+  }
+  
+  // Fallback to JSON
+  const data = readDB();
+  const items = data[collectionName] || [];
+  const index = items.findIndex(item => item.id === documentId);
+  if (index !== -1) {
+    items[index] = { ...items[index], ...updates, updatedAt: new Date().toISOString() };
+    writeDB(data);
+  }
+};
+
+// Delete a single document by ID (SAFE - doesn't affect other documents)
+const deleteDocument = async (collectionName, documentId) => {
+  const db = getDB();
+  if (db) {
+    try {
+      const result = await db.collection(collectionName).deleteOne(
+        { id: documentId },
+        { writeConcern: { w: 'majority', j: true, wtimeout: 5000 } }
+      );
+      console.log(`✅ Deleted document from ${collectionName}: id=${documentId}, deleted=${result.deletedCount}`);
+      return result;
+    } catch (error) {
+      console.error(`❌ MongoDB delete error for ${collectionName}:`, error.message);
+      throw error;
+    }
+  }
+  
+  // Fallback to JSON
+  const data = readDB();
+  const items = data[collectionName] || [];
+  data[collectionName] = items.filter(item => item.id !== documentId);
+  writeDB(data);
+};
+
 const saveCollection = async (collectionName, items) => {
   // Check MongoDB availability directly (don't rely on useMongoDB flag due to async init)
   const db = getDB();
@@ -412,40 +464,39 @@ app.post('/api/news', async (req, res) => {
 app.put('/api/news/:id', async (req, res) => {
   try {
     const news = await getCollection('news');
-    const newsIndex = news.findIndex(n => n.id === req.params.id);
+    const existingNews = news.find(n => n.id === req.params.id);
     
-    if (newsIndex === -1) {
+    if (!existingNews) {
       return res.status(404).json({ error: 'News not found' });
     }
     
     // Get image path from request body (uploaded via file-server) or keep existing
-    let imagePath = news[newsIndex].image; // Keep existing image by default
+    let imagePath = existingNews.image; // Keep existing image by default
     
     if (req.body.image !== undefined) {
       // Image field provided in JSON (could be null to remove image, or filename from file-server)
       imagePath = req.body.image;
     }
     
-    const updatedNews = {
-      ...news[newsIndex],
-      title: req.body.title || news[newsIndex].title,
-      content: req.body.content || news[newsIndex].content,
-      author: req.body.author !== undefined ? req.body.author : news[newsIndex].author,
-      category: req.body.category || news[newsIndex].category,
+    const updates = {
+      title: req.body.title || existingNews.title,
+      content: req.body.content || existingNews.content,
+      author: req.body.author !== undefined ? req.body.author : existingNews.author,
+      category: req.body.category || existingNews.category,
       image: imagePath,
-      featured: req.body.featured !== undefined ? req.body.featured : news[newsIndex].featured,
-      updatedAt: new Date().toISOString()
+      featured: req.body.featured !== undefined ? req.body.featured : existingNews.featured
     };
     
     console.log('📰 Updating news:', {
       id: req.params.id,
-      title: updatedNews.title,
-      hasNewImage: !!req.file,
+      title: updates.title,
       imagePath: imagePath
     });
     
-    news[newsIndex] = updatedNews;
-    await saveCollection('news', news);
+    // SAFE UPDATE - only updates THIS document, doesn't affect others
+    await updateDocument('news', req.params.id, updates);
+    
+    const updatedNews = { ...existingNews, ...updates, updatedAt: new Date().toISOString() };
     broadcastToClients('news-updated', updatedNews);
     res.json(updatedNews);
   } catch (error) {
@@ -458,17 +509,19 @@ app.put('/api/news/:id', async (req, res) => {
 app.delete('/api/news/:id', async (req, res) => {
   try {
     const news = await getCollection('news');
-    const newsIndex = news.findIndex(n => n.id === req.params.id);
+    const existingNews = news.find(n => n.id === req.params.id);
     
-    if (newsIndex === -1) {
+    if (!existingNews) {
       return res.status(404).json({ error: 'News not found' });
     }
     
-    const deletedNews = news[newsIndex];
-    news.splice(newsIndex, 1);
-    await saveCollection('news', news);
+    console.log('🗑️  Deleting news:', { id: req.params.id, title: existingNews.title });
+    
+    // SAFE DELETE - only deletes THIS document, doesn't affect others
+    await deleteDocument('news', req.params.id);
+    
     broadcastToClients('news-deleted', { id: req.params.id });
-    res.json({ message: 'News deleted successfully', deletedNews });
+    res.json({ message: 'News deleted successfully', deletedNews: existingNews });
   } catch (error) {
     console.error('Error deleting news:', error);
     res.status(500).json({ error: 'Failed to delete news' });
@@ -811,25 +864,25 @@ app.post('/api/beasiswa', async (req, res) => {
 app.put('/api/beasiswa/:id', async (req, res) => {
   try {
     const beasiswa = await getCollection('beasiswa');
-    const beasiswaIndex = beasiswa.findIndex(b => b.id === req.params.id);
+    const existing = beasiswa.find(b => b.id === req.params.id);
     
-    if (beasiswaIndex === -1) {
+    if (!existing) {
       return res.status(404).json({ error: 'Beasiswa not found' });
     }
     
-    const updatedBeasiswa = {
-      ...beasiswa[beasiswaIndex],
+    const updates = {
       ...req.body,
       // Auto-calculate status jika tanggal diubah
       status: calculateBeasiswaStatus(
-        req.body.tanggal_mulai || beasiswa[beasiswaIndex].tanggal_mulai,
-        req.body.deadline || beasiswa[beasiswaIndex].deadline
-      ),
-      updatedAt: new Date().toISOString()
+        req.body.tanggal_mulai || existing.tanggal_mulai,
+        req.body.deadline || existing.deadline
+      )
     };
     
-    beasiswa[beasiswaIndex] = updatedBeasiswa;
-    await saveCollection('beasiswa', beasiswa);
+    // SAFE UPDATE - only updates THIS document
+    await updateDocument('beasiswa', req.params.id, updates);
+    
+    const updatedBeasiswa = { ...existing, ...updates, updatedAt: new Date().toISOString() };
     
     broadcastToClients('beasiswa-updated', updatedBeasiswa);
     res.json(updatedBeasiswa);
@@ -843,14 +896,16 @@ app.put('/api/beasiswa/:id', async (req, res) => {
 app.delete('/api/beasiswa/:id', async (req, res) => {
   try {
     const beasiswa = await getCollection('beasiswa');
-    const beasiswaIndex = beasiswa.findIndex(b => b.id === req.params.id);
+    const existing = beasiswa.find(b => b.id === req.params.id);
     
-    if (beasiswaIndex === -1) {
+    if (!existing) {
       return res.status(404).json({ error: 'Beasiswa not found' });
     }
     
-    beasiswa.splice(beasiswaIndex, 1);
-    await saveCollection('beasiswa', beasiswa);
+    console.log('🗑️  Deleting beasiswa:', { id: req.params.id, judul: existing.judul });
+    
+    // SAFE DELETE - only deletes THIS document
+    await deleteDocument('beasiswa', req.params.id);
     
     broadcastToClients('beasiswa-deleted', { id: req.params.id });
     res.status(204).send(); // No content response for successful deletion
@@ -1064,17 +1119,17 @@ app.put('/api/applications/:id/status', async (req, res) => {
 app.delete('/api/applications/:id', async (req, res) => {
   try {
     const applications = await getCollection('applications');
-    const appIndex = applications.findIndex(app => app.id === req.params.id);
+    const existing = applications.find(app => app.id === req.params.id);
     
-    if (appIndex === -1) {
+    if (!existing) {
       return res.status(404).json({ error: 'Application not found' });
     }
     
-    // Remove application from array
-    applications.splice(appIndex, 1);
+    console.log(`🗑️ Deleting application: ${req.params.id}`);
     
-    await saveCollection('applications', applications);
-    console.log(`🗑️ Application ${req.params.id} deleted successfully`);
+    // SAFE DELETE - only deletes THIS document
+    await deleteDocument('applications', req.params.id);
+    
     res.json({ success: true, message: 'Application deleted' });
   } catch (error) {
     console.error('Error deleting application:', error);
