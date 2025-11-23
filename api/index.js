@@ -195,16 +195,35 @@ const DB_PATH = isVercel ? '/tmp/db.json' : DB_SOURCE;
 
 // Helper: Get collection from MongoDB or JSON
 const getCollection = async (collectionName) => {
-  // Check MongoDB availability directly (don't rely on useMongoDB flag due to async init)
-  const db = getDB();
-  if (db) {
+  // If MongoDB is configured, WAIT for it - don't use JSON fallback that could cause data loss
+  if (process.env.MONGODB_URI) {
+    const db = getDB();
+    
+    if (!db) {
+      // MongoDB configured but not connected yet - wait a bit
+      console.log(`⏳ MongoDB not ready for ${collectionName}, waiting 2s...`);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      const dbRetry = getDB();
+      if (!dbRetry) {
+        console.error(`❌ MongoDB still not ready for ${collectionName} after wait`);
+        throw new Error('MongoDB not available - cannot serve stale data');
+      }
+    }
+    
     try {
-      return await db.collection(collectionName).find({}).toArray();
+      const finalDb = getDB();
+      const data = await finalDb.collection(collectionName).find({}).toArray();
+      console.log(`✅ Got ${data.length} items from MongoDB collection: ${collectionName}`);
+      return data;
     } catch (error) {
-      console.error('MongoDB read error, falling back to JSON:', error.message);
+      console.error(`❌ MongoDB read error for ${collectionName}:`, error.message);
+      throw error; // Don't fallback to JSON - this prevents data loss
     }
   }
-  // Fallback to JSON
+  
+  // Only use JSON if MongoDB is NOT configured at all
+  console.log(`📄 Using JSON fallback for ${collectionName} (MongoDB not configured)`);
   const data = readDB();
   return data[collectionName] || [];
 };
@@ -321,26 +340,23 @@ const readDB = () => {
     
     console.log('🔍 MongoDB actual connection status:', mongoActuallyConnected);
     
-    // NEVER copy source if MongoDB URI exists (even if not connected yet)
-    // This prevents stale data resurrection on cold starts
+    // CRITICAL FIX: If MongoDB is configured, NEVER use JSON fallback that could overwrite MongoDB
+    // This prevents data loss during cold starts when MongoDB takes time to connect
     if (process.env.MONGODB_URI) {
-      console.log('⚠️ MongoDB URI exists - skipping source copy to prevent data resurrection');
+      console.log('⚠️ MongoDB URI exists - this function should NOT be called');
+      console.log('⚠️ Callers should use getCollection() which waits for MongoDB');
       
-      // If MongoDB URI exists but not connected, use empty structure
-      // MongoDB will be used once connection is established
-      if (!mongoActuallyConnected && !existsSync(DB_PATH)) {
-        console.log('📝 Creating empty fallback structure (MongoDB will be primary)');
-        const emptyDB = {
-          users: [],
-          news: [],
-          sessions: [],
-          applications: [],
-          beasiswa: [],
-          beasiswa_applications: []
-        };
-        writeFileSync(DB_PATH, JSON.stringify(emptyDB, null, 2));
-        return emptyDB;
-      }
+      // Return empty structure but DO NOT WRITE to file
+      // This is emergency fallback only - should never be used in production
+      console.error('❌ CRITICAL: readDB() called when MongoDB configured!');
+      return {
+        users: [],
+        news: [],
+        sessions: [],
+        applications: [],
+        beasiswa: [],
+        beasiswa_applications: []
+      };
     }
     
     // Only copy from source if ABSOLUTELY NO MongoDB configuration exists
