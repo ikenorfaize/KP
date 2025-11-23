@@ -609,9 +609,16 @@ app.post('/api/register', async (req, res) => {
     // Use MongoDB insertOne instead of saveCollection to avoid replacing entire collection
     const db = getDB();
     if (db) {
-      await db.collection('users').insertOne(newUser);
+      try {
+        const result = await db.collection('users').insertOne(newUser);
+        console.log(`✅ User registered via MongoDB: ${email}, hasPassword: ${!!newUser.password}, passwordLength: ${newUser.password?.length}`);
+      } catch (insertError) {
+        console.error(`❌ MongoDB insert error for user ${email}:`, insertError.message);
+        throw insertError;
+      }
     } else {
       // Fallback to JSON if MongoDB not available
+      console.log(`⚠️ Using JSON fallback for user registration: ${email}`);
       users.push(newUser);
       await saveCollection('users', users);
     }
