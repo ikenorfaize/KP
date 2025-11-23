@@ -599,29 +599,14 @@ app.post('/api/register', async (req, res) => {
       id: userId,
       email,
       password: hashedPassword,
-      username: req.body.username || '', // Preserve username from import
       name: name || fullName || '', // Support both 'name' and 'fullName' fields
       fullName: fullName || name || '', // Keep both for compatibility
       role: role || 'user',
       createdAt: createdAt || new Date().toISOString()
     };
     
-    // Use MongoDB insertOne instead of saveCollection to avoid replacing entire collection
-    const db = getDB();
-    if (db) {
-      try {
-        const result = await db.collection('users').insertOne(newUser);
-        console.log(`✅ User registered via MongoDB: ${email}, hasPassword: ${!!newUser.password}, passwordLength: ${newUser.password?.length}`);
-      } catch (insertError) {
-        console.error(`❌ MongoDB insert error for user ${email}:`, insertError.message);
-        throw insertError;
-      }
-    } else {
-      // Fallback to JSON if MongoDB not available
-      console.log(`⚠️ Using JSON fallback for user registration: ${email}`);
-      users.push(newUser);
-      await saveCollection('users', users);
-    }
+    users.push(newUser);
+    await saveCollection('users', users);
     
     const { password: _, ...userWithoutPassword } = newUser;
     res.status(201).json(userWithoutPassword);
