@@ -1,0 +1,108 @@
+﻿[
+    {
+        "id":  "1726987200001",
+        "judul":  "Beasiswa Riset Pendidikan Islam",
+        "nominal":  "Rp 15.000.000",
+        "deadline":  "2025-06-30",
+        "tanggal_mulai":  "2025-01-01",
+        "status":  "Buka",
+        "deskripsi":  "Dana penelitian untuk pengembangan metode pembelajaran Islam kontemporer",
+        "persyaratan":  [
+                            "S2/S3 bidang pendidikan",
+                            "Proposal penelitian yang relevan",
+                            "Publikasi jurnal sebelumnya"
+                        ],
+        "kategori":  "Riset",
+        "createdAt":  "2025-09-22T00:00:00.000Z",
+        "updatedAt":  "2025-09-22T00:00:00.000Z"
+    },
+    {
+        "id":  "1726987200002",
+        "judul":  "Beasiswa Pendidikan S1 Unggulan",
+        "nominal":  "Rp 8.000.000",
+        "deadline":  "2025-12-31",
+        "tanggal_mulai":  "2025-09-01",
+        "status":  "Buka",
+        "deskripsi":  "Bantuan biaya pendidikan untuk mahasiswa S1 berprestasi dari keluarga kurang mampu",
+        "persyaratan":  [
+                            "Mahasiswa aktif S1",
+                            "IPK minimal 3.5",
+                            "Surat keterangan tidak mampu",
+                            "Rekomendasi dari dosen pembimbing"
+                        ],
+        "kategori":  "Pendidikan",
+        "createdAt":  "2025-09-22T00:00:00.000Z",
+        "updatedAt":  "2025-09-22T00:00:00.000Z"
+    },
+    {
+        "id":  "1726987200003",
+        "judul":  "Beasiswa Pelatihan Guru Digital",
+        "nominal":  "Rp 5.000.000",
+        "deadline":  "2025-10-15",
+        "tanggal_mulai":  "2025-09-22",
+        "status":  "Buka",
+        "deskripsi":  "Program pelatihan untuk meningkatkan kompetensi digital guru dalam era teknologi modern",
+        "persyaratan":  [
+                            "Guru aktif di sekolah",
+                            "Minimal pengalaman mengajar 2 tahun",
+                            "Sertifikat pendidik",
+                            "Komitmen mengikuti pelatihan full"
+                        ],
+        "kategori":  "Pelatihan",
+        "createdAt":  "2025-09-22T00:00:00.000Z",
+        "updatedAt":  "2025-09-22T00:00:00.000Z"
+    },
+    {
+        "id":  "1726987200004",
+        "judul":  "Beasiswa Santri Berprestasi",
+        "nominal":  "Rp 3.000.000",
+        "deadline":  "2025-11-30",
+        "tanggal_mulai":  "2025-09-15",
+        "status":  "Buka",
+        "deskripsi":  "Bantuan pendidikan untuk santri berprestasi di bidang akademik dan keagamaan",
+        "persyaratan":  [
+                            "Santri aktif di pesantren",
+                            "Prestasi akademik atau keagamaan",
+                            "Rekomendasi dari kyai/ustadz",
+                            "Surat keterangan aktif santri"
+                        ],
+        "kategori":  "Santri",
+        "createdAt":  "2025-09-22T00:00:00.000Z",
+        "updatedAt":  "2025-09-22T00:00:00.000Z"
+    },
+    {
+        "id":  "1726987200005",
+        "judul":  "Beasiswa S2 Manajemen Pendidikan",
+        "nominal":  "Rp 20.000.000",
+        "deadline":  "2025-03-15",
+        "tanggal_mulai":  "2025-01-01",
+        "status":  "Segera",
+        "deskripsi":  "Program beasiswa untuk melanjutkan studi S2 Manajemen Pendidikan bagi guru dan tenaga kependidikan",
+        "persyaratan":  [
+                            "S1 bidang pendidikan atau terkait",
+                            "Pengalaman kerja minimal 3 tahun",
+                            "TOEFL/IELTS score minimal 500",
+                            "Proposal penelitian tesis"
+                        ],
+        "kategori":  "S2",
+        "createdAt":  "2025-09-22T00:00:00.000Z",
+        "updatedAt":  "2025-09-22T00:00:00.000Z"
+    },
+    {
+        "id":  "1758714842513",
+        "judul":  "Pendidikan S1",
+        "nominal":  "3.000.000",
+        "deadline":  "2025-11-10",
+        "tanggal_mulai":  "2025-10-15",
+        "status":  "Buka",
+        "deskripsi":  "beasiswa untuk menjenjang pendidikan S1",
+        "persyaratan":  [
+                            "Teknik Informatika",
+                            "Sistem Informasi",
+                            "Perguruan tinggi di pulau jawa"
+                        ],
+        "kategori":  "S1",
+        "createdAt":  "2025-09-24T11:54:02.513Z",
+        "updatedAt":  "2025-10-16T16:34:50.348Z"
+    }
+]

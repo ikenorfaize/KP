@@ -1,0 +1,284 @@
+﻿[
+    {
+        "id":  "2",
+        "fullName":  "Admin Pergunu",
+        "email":  "admin@pergunu.com",
+        "username":  "admin",
+        "password":  "$2b$10$c3O0Qp3CNrr4EOfTTqXpE.sd2.TkYjkqCoEoyetIHbqokMOHKPGnG",
+        "createdAt":  "2025-01-18T09:00:00Z",
+        "role":  "admin",
+        "avatar":  "https://ui-avatars.com/api/?name=Admin+Pergunu\u0026background=28a745\u0026color=fff",
+        "certificates":  [
+
+                         ],
+        "downloads":  0,
+        "lastDownload":  null,
+        "downloadHistory":  [
+
+                            ],
+        "profileImage":  "https://ui-avatars.com/api/?name=Admin+Pergunu\u0026background=28a745\u0026color=fff"
+    },
+    {
+        "id":  "1752826000002",
+        "fullName":  "Muhammad Rizky Fajar Nugraha",
+        "email":  "muhammad.rizky@gmail.com",
+        "username":  "muhammad rizky fajar nugraha",
+        "password":  "$2b$12$Bqosep7m3z5sZgGqx9aLL.IslbPwTIkxWkrQaaBY4f2HcNF17I/.W",
+        "createdAt":  "2025-07-20T12:02:00.000Z",
+        "role":  "user",
+        "certificates":  [
+
+                         ],
+        "downloads":  0,
+        "lastDownload":  null,
+        "downloadHistory":  [
+
+                            ],
+        "profileImage":  "https://ui-avatars.com/api/?name=Muhammad%20Rizky%20Fajar%20Nugraha\u0026background=0F7536\u0026color=fff"
+    },
+    {
+        "id":  "bdef",
+        "fullName":  "Adi Pratama",
+        "email":  "adi@pergunu.com",
+        "username":  "adi",
+        "password":  "$2b$10$DwaCujaHhNeqQIdI6gauV.JfspES7PGltLb/6uEkv.28u0eUa7eUq",
+        "position":  "Guru Agama",
+        "address":  "Jl.Pegangsaan Timur",
+        "phone":  "081234567890",
+        "status":  "active",
+        "role":  "user",
+        "createdAt":  "2025-07-21T16:29:03.630Z",
+        "certificates":  [
+                             {
+                                 "id":  1754760428973,
+                                 "fileName":  "Additional+Exercises+Combinatorics.pdf",
+                                 "originalName":  "Additional+Exercises+Combinatorics.pdf",
+                                 "uniqueName":  "1754760428967_u5bg3sv3awn.pdf",
+                                 "filePath":  "C:\\Users\\fairu\\campus\\KP\\uploads\\certificates\\1754760428967_u5bg3sv3awn.pdf",
+                                 "fileUrl":  "/download-certificate/1754760428973",
+                                 "size":  109139,
+                                 "uploadDate":  "2025-08-09T17:27:08.973Z",
+                                 "downloadCount":  14
+                             },
+                             {
+                                 "id":  1754770699846,
+                                 "fileName":  "SOPFRSOnline2025.pdf",
+                                 "originalName":  "SOPFRSOnline2025.pdf",
+                                 "uniqueName":  "1754770699842_n35ya8uk6eh.pdf",
+                                 "filePath":  "C:\\Users\\fairu\\campus\\KP\\uploads\\certificates\\1754770699842_n35ya8uk6eh.pdf",
+                                 "fileUrl":  "/download-certificate/1754770699846",
+                                 "size":  71776,
+                                 "uploadDate":  "2025-08-09T20:18:19.846Z",
+                                 "downloadCount":  2
+                             }
+                         ],
+        "downloads":  23,
+        "lastDownload":  "2025-10-10T15:39:41.727Z",
+        "downloadHistory":  [
+                                {
+                                    "id":  "1754771897122",
+                                    "certificateTitle":  "SOPFRSOnline2025.pdf",
+                                    "downloadDate":  "10/8/2025, 03.38.17",
+                                    "fileName":  "SOPFRSOnline2025.pdf"
+                                },
+                                {
+                                    "id":  "1754771894533",
+                                    "certificateTitle":  "Additional+Exercises+Combinatorics.pdf",
+                                    "downloadDate":  "10/8/2025, 03.38.14",
+                                    "fileName":  "Additional+Exercises+Combinatorics.pdf"
+                                },
+                                {
+                                    "id":  "1754770717914",
+                                    "certificateTitle":  "SOPFRSOnline2025.pdf",
+                                    "downloadDate":  "10/8/2025, 03.18.37",
+                                    "fileName":  "SOPFRSOnline2025.pdf"
+                                },
+                                {
+                                    "id":  "1754770653037",
+                                    "certificateTitle":  "Additional+Exercises+Combinatorics.pdf",
+                                    "downloadDate":  "10/8/2025, 03.17.33",
+                                    "fileName":  "Additional+Exercises+Combinatorics.pdf"
+                                },
+                                {
+                                    "id":  "1754769813535",
+                                    "certificateTitle":  "Additional+Exercises+Combinatorics.pdf",
+                                    "downloadDate":  "10/8/2025, 03.03.33",
+                                    "fileName":  "Additional+Exercises+Combinatorics.pdf"
+                                },
+                                {
+                                    "id":  "1754769723677",
+                                    "certificateTitle":  "Additional+Exercises+Combinatorics.pdf",
+                                    "downloadDate":  "10/8/2025, 03.02.03",
+                                    "fileName":  "Additional+Exercises+Combinatorics.pdf"
+                                },
+                                {
+                                    "id":  "1754768561767",
+                                    "certificateTitle":  "Additional+Exercises+Combinatorics.pdf",
+                                    "downloadDate":  "10/8/2025, 02.42.41",
+                                    "fileName":  "Additional+Exercises+Combinatorics.pdf"
+                                },
+                                {
+                                    "id":  "1754768526045",
+                                    "certificateTitle":  "Additional+Exercises+Combinatorics.pdf",
+                                    "downloadDate":  "10/8/2025, 02.42.06",
+                                    "fileName":  "Additional+Exercises+Combinatorics.pdf"
+                                },
+                                {
+                                    "id":  "1754768187602",
+                                    "certificateTitle":  "Additional+Exercises+Combinatorics.pdf",
+                                    "downloadDate":  "10/8/2025, 02.36.27",
+                                    "fileName":  "Additional+Exercises+Combinatorics.pdf"
+                                },
+                                {
+                                    "id":  "1754768173768",
+                                    "certificateTitle":  "Additional+Exercises+Combinatorics.pdf",
+                                    "downloadDate":  "10/8/2025, 02.36.13",
+                                    "fileName":  "Additional+Exercises+Combinatorics.pdf"
+                                },
+                                {
+                                    "id":  "1754768165404",
+                                    "certificateTitle":  "Additional+Exercises+Combinatorics.pdf",
+                                    "downloadDate":  "10/8/2025, 02.36.05",
+                                    "fileName":  "Additional+Exercises+Combinatorics.pdf"
+                                },
+                                {
+                                    "id":  "1754761008910",
+                                    "certificateTitle":  "Additional+Exercises+Combinatorics.pdf",
+                                    "downloadDate":  "10/8/2025, 00.36.48",
+                                    "fileName":  "Additional+Exercises+Combinatorics.pdf"
+                                },
+                                {
+                                    "id":  "1754760725880",
+                                    "certificateTitle":  "Additional+Exercises+Combinatorics.pdf",
+                                    "downloadDate":  "10/8/2025, 00.32.05",
+                                    "fileName":  "Additional+Exercises+Combinatorics.pdf"
+                                },
+                                {
+                                    "id":  "1754760706342",
+                                    "certificateTitle":  "Additional+Exercises+Combinatorics.pdf",
+                                    "downloadDate":  "10/8/2025, 00.31.46",
+                                    "fileName":  "Additional+Exercises+Combinatorics.pdf"
+                                },
+                                {
+                                    "id":  "1754760702069",
+                                    "certificateTitle":  "Additional+Exercises+Combinatorics.pdf",
+                                    "downloadDate":  "10/8/2025, 00.31.42",
+                                    "fileName":  "Additional+Exercises+Combinatorics.pdf"
+                                },
+                                {
+                                    "id":  "1754760698911",
+                                    "certificateTitle":  "Additional+Exercises+Combinatorics.pdf",
+                                    "downloadDate":  "10/8/2025, 00.31.38",
+                                    "fileName":  "Additional+Exercises+Combinatorics.pdf"
+                                },
+                                {
+                                    "id":  1754326243829,
+                                    "certificateTitle":  "Additional+Exercises+Combinatorics.pdf",
+                                    "downloadDate":  "4/8/2025, 23.50.43",
+                                    "fileName":  "Additional+Exercises+Combinatorics.pdf"
+                                },
+                                {
+                                    "id":  1760110150550,
+                                    "certificateTitle":  "Additional+Exercises+Combinatorics.pdf",
+                                    "downloadDate":  "2025-10-10T15:29:10.550Z",
+                                    "fileName":  "Additional+Exercises+Combinatorics.pdf"
+                                },
+                                {
+                                    "id":  1760110781727,
+                                    "certificateTitle":  "Additional+Exercises+Combinatorics.pdf",
+                                    "downloadDate":  "2025-10-10T15:39:41.727Z",
+                                    "fileName":  "Additional+Exercises+Combinatorics.pdf"
+                                }
+                            ],
+        "profileImage":  "https://ui-avatars.com/api/?name=Adi%20Pratama\u0026background=0F7536\u0026color=fff"
+    },
+    {
+        "id":  "c3a3",
+        "fullName":  "akbar maulana",
+        "email":  "akbar@gmail.com",
+        "username":  "akbar",
+        "password":  "$2b$12$eY.Y/iSdyfKGQka0FhpsueKCN5/K1rQQwXQSNJJWqfVv6P3oiGDGe",
+        "position":  "Guru PJOK",
+        "address":  "jl.udang keras",
+        "phone":  "0823232322",
+        "status":  "active",
+        "role":  "user",
+        "createdAt":  "2025-07-21T16:53:59.310Z",
+        "certificates":  [
+                             {
+                                 "id":  1754772207159,
+                                 "fileName":  "Symmetry+Explained.pdf",
+                                 "originalName":  "Symmetry+Explained.pdf",
+                                 "uniqueName":  "1754772207155_f4leg020lw.pdf",
+                                 "filePath":  "C:\\Users\\fairu\\campus\\KP\\uploads\\certificates\\1754772207155_f4leg020lw.pdf",
+                                 "fileUrl":  "/download-certificate/1754772207159",
+                                 "size":  87076,
+                                 "uploadDate":  "2025-08-09T20:43:27.159Z",
+                                 "downloadCount":  1
+                             }
+                         ],
+        "downloads":  3,
+        "lastDownload":  "2025-08-14T10:15:51.952Z",
+        "downloadHistory":  [
+                                {
+                                    "id":  "1754772225654",
+                                    "certificateTitle":  "Symmetry+Explained.pdf",
+                                    "downloadDate":  "10/8/2025, 03.43.45",
+                                    "fileName":  "Symmetry+Explained.pdf"
+                                },
+                                {
+                                    "id":  1753372707653,
+                                    "certificateTitle":  "Copy of Modul Construct 3 (1).pdf",
+                                    "downloadDate":  "24/7/2025, 22.58.27",
+                                    "fileName":  "Copy of Modul Construct 3 (1).pdf"
+                                },
+                                {
+                                    "id":  1755166551952,
+                                    "certificateTitle":  "Symmetry+Explained.pdf",
+                                    "downloadDate":  "2025-08-14T10:15:51.952Z",
+                                    "fileName":  "Symmetry+Explained.pdf"
+                                }
+                            ],
+        "profileImage":  "https://ui-avatars.com/api/?name=akbar%20maulana\u0026background=0F7536\u0026color=fff"
+    },
+    {
+        "id":  "67de",
+        "fullName":  "fairuz",
+        "email":  "fairuz.fuadi04@gmail.com",
+        "username":  "fairuz",
+        "password":  "$2b$10$6pE1WctiTVHxUkfX5sPzdOWIdc8yR3tgJlvFZTaB6kasuYJE3baaO",
+        "position":  "admin",
+        "address":  "surabaya",
+        "phone":  "081515263851",
+        "status":  "active",
+        "role":  "admin",
+        "createdAt":  "2025-07-27T13:25:44.703Z",
+        "certificates":  [
+
+                         ],
+        "downloads":  0,
+        "lastDownload":  null,
+        "downloadHistory":  [
+
+                            ],
+        "profileImage":  "https://ui-avatars.com/api/?name=fairuz\u0026background=0F7536\u0026color=fff"
+    },
+    {
+        "id":  "1760685384451",
+        "fullName":  "joko",
+        "email":  "dwad@gmail.com",
+        "username":  "joko_699",
+        "password":  "$2b$10$R7uviqJIkZFjlyTETAXWW.DfK8km0mvFXFwVxvC7PWTz.2HxXn09m",
+        "createdAt":  "2025-10-17T07:16:24.451Z",
+        "role":  "user",
+        "certificates":  [
+
+                         ],
+        "downloads":  0,
+        "lastDownload":  null,
+        "downloadHistory":  [
+
+                            ],
+        "profileImage":  "https://ui-avatars.com/api/?name=joko\u0026background=0F7536\u0026color=fff"
+    }
+]
