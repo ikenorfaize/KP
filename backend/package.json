@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "Backend API for KP Project",
   "type": "module",
-  "main": "src/index.js",
+  "main": "src/index-refactored.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "node src/index.js",
+    "start": "node src/index-refactored.js",
+    "start:old": "node src/index.js",
+    "dev": "node src/index-refactored.js",
     "file-server": "node src/file-server.js"
   },
   "dependencies": {
