@@ -63,7 +63,11 @@ const UserDashboard = () => {
         console.log(`🔄 Fetching user data for ID: ${userId}`);
         
   const apiUrl = import.meta.env.VITE_API_BASE_URL || 'https://kp-mocha.vercel.app/api';
-        const response = await fetch(`${apiUrl}/users/${userId}`);
+        const response = await fetch(`${apiUrl}/users/${userId}`, {
+          headers: {
+            'x-user-id': userId
+          }
+        });
         if (!response.ok) {
           throw new Error(`Failed to fetch user data: ${response.status}`);
         }

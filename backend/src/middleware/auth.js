@@ -17,7 +17,8 @@ export const requireAuth = (req, res, next) => {
     });
   }
   
-  const user = findOne('users', { id: parseInt(userId) });
+  // Try both string and integer ID formats for compatibility
+  const user = findOne('users', { id: userId }) || findOne('users', { id: parseInt(userId) });
   
   if (!user) {
     return res.status(401).json({

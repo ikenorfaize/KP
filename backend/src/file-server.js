@@ -39,7 +39,10 @@ const corsOptions = {
       const allowList = new Set([
         ...allowedOrigins,
         process.env.FRONTEND_URL,
-        'https://your-frontend-domain.vercel.app' // Replace with actual domain
+        'https://pergunu.fairuzfd.dev',
+        'https://apipergunu.fairuzfd.dev',
+        'http://localhost:5173',
+        'http://localhost:3000'
       ].filter(Boolean));
       
       if (allowList.has(origin)) {
@@ -416,14 +419,14 @@ app.use((error, req, res, _next) => {
 });
 
 // ===== SERVER STARTUP =====
-app.listen(PORT, 'localhost', (err) => {
+app.listen(PORT, '0.0.0.0', (err) => {
   if (err) {
     console.error('❌ Failed to start file server:', err);
     process.exit(1);
   }
   
   console.log('📁 === PERGUNU FILE SERVER ===');
-  console.log(`🌐 File server running on: http://localhost:${PORT}`);
+  console.log(`🌐 File server running on: http://0.0.0.0:${PORT}`);
   console.log(`📁 Upload directory: ${uploadDir}`);
   console.log('📋 Available endpoints:');
   console.log('  GET    /health - Health check');

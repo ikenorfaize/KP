@@ -11,7 +11,8 @@
 // - Primary: JSON Server (development) - port 3001
 // - Fallback: LocalStorage (offline/demo mode)
 
-import bcrypt from 'bcryptjs'; // Library untuk secure password hashing
+// NOTE: Password hashing dilakukan di BACKEND untuk security
+// Frontend hanya mengirim plain password via HTTPS
 
 class ApiService {
   constructor() {
@@ -47,32 +48,9 @@ class ApiService {
 
   // === PASSWORD SECURITY UTILITIES ===
   
-  // Hash password menggunakan bcrypt dengan salt yang kuat dari environment config
-  // Salt rounds dari environment variable untuk flexibility
-  async hashPassword(plainPassword) {
-    try {
-      const saltRounds = this.saltRounds; // Tingkat kesulitan hash dari env config
-      const hashedPassword = await bcrypt.hash(plainPassword, saltRounds);
-      console.log('✅ Password berhasil di-hash dengan salt rounds:', saltRounds);
-      return hashedPassword;
-    } catch (error) {
-      console.error('❌ Error saat hashing password:', error);
-      throw new Error('Password hashing gagal');
-    }
-  }
-
-  // Verifikasi password dengan comparing plain text vs stored hash
-  // Menggunakan bcrypt compare yang secure terhadap timing attacks
-  async verifyPassword(plainPassword, hashedPassword) {
-    try {
-      const isMatch = await bcrypt.compare(plainPassword, hashedPassword);
-      console.log(isMatch ? '✅ Password verified' : '❌ Password mismatch');
-      return isMatch;
-    } catch (error) {
-      console.error('❌ Error saat verifikasi password:', error);
-      return false;
-    }
-  }
+  // Password hashing dan verification dilakukan di BACKEND
+  // Frontend hanya mengirim plain password via HTTPS ke backend
+  // Backend akan handle bcrypt hashing dengan proper security
 
   // === SERVICE INITIALIZATION ===
   
@@ -250,15 +228,18 @@ class ApiService {
       
       const result = await response.json();
       
+      // Extract user data from response.data
+      const userData = result.data || result;
+      
       if (isDevelopment) {
         console.log('✅ Login successful:', result.message);
-        console.log('👤 User role:', result.user.role);
+        console.log('👤 User data:', userData);
+        console.log('👤 User role:', userData.role);
       }
       
       // Store user session
       const userSession = {
-        user: result.user,
-        token: result.token,
+        ...userData,
         timestamp: Date.now(),
         loginTime: new Date().toISOString()
       };
@@ -267,8 +248,8 @@ class ApiService {
       
       return {
         success: true,
-        user: result.user,
-        message: result.message
+        user: userData,
+        message: 'Login successful'
       };
     } catch (error) {
       const isDevelopment = import.meta.env.DEV || false;
@@ -317,16 +298,14 @@ class ApiService {
         throw new Error('User already exists');
       }
       
-      // === PASSWORD HASHING ===
-      // Hash password untuk localStorage juga (consistent security)
-      const hashedPassword = await this.hashPassword(userData.password);
-      
       // === CREATE USER RECORD ===
       // Add new user dengan metadata
+      // NOTE: In localStorage fallback, password stored as-is (demo only)
+      // In production, backend handles all password hashing
       const newUser = {
         id: Date.now(),                          // Generate unique ID
         ...userData,                             // Spread user data
-        password: hashedPassword,                // Hashed password untuk security
+        password: userData.password,             // Password (backend handles hashing)
         createdAt: new Date().toISOString(),     // Timestamp creation
         role: 'user'                            // Default role
       };
@@ -400,8 +379,9 @@ class ApiService {
 
       // === PASSWORD VERIFICATION ===
       console.log('🔐 Verifying password...');
-      // Password verification dengan bcrypt (consistent dengan JSON Server)
-      const isPasswordValid = await this.verifyPassword(credentials.password, user.password);
+      // Simple password check for localStorage fallback (demo only)
+      // In production, backend handles secure password verification
+      const isPasswordValid = (credentials.password === user.password);
       
       console.log('✅ Password valid:', isPasswordValid);
       

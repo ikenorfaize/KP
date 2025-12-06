@@ -41,30 +41,7 @@
       "status": "active",
       "role": "user",
       "createdAt": "2025-07-21T16:29:03.630Z",
-      "certificates": [
-        {
-          "id": 1754760428973,
-          "fileName": "Additional+Exercises+Combinatorics.pdf",
-          "originalName": "Additional+Exercises+Combinatorics.pdf",
-          "uniqueName": "1754760428967_u5bg3sv3awn.pdf",
-          "filePath": "C:\\Users\\fairu\\campus\\KP\\uploads\\certificates\\1754760428967_u5bg3sv3awn.pdf",
-          "fileUrl": "/download-certificate/1754760428973",
-          "size": 109139,
-          "uploadDate": "2025-08-09T17:27:08.973Z",
-          "downloadCount": 14
-        },
-        {
-          "id": 1754770699846,
-          "fileName": "SOPFRSOnline2025.pdf",
-          "originalName": "SOPFRSOnline2025.pdf",
-          "uniqueName": "1754770699842_n35ya8uk6eh.pdf",
-          "filePath": "C:\\Users\\fairu\\campus\\KP\\uploads\\certificates\\1754770699842_n35ya8uk6eh.pdf",
-          "fileUrl": "/download-certificate/1754770699846",
-          "size": 71776,
-          "uploadDate": "2025-08-09T20:18:19.846Z",
-          "downloadCount": 2
-        }
-      ],
+      "certificates": [],
       "downloads": 23,
       "lastDownload": "2025-10-10T15:39:41.727Z",
       "downloadHistory": [
@@ -197,19 +174,7 @@
       "status": "active",
       "role": "user",
       "createdAt": "2025-07-21T16:53:59.310Z",
-      "certificates": [
-        {
-          "id": 1754772207159,
-          "fileName": "Symmetry+Explained.pdf",
-          "originalName": "Symmetry+Explained.pdf",
-          "uniqueName": "1754772207155_f4leg020lw.pdf",
-          "filePath": "C:\\Users\\fairu\\campus\\KP\\uploads\\certificates\\1754772207155_f4leg020lw.pdf",
-          "fileUrl": "/download-certificate/1754772207159",
-          "size": 87076,
-          "uploadDate": "2025-08-09T20:43:27.159Z",
-          "downloadCount": 1
-        }
-      ],
+      "certificates": [],
       "downloads": 3,
       "lastDownload": "2025-08-14T10:15:51.952Z",
       "downloadHistory": [

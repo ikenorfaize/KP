@@ -84,7 +84,12 @@ export const ApplicationService = {
     }
     try {
       await apiService.init();
-      const resp = await fetch(`${apiService.API_URL}/applications`);
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      const resp = await fetch(`${apiService.API_URL}/applications`, {
+        headers: {
+          'x-user-id': currentUser.id || ''
+        }
+      });
       if (resp.ok) {
         const data = await resp.json();
         return normalizeList(data);

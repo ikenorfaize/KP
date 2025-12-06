@@ -36,10 +36,8 @@ export const login = async (req, res) => {
 
     console.log(`✅ Login successful: ${username}`);
 
-    res.json(successResponse({
-      user: userWithoutPassword,
-      message: 'Login successful'
-    }));
+    // Return user data directly in data field (not nested in user object)
+    res.json(successResponse(userWithoutPassword));
   } catch (error) {
     console.error('❌ Login error:', error);
     res.status(500).json(errorResponse('Login failed', error));

@@ -37,7 +37,7 @@ class EmailService {
     };
   }
 
-  // Validasi environment variables yang diperlukan
+  // Validasi environment variables yang diperlukan (OPTIONAL - tidak throw error)
   validateEnvironmentVariables() {
     const required = {
       'VITE_EMAILJS_SERVICE_ID': this.emailConfig.serviceId,
@@ -54,12 +54,14 @@ class EmailService {
     }
 
     if (missing.length > 0) {
-      console.error('❌ Missing required environment variables:', missing);
-      console.error('⚠️ Please check your .env file and ensure these variables are set properly.');
-      throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+      console.warn('⚠️ EmailJS environment variables missing:', missing);
+      console.warn('⚠️ Email notifications will be disabled. App will continue without email features.');
+      this.emailConfig.isDemoMode = true; // Force demo mode jika env vars tidak ada
+      return false;
     }
 
-    console.log('✅ All required environment variables are present');
+    console.log('✅ EmailJS configured and ready');
+    return true;
   }
 
   // Fungsi inisialisasi EmailJS dengan penanganan error yang lebih baik
@@ -167,6 +169,12 @@ class EmailService {
 
   // Kirim email approval ke user
   async sendApprovalEmail(userData) {
+    // Skip sending if EmailJS not configured
+    if (this.emailConfig.isDemoMode || !this.emailConfig.serviceId) {
+      console.warn('⚠️ EmailJS not configured - skipping approval email');
+      return { success: true, skipped: true, message: 'Email skipped - EmailJS not configured' };
+    }
+    
     try {
       const emailjs = await this.initEmailService();
       const template = emailTemplates.approvalEmail(userData);
@@ -197,6 +205,12 @@ class EmailService {
 
   // Kirim email rejection ke user
   async sendRejectionEmail(userData, reason) {
+    // Skip sending if EmailJS not configured
+    if (this.emailConfig.isDemoMode || !this.emailConfig.serviceId) {
+      console.warn('⚠️ EmailJS not configured - skipping rejection email');
+      return { success: true, skipped: true, message: 'Email skipped - EmailJS not configured' };
+    }
+    
     try {
       const emailjs = await this.initEmailService();
       const template = emailTemplates.rejectionEmail(userData, reason);
@@ -226,6 +240,12 @@ class EmailService {
 
   // Kirim notifikasi ke admin untuk pendaftaran baru
   async sendAdminNotification(userData) {
+    // Skip sending if EmailJS not configured
+    if (this.emailConfig.isDemoMode || !this.emailConfig.serviceId) {
+      console.warn('⚠️ EmailJS not configured - skipping admin notification');
+      return { success: true, skipped: true, message: 'Email skipped - EmailJS not configured' };
+    }
+    
     console.log('📧 === ENHANCED ADMIN NOTIFICATION DEBUG ===');
     console.log('🎯 Target email:', this.emailConfig.adminEmail);
     console.log('👤 Applicant:', userData.fullName);

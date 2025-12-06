@@ -10,7 +10,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';                    // Hook navigasi
-import bcrypt from 'bcryptjs';                                     // Library untuk password hashing
+// Password hashing dilakukan di BACKEND untuk security
 import { apiService } from '../../services/apiService';            // Import API service
 import { ApplicationService } from '../../services/ApplicationService';
 import { usePendingApplications } from '../../context/PendingApplicationsContext';
@@ -65,6 +65,15 @@ const AdminDashboard = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);   // Loading state saat submit forms
   const [users, setUsers] = useState([]);                   // Array semua pengguna dari database
   const [isLoadingUsers, setIsLoadingUsers] = useState(true); // Loading state untuk fetch users
+  
+  // Current user state (for auth headers)
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('currentUser') || '{}');
+    } catch {
+      return {};
+    }
+  });
 
   // State untuk edit pengguna
   const [editingUser, setEditingUser] = useState(null); // Data user yang sedang diedit
@@ -80,7 +89,11 @@ const AdminDashboard = () => {
       await apiService.init();
       
       // Fetch data dari Express.js API menggunakan apiService
-      const response = await fetch(`${apiService.API_URL}/users`);
+      const response = await fetch(`${apiService.API_URL}/users`, {
+        headers: {
+          'x-user-id': currentUser.id || ''
+        }
+      });
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
@@ -268,10 +281,9 @@ const AdminDashboard = () => {
       
       // Only update password jika user input password baru
       if (editingUser.password && editingUser.password.trim()) {
-        const saltRounds = 12;     // bcrypt salt rounds untuk security
-        const hashedPassword = await bcrypt.hash(editingUser.password.trim(), saltRounds);
-        updateData.password = hashedPassword; // Add hashed password ke update data
-        console.log('🔐 Password updated');
+        // Send plain password to backend - backend will handle hashing
+        updateData.password = editingUser.password.trim();
+        console.log('🔐 Password will be hashed by backend');
       }
       
       // Send PATCH request ke Express.js API
@@ -346,19 +358,14 @@ const AdminDashboard = () => {
       
       console.log('🔄 Adding new user to JSON Server...');
       
-      // === STEP 2: PASSWORD HASHING ===
-      // Hash password dengan bcrypt untuk security (NEVER store plain text passwords)
-      const saltRounds = 12;     // Higher salt rounds = more secure but slower
-      const hashedPassword = await bcrypt.hash(newUser.password.trim(), saltRounds);
-      console.log('🔐 Password hashed successfully');
-      
-      // === STEP 3: PREPARE USER DATA ===
+      // === STEP 2: PREPARE USER DATA ===
       // Create new user object dengan semua data yang diperlukan
+      // Password will be hashed by backend for security
       const userToAdd = {
         fullName: newUser.fullName.trim(),
         email: newUser.email.trim(),
         username: newUser.username.trim(),
-        password: hashedPassword,           // Hashed password untuk security
+        password: newUser.password.trim(),  // Plain password - backend will hash
         position: newUser.position.trim(),
         address: newUser.address.trim(),
         phone: newUser.phone.trim(),
@@ -464,7 +471,8 @@ const AdminDashboard = () => {
     }
 
     try {
-      console.log('� Uploading to file server...');
+      console.log('📤 Uploading to file server...', { fileName: file.name, size: file.size });
+      showToast('⏳ Uploading file...', 'info', 5000);
 
       // === UPLOAD TO FILE SERVER ===
       const formData = new FormData();
@@ -472,10 +480,16 @@ const AdminDashboard = () => {
       formData.append('userId', userId);
 
       const fileServerUrl = import.meta.env.VITE_FILE_SERVER_URL || 'https://kp-mocha.vercel.app';
+      
+      // Add timeout to prevent hanging
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
+      
       const uploadResponse = await fetch(`${fileServerUrl}/upload-certificate`, {
         method: 'POST',
-        body: formData
-      });
+        body: formData,
+        signal: controller.signal
+      }).finally(() => clearTimeout(timeoutId));
 
       if (!uploadResponse.ok) {
         throw new Error(`Upload failed: ${uploadResponse.statusText}`);
@@ -526,6 +540,7 @@ const AdminDashboard = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
+          'x-user-id': currentUser?.id || currentUser?.userId || ''
         },
         body: JSON.stringify(certificateUpdate)
       });
@@ -535,11 +550,18 @@ const AdminDashboard = () => {
       }
 
   console.log('✅ Certificate uploaded successfully:', fileMetadata);
-  showToast(`Sertifikat "${file.name}" berhasil diupload`, 'success');
+  showToast(`✅ Sertifikat "${file.name}" berhasil diupload`, 'success');
       
     } catch (error) {
       console.error('❌ Error uploading certificate:', error);
-      showToast(`Gagal mengupload sertifikat: ${error.message}`, 'error', 3500);
+      
+      if (error.name === 'AbortError') {
+        showToast('❌ Upload timeout - file terlalu lama diproses', 'error', 3500);
+      } else if (error.message.includes('Failed to fetch')) {
+        showToast('❌ Koneksi ke file server gagal - cek network', 'error', 3500);
+      } else {
+        showToast(`❌ Gagal upload: ${error.message}`, 'error', 3500);
+      }
     }
   };
 
@@ -550,6 +572,9 @@ const AdminDashboard = () => {
     }
 
     try {
+      // Convert certificateId to string if it's an object
+      const certIdStr = typeof certificateId === 'object' ? (certificateId.id || `temp_${JSON.stringify(certificateId)}`) : String(certificateId);
+      
       // Find user and certificate to delete
       const userToUpdate = users.find(user => user.id === userId);
       if (!userToUpdate) {
@@ -561,17 +586,17 @@ const AdminDashboard = () => {
       let certToDelete = null;
       let certificateIndex = -1;
 
-      // Try to find by ID first
-      if (certificateId && !certificateId.startsWith('temp_')) {
+      // Try to find by ID first (compare both string and number formats)
+      if (certIdStr && !certIdStr.startsWith('temp_')) {
         certificateIndex = userToUpdate.certificates.findIndex(cert => 
-          typeof cert === 'object' && cert.id === certificateId
+          typeof cert === 'object' && (cert.id == certIdStr || String(cert.id) === certIdStr || cert.id === Number(certIdStr))
         );
         if (certificateIndex !== -1) {
           certToDelete = userToUpdate.certificates[certificateIndex];
         }
-      } else if (certificateId && certificateId.startsWith('temp_')) {
+      } else if (certIdStr && certIdStr.startsWith('temp_')) {
         // Handle temporary ID for old certificates without proper ID
-        const parts = certificateId.split('_');
+        const parts = certIdStr.split('_');
         const index = parseInt(parts[1]);
         const uploadDate = parts.slice(2).join('_');
         
@@ -625,6 +650,7 @@ const AdminDashboard = () => {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
+          'x-user-id': currentUser?.id || currentUser?.userId || ''
         },
         body: JSON.stringify(certificateUpdate)
       });
