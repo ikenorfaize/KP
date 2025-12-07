@@ -118,13 +118,20 @@ export const ApplicationService = {
   async approveApplication(id, meta = {}) {
     try {
       await apiService.init();
-      const resp = await fetch(`${apiService.API_URL}/applications/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      
+      const resp = await fetch(`${apiService.API_URL}/applications/${id}/status`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-user-id': currentUser.id || ''
+        },
         body: JSON.stringify({ status: 'approved', ...meta })
       });
+      
       if (resp.ok) {
-        const { application } = await resp.json();
+        const data = await resp.json();
+        const application = data.data || data.application || data;
         // server write succeeded, prefer server again
         try {
           localStorage.removeItem('applications_mode');
@@ -134,7 +141,8 @@ export const ApplicationService = {
         }
         return application;
       }
-    } catch {
+    } catch (error) {
+      console.error('Approve API failed:', error);
       // ignore and fallback to localStorage
     }
     // Local fallback: update in localStorage
@@ -148,13 +156,20 @@ export const ApplicationService = {
   async rejectApplication(id, reason) {
     try {
       await apiService.init();
-      const resp = await fetch(`${apiService.API_URL}/applications/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      
+      const resp = await fetch(`${apiService.API_URL}/applications/${id}/status`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-user-id': currentUser.id || ''
+        },
         body: JSON.stringify({ status: 'rejected', rejectionReason: reason })
       });
+      
       if (resp.ok) {
-        const { application } = await resp.json();
+        const data = await resp.json();
+        const application = data.data || data.application || data;
         // server write succeeded, prefer server again
         try {
           localStorage.removeItem('applications_mode');
@@ -164,7 +179,8 @@ export const ApplicationService = {
         }
         return application;
       }
-    } catch {
+    } catch (error) {
+      console.error('Reject API failed:', error);
       // ignore and fallback to localStorage
     }
     const apps = await this.getApplications();
@@ -177,10 +193,16 @@ export const ApplicationService = {
   async deleteApplication(id) {
     try {
       await apiService.init();
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      
       const resp = await fetch(`${apiService.API_URL}/applications/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          'x-user-id': currentUser.id || ''
+        }
       });
-      if (resp.status === 204) {
+      
+      if (resp.ok || resp.status === 204) {
         try {
           localStorage.removeItem('applications_mode');
           localStorage.removeItem('applications');
@@ -188,8 +210,12 @@ export const ApplicationService = {
           console.warn('Failed to clear applications mode:', storageError);
         }
         return true;
+      } else {
+        console.error('Delete failed:', resp.status, await resp.text().catch(() => ''));
+        throw new Error(`Delete failed with status ${resp.status}`);
       }
-    } catch {
+    } catch (error) {
+      console.error('Delete API failed:', error);
       // ignore and fallback to localStorage
     }
     const apps = await this.getApplications();
@@ -229,34 +255,41 @@ export const ApplicationService = {
       if (res.ok) {
         const data = await res.json();
         return { 
-          user: data.user, 
+          user: data.data?.user || data.user, 
           username: tryUsername,
           isExisting: data.isExisting || false
         };
       }
       
-      // NEW: Handle email already registered error (409 with EMAIL_ALREADY_EXISTS)
-      if (res.status === 409) {
-        const conflictErrorData = await res.json();
+      // Handle errors (400 or 409)
+      if (res.status === 400 || res.status === 409) {
+        const errorData = await res.json();
+        const errorMsg = errorData.message || errorData.error || 'Registration failed';
         
-        // Check if error is due to EMAIL already exists (not username)
-        if (conflictErrorData.type === 'EMAIL_ALREADY_EXISTS') {
+        // Check if error is due to EMAIL already exists
+        if (errorMsg.includes('Email already registered') || errorMsg.includes('email')) {
           console.error('❌ Email already registered:', app.email);
           throw new Error(`Email ${app.email} sudah terdaftar. Gunakan email lain atau hapus user yang sudah ada terlebih dahulu.`);
         }
         
         // Username conflict only - retry with different username
-        if (conflictErrorData.error === 'Username already exists') {
+        if (errorMsg.includes('Username already exists') || errorMsg.includes('username')) {
           attempt++;
           lastError = new Error('Username already exists');
           continue;
         }
         
-        // Fallback for other 409 errors
-        lastError = new Error(conflictErrorData.error || 'Conflict error');
+        // Other validation errors
+        lastError = new Error(errorMsg);
         break;
       } else {
-        try { lastError = new Error((await res.json()).error || res.statusText); } catch { lastError = new Error(res.statusText); }
+        // Other HTTP errors
+        try { 
+          const errorData = await res.json();
+          lastError = new Error(errorData.message || errorData.error || res.statusText); 
+        } catch { 
+          lastError = new Error(res.statusText); 
+        }
         break;
       }
     }

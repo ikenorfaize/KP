@@ -275,9 +275,9 @@ const SidebarWidget = ({
     }
   };
 
-  // Handle view all button
+  // Handle view all button - navigate to homepage berita section
   const handleViewAll = () => {
-    navigate('/berita');
+    navigate('/#berita-wrapper');
   };
 
   if (loading) {

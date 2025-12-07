@@ -1259,18 +1259,6 @@ const AdminDashboard = () => {
             Applications
           </button>
           <button
-            className={`nav-item ${activeTab === 'certificates' ? 'active' : ''}`}
-            onClick={() => setActiveTab('certificates')}
-          >
-            Certificates
-          </button>
-          <button
-            className={`nav-item ${activeTab === 'analytics' ? 'active' : ''}`}
-            onClick={() => setActiveTab('analytics')}
-          >
-            Analytics
-          </button>
-          <button
             className={`nav-item ${activeTab === 'news' ? 'active' : ''}`}
             onClick={() => setActiveTab('news')}
           >
@@ -1290,8 +1278,6 @@ const AdminDashboard = () => {
         {activeTab === 'dashboard' && renderDashboard()}
         {activeTab === 'add-user' && renderAddUser()}
         {activeTab === 'applications' && renderApplications()}
-        {activeTab === 'certificates' && renderCertificates()}
-        {activeTab === 'analytics' && renderAnalytics()}
         {activeTab === 'news' && (
           <div className="card">
             <NewsManager />

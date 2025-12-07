@@ -123,7 +123,7 @@ const App = () => {
         <Route path="/sponsor" element={<SponsorPage />} />
         <Route path="/tentang" element={<><Navbar /><Tentang /><Footer /></>} />
         <Route path="/anggota" element={<><Navbar /><Anggota /><Footer /></>} />
-        {/* <Route path="/berita" element={<><Navbar /><Berita /><Footer /></>} /> */}
+        <Route path="/berita" element={<><Navbar /><Berita /><Footer /></>} />
         <Route path="/layanan" element={<LayananPage />} />
         <Route path="/layanan/:id" element={<><Navbar /><LayananDetail /><Footer /></>} />
         <Route path="/beasiswa" element={<><Navbar /><Beasiswa /><Footer /></>} />

@@ -12,6 +12,9 @@ const UserDashboard = () => {
     totalDownloads: 0,
     lastLogin: null
   });
+  
+  // API URL - accessible in all functions
+  const apiUrl = import.meta.env.VITE_API_BASE_URL || 'https://kp-mocha.vercel.app/api';
 
   // Helper function to safely format dates
   const formatDateSafe = (dateInput) => {
@@ -62,7 +65,6 @@ const UserDashboard = () => {
         const userId = userData.userId || userData.id;
         console.log(`🔄 Fetching user data for ID: ${userId}`);
         
-  const apiUrl = import.meta.env.VITE_API_BASE_URL || 'https://kp-mocha.vercel.app/api';
         const response = await fetch(`${apiUrl}/users/${userId}`, {
           headers: {
             'x-user-id': userId
@@ -75,32 +77,11 @@ const UserDashboard = () => {
         const fullUserData = await response.json();
         console.log('✅ User data loaded:', fullUserData);
         
-        // Set user data with default certificates if none exist
+        // Set user data - only use REAL certificates from database
         const userWithDefaults = {
           ...fullUserData,
           profileImage: fullUserData.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(fullUserData.fullName)}&background=0F7536&color=fff`,
-          certificates: fullUserData.certificates || [
-            {
-              id: '1',
-              title: 'Sertifikat Pendidik Profesional',
-              description: `Sertifikat kelulusan program pendidik profesional 2025 untuk ${fullUserData.fullName}`,
-              fileName: `sertifikat_${fullUserData.username}_pendidik_2025.pdf`,
-              uploadDate: '2025-01-20',
-              downloadCount: 0,
-              category: 'Professional',
-              status: 'available'
-            },
-            {
-              id: '2',
-              title: 'Pelatihan Pedagogik',
-              description: `Sertifikat pelatihan metode pembelajaran untuk ${fullUserData.fullName}`,
-              fileName: `pelatihan_pedagogik_${fullUserData.username}_2025.pdf`,
-              uploadDate: '2025-01-15',
-              downloadCount: 0,
-              category: 'Training',
-              status: 'available'
-            }
-          ]
+          certificates: fullUserData.certificates || []  // Empty array if no certificates
         };
 
         setUser(userWithDefaults);

@@ -7,7 +7,6 @@
 // - Real-time validation dan feedback
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';           // Hook untuk navigasi
-import { emailService } from '../../services/EmailService'; // Service untuk kirim email
 import './RegisterForm.css';
 
 // KOMPONEN FORM PENDAFTARAN ANGGOTA PERGUNU
@@ -114,10 +113,15 @@ const RegisterForm = () => {
 
       // HTTP POST request ke JSON server database
       const apiUrl = import.meta.env.VITE_API_BASE_URL || 'https://kp-mocha.vercel.app/api';
+      
+      // Get authentication token from localStorage
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      
       const dbResponse = await fetch(`${apiUrl}/applications`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',  // Set JSON content type
+          'x-user-id': currentUser.id || ''     // Add authentication header
         },
         body: JSON.stringify(applicationData)  // Convert object ke JSON string
       });
@@ -132,60 +136,18 @@ const RegisterForm = () => {
       const dbResult = await dbResponse.json();
       console.log('✅ Database save successful, ID:', dbResult.id);
       
-      // === STEP 3: EMAIL NOTIFICATION SYSTEM ===
-      // Kirim notifikasi ke admin bahwa ada pendaftar baru
-      console.log('📧 === EMAIL SENDING STEP ===');
-      
-      // Initialize email result dengan default failure
-      let emailResult = { success: false, error: 'Not attempted' };
-      
-      try {
-        console.log('📤 Attempting to send admin notification...');
-        console.log('📧 EmailService config check:', emailService.emailConfig);
-        
-        // Send email dengan timeout protection (max 30 detik)
-        const emailPromise = emailService.sendAdminNotification(formData);
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Email timeout after 30 seconds')), 30000)
-        );
-        
-        // Race between email send dan timeout
-        emailResult = await Promise.race([emailPromise, timeoutPromise]);
-        console.log('📧 Email result:', emailResult);
-        
-      } catch (emailError) {
-        // Handle email errors tanpa mengganggu database save
-        console.error('❌ Email sending failed:', emailError);
-        emailResult = {
-          success: false,
-          error: emailError.message,
-          errorType: emailError.name
-        };
-      }
-      
-      // === STEP 4: USER FEEDBACK & RESULT DISPLAY ===
+      // === STEP 3: USER FEEDBACK & RESULT DISPLAY ===
       // Show hasil akhir ke user dengan alert yang sesuai
       console.log('🎉 === SUBMISSION COMPLETED ===');
       console.log('💾 Database saved:', dbResult.id);
-      console.log('📧 Email result:', emailResult.success ? 'Success' : `Failed: ${emailResult.error}`);
       
-      // Success case: database + email berhasil
-      if (emailResult.success) {
-        showCustomAlert('success', 'Pendaftaran Berhasil!', `✅ Data berhasil tersimpan dengan ID: ${dbResult.id}
-📧 Notifikasi email telah dikirim ke admin
+      // Success case: database berhasil tersimpan
+      showCustomAlert('success', 'Pendaftaran Berhasil!', `✅ Data berhasil tersimpan dengan ID: ${dbResult.id}
 
 Admin akan segera memproses pendaftaran Anda dalam 1-2 hari kerja.
+Anda dapat mengecek status pendaftaran di halaman utama.
+
 Terima kasih telah bergabung dengan PERGUNU!`, dbResult.id);
-      } else {
-        // Partial success: database berhasil, email gagal
-        showCustomAlert('warning', 'Pendaftaran Tersimpan', `✅ Data Anda berhasil tersimpan dengan ID: ${dbResult.id}
-⚠️ Notifikasi email gagal dikirim ke admin
-
-Error: ${emailResult.error}
-
-Jangan khawatir, data Anda sudah aman.
-Admin akan memproses secara manual.`, dbResult.id);
-      }
       
     } catch (mainError) {
       // === ERROR HANDLING ===
