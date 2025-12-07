@@ -114,7 +114,12 @@ const NewsDetail = () => {
       return imageUrl;
     }
     
-    // Handle file server uploads
+    // Handle file server uploads with relative paths (e.g., /uploads/images/xxx.png)
+    if (imageUrl && imageUrl.startsWith('/uploads/')) {
+      return `${FILE_SERVER}${imageUrl}`;
+    }
+    
+    // Handle file server uploads (just filename)
     if (imageUrl && !imageUrl.includes('/') && !imageUrl.startsWith('http') && !imageUrl.startsWith('/src/')) {
       return `${FILE_SERVER}/uploads/images/${imageUrl}`;
     }

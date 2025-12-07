@@ -9,6 +9,15 @@ const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://kp-mocha.vercel.a
 const FILE_SERVER = import.meta.env.VITE_FILE_SERVER_URL || 'https://kp-mocha.vercel.app';
 
 export default function NewsManager() {
+  // Get current user for authentication
+  const [currentUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('currentUser') || '{}');
+    } catch {
+      return {};
+    }
+  });
+
   // States untuk mengelola data berita
   const [newsList, setNewsList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -58,8 +67,10 @@ export default function NewsManager() {
       return imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
     }
     
-    // Jika path dimulai dengan /, gunakan langsung
-    if (imagePath.startsWith('/')) return imagePath;
+    // Jika path dimulai dengan /, tambahkan FILE_SERVER prefix
+    if (imagePath.startsWith('/')) {
+      return `${FILE_SERVER}${imagePath}`;
+    }
     
     // Default: anggap file upload di folder uploads/images
     return `${FILE_SERVER}/uploads/images/${imagePath}`;
@@ -380,7 +391,8 @@ export default function NewsManager() {
       response = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'x-user-id': currentUser?.id || currentUser?.userId || ''
         },
         body: JSON.stringify(newsData)
       });
@@ -470,7 +482,10 @@ export default function NewsManager() {
     try {
       const response = await fetch(`${API_BASE}/news/${newsId}/feature`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-id': currentUser?.id || currentUser?.userId || ''
+        },
         body: JSON.stringify({ featured: true })
       });
       
@@ -496,7 +511,10 @@ export default function NewsManager() {
     setIsLoading(true);
     try {
   const response = await fetch(`${API_BASE}/news/${newsId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          'x-user-id': currentUser?.id || currentUser?.userId || ''
+        }
       });
 
       if (response.ok) {

@@ -181,17 +181,16 @@ const UserDashboard = () => {
 
       console.log(`🔄 Downloading: ${certificate.fileName || certificate.originalName || certificate.filename}`);
 
-      const fileServerUrl = import.meta.env.VITE_FILE_SERVER_URL || 'https://kp-mocha.vercel.app';
       let downloadHref = null;
 
       if (typeof certificate === 'object') {
-        // Preferred: backend-provided URL fields
-        if (certificate.downloadUrl || certificate.fileUrl) {
+        // Use backend API proxy endpoint that includes auth
+        if (certificate.id) {
+          // Backend will proxy to file server with proper auth
+          downloadHref = `${apiUrl}/certificates/download/${certificate.id}`;
+        } else if (certificate.downloadUrl || certificate.fileUrl) {
           const raw = certificate.downloadUrl || certificate.fileUrl;
-          downloadHref = raw.startsWith('http') ? raw : `${fileServerUrl}${raw}`;
-        } else if (certificate.id) {
-          // Construct from id
-          downloadHref = `${fileServerUrl}/download-certificate/${certificate.id}`;
+          downloadHref = raw.startsWith('http') ? raw : `${apiUrl}${raw}`;
         } else if (certificate.base64Data) {
           downloadHref = certificate.base64Data;
         } else if (certificate.url) {
@@ -238,7 +237,6 @@ const UserDashboard = () => {
       setUser(updatedUser);
 
       // Update in API (PATCH minimal fields)
-      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'https://kp-mocha.vercel.app/api';
       const patchPayload = {
         downloads: updatedUser.downloads,
         lastDownload: updatedUser.lastDownload,

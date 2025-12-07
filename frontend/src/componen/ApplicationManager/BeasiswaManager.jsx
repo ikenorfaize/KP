@@ -7,6 +7,15 @@ import { formatRupiah, formatNominalInput } from '../../utils/formatCurrency';
 // Mirip dengan NewsManager tapi untuk beasiswa
 
 const BeasiswaManager = () => {
+  // Get current user for authentication
+  const [currentUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('currentUser') || '{}');
+    } catch {
+      return {};
+    }
+  });
+
   // State management untuk data beasiswa
   const [beasiswa, setBeasiswa] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -134,6 +143,7 @@ const BeasiswaManager = () => {
         method,
         headers: {
           'Content-Type': 'application/json',
+          'x-user-id': currentUser?.id || currentUser?.userId || ''
         },
         body: JSON.stringify(beasiswaData)
       });
@@ -193,7 +203,10 @@ const BeasiswaManager = () => {
     setLoading(true);
     try {
       const response = await fetch(`${API_BASE}/beasiswa/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          'x-user-id': currentUser?.id || currentUser?.userId || ''
+        }
       });
 
       if (!response.ok) {

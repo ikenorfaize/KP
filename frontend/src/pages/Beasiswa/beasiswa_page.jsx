@@ -233,31 +233,35 @@ const Beasiswa = () => {
             </div>
           ) : (
             // Render dynamic beasiswa cards
-            filteredData.map((beasiswa) => (
+            filteredData
+              .filter(beasiswa => beasiswa && beasiswa.judul) // Filter out null/incomplete entries
+              .map((beasiswa) => (
               <div className="card" key={beasiswa.id}>
                 <div className="card-header">
                   <h3>{beasiswa.judul}</h3>
                   <p>{formatRupiah(beasiswa.nominal)}</p>
                 </div>
                 <div className="card-status">
-                  <span className={`status-${beasiswa.status.toLowerCase()}`}>
-                    {beasiswa.status}
+                  <span className={`status-${beasiswa.status?.toLowerCase() || 'buka'}`}>
+                    {beasiswa.status || 'Buka'}
                   </span>
                   <span className="deadline">
-                    Deadline: {new Date(beasiswa.deadline).toLocaleDateString('id-ID')}
+                    Deadline: {beasiswa.deadline ? new Date(beasiswa.deadline).toLocaleDateString('id-ID') : 'TBA'}
                   </span>
                 </div>
                 <p className="desc">
-                  {beasiswa.deskripsi}
+                  {beasiswa.deskripsi || 'Tidak ada deskripsi'}
                 </p>
-                <div className="requirements">
-                  <strong>Persyaratan:</strong>
-                  <ul>
-                    {beasiswa.persyaratan.map((req, index) => (
-                      <li key={index}>{req}</li>
-                    ))}
-                  </ul>
-                </div>
+                {beasiswa.persyaratan && beasiswa.persyaratan.length > 0 && (
+                  <div className="requirements">
+                    <strong>Persyaratan:</strong>
+                    <ul>
+                      {beasiswa.persyaratan.map((req, index) => (
+                        <li key={index}>{req}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 <div className="card-actions">
                   <button 
                     className="btn-apply"

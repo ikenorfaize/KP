@@ -95,7 +95,11 @@ router.put('/:id/status', requireAuth, requireAdmin, (req, res) => {
       return res.status(400).json(errorResponse('Invalid status'));
     }
     
-    const updatedApplication = updateDocument('applications', parseInt(id), { status });
+    // Try string ID first, then integer ID
+    let updatedApplication = updateDocument('applications', id, { status });
+    if (!updatedApplication) {
+      updatedApplication = updateDocument('applications', parseInt(id), { status });
+    }
     
     if (!updatedApplication) {
       return res.status(404).json(errorResponse('Application not found'));

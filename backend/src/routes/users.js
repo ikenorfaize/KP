@@ -3,11 +3,80 @@
 // ===================================
 
 import express from 'express';
-import { getCollection, updateDocument, deleteDocument } from '../utils/database.js';
+import bcrypt from 'bcrypt';
+import { getCollection, updateDocument, deleteDocument, addDocument } from '../utils/database.js';
 import { successResponse, errorResponse } from '../utils/helpers.js';
 import { requireAuth, requireAdmin } from '../middleware/auth.js';
+import { isValidEmail } from '../utils/helpers.js';
 
 const router = express.Router();
+
+// Create user (admin only) - Manual user creation
+router.post('/', requireAuth, requireAdmin, async (req, res) => {
+  try {
+    const { username, email, password, fullName, position, address, phone, role, status } = req.body;
+
+    // Validation
+    if (!username || !email || !password || !fullName) {
+      return res.status(400).json(errorResponse('Username, email, password, and fullName are required'));
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json(errorResponse('Invalid email format'));
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json(errorResponse('Password must be at least 6 characters'));
+    }
+
+    // Check if user exists
+    const users = getCollection('users');
+    const existingUser = users.find(u => u.username === username);
+    if (existingUser) {
+      return res.status(400).json(errorResponse('Username already exists'));
+    }
+
+    const existingEmail = users.find(u => u.email === email);
+    if (existingEmail) {
+      return res.status(400).json(errorResponse('Email already registered'));
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create new user
+    const newUser = {
+      id: Date.now().toString(),
+      username,
+      email,
+      password: hashedPassword,
+      fullName,
+      position: position || 'Staff',
+      address: address || '',
+      phone: phone || '',
+      role: role || 'user',
+      status: status || 'active',
+      certificates: [],
+      downloads: 0,
+      lastDownload: null,
+      downloadHistory: [],
+      profileImage: `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=0F7536&color=fff`,
+      createdAt: new Date().toISOString()
+    };
+
+    const savedUser = addDocument('users', newUser);
+
+    if (!savedUser) {
+      return res.status(500).json(errorResponse('Failed to create user'));
+    }
+
+    const { password: _, ...userWithoutPassword } = savedUser;
+    res.status(201).json(successResponse(userWithoutPassword, 'User created successfully'));
+  } catch (error) {
+    console.error('❌ Error creating user:', error);
+    res.status(500).json(errorResponse('Failed to create user', error));
+  }
+});
 
 // Get all users (admin only)
 router.get('/', requireAuth, requireAdmin, (req, res) => {

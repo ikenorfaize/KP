@@ -741,6 +741,7 @@ const AdminDashboard = () => {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
+          'x-user-id': currentUser?.id || currentUser?.userId || ''
         }
       });
 
