@@ -1,0 +1,54 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Build outputs
+dist/
+build/
+*/dist/
+*/build/
+
+# Environment files (use .env.docker instead)
+.env
+.env.local
+.env.*.local
+!.env.docker
+!.env.example
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Documentation (optional - remove if needed in container)
+*.md
+!README.md
+file MD/
+
+# Test files
+*.test.js
+*.spec.js
+__tests__/
+coverage/
+
+# Misc
+.dockerignore
+docker-compose*.yml
+Dockerfile*
+traefik/

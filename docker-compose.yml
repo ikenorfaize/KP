@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # TRAEFIK - Reverse Proxy & SSL Manager
+  # ============================================
+  traefik:
+    image: traefik:v3.2
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/config:/etc/traefik/config:ro
+      - ./traefik/acme:/etc/traefik/acme
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      # Dashboard (optional - comment out in production if not needed)
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.fairuzfd.dev`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.routers.traefik-dashboard.middlewares=auth"
+      # Basic auth for dashboard (user: admin, password: admin - CHANGE THIS!)
+      # Generate new password: echo $(htpasswd -nb admin yourpassword) | sed -e s/\\$/\\$\\$/g
+      - "traefik.http.middlewares.auth.basicauth.users=admin:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/"
+
+  # ============================================
+  # FRONTEND - React/Vite Application
+  # ============================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=https://api.fairuzfd.dev/api
+        - VITE_FILE_SERVER_URL=https://api.fairuzfd.dev
+    container_name: frontend
+    restart: unless-stopped
+    networks:
+      - web
+    depends_on:
+      - backend
+    labels:
+      - "traefik.enable=true"
+      # HTTP Router
+      - "traefik.http.routers.frontend.rule=Host(`fairuzfd.dev`) || Host(`www.fairuzfd.dev`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.frontend.service=frontend"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+      # WWW redirect to non-www (optional)
+      - "traefik.http.routers.frontend-www.rule=Host(`www.fairuzfd.dev`)"
+      - "traefik.http.routers.frontend-www.entrypoints=websecure"
+      - "traefik.http.routers.frontend-www.middlewares=www-redirect"
+      - "traefik.http.middlewares.www-redirect.redirectregex.regex=^https://www\\.(.+)"
+      - "traefik.http.middlewares.www-redirect.redirectregex.replacement=https://$${1}"
+      - "traefik.http.middlewares.www-redirect.redirectregex.permanent=true"
+
+  # ============================================
+  # BACKEND - Node.js API
+  # ============================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env.docker
+    volumes:
+      - backend_uploads:/app/uploads
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      # API Router
+      - "traefik.http.routers.backend.rule=Host(`api.fairuzfd.dev`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.backend.service=backend"
+      - "traefik.http.services.backend.loadbalancer.server.port=3001"
+      # CORS headers middleware
+      - "traefik.http.middlewares.backend-cors.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,POST,DELETE,PATCH"
+      - "traefik.http.middlewares.backend-cors.headers.accesscontrolallowheaders=*"
+      - "traefik.http.middlewares.backend-cors.headers.accesscontrolalloworiginlist=https://fairuzfd.dev,https://www.fairuzfd.dev"
+      - "traefik.http.middlewares.backend-cors.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.backend-cors.headers.addvaryheader=true"
+      - "traefik.http.routers.backend.middlewares=backend-cors"
+
+networks:
+  web:
+    driver: bridge
+
+volumes:
+  backend_uploads:
+    driver: local
