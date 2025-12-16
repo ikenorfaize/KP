@@ -12,10 +12,9 @@ RUN npm ci --only=production
 
 # Copy source code
 COPY src/ ./src/
-COPY uploads/ ./uploads/ 2>/dev/null || true
 
-# Create uploads directory if not exists
-RUN mkdir -p uploads
+# Ensure uploads directory exists inside image (do not fail build if host folder missing)
+RUN mkdir -p /app/uploads
 
 # Expose port
 EXPOSE 3001
