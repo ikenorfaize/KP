@@ -3,7 +3,7 @@
 // ===================================
 
 import express from 'express';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { getCollection, updateDocument, deleteDocument, addDocument } from '../utils/database.js';
 import { successResponse, errorResponse } from '../utils/helpers.js';
 import { requireAuth, requireAdmin } from '../middleware/auth.js';
