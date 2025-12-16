@@ -35,4 +35,3 @@ coverage/
 # Docker files
 Dockerfile
 .dockerignore
-nginx.conf
