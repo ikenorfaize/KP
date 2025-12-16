@@ -12,6 +12,7 @@ RUN npm ci --only=production
 
 # Copy source code
 COPY src/ ./src/
+COPY start-server.js ./start-server.js
 
 # Ensure uploads directory exists inside image (do not fail build if host folder missing)
 RUN mkdir -p /app/uploads
@@ -27,4 +28,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3001/api/health || exit 1
 
 # Start the application
-CMD ["node", "src/index-refactored.js"]
+CMD ["node", "start-server.js"]
