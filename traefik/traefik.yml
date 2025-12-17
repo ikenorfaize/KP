@@ -1,9 +1,6 @@
-# Traefik Static Configuration
 api:
   dashboard: true
-  insecure: false
 
-# Entry Points
 entryPoints:
   web:
     address: ":80"
@@ -13,44 +10,31 @@ entryPoints:
           to: websecure
           scheme: https
           permanent: true
+
   websecure:
     address: ":443"
-    http:
-      tls:
-        certResolver: letsencrypt
 
-# Certificate Resolvers
 certificatesResolvers:
   letsencrypt:
     acme:
-      email: admin@fairuzfd.site  # CHANGE THIS to your email
+      email: admin@fairuzfd.site
       storage: /etc/traefik/acme/acme.json
-      httpChallenge:
-        entryPoint: web
-      # For testing, use staging server (uncomment below)
-      # caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      tlsChallenge: true
 
-# Providers
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
     network: web
+
   file:
     directory: /etc/traefik/config
     watch: true
 
-# Logging
 log:
   level: INFO
-  format: common
 
-accessLog:
-  format: common
-  filePath: "/var/log/traefik/access.log"
-  bufferingSize: 100
+accessLog: {}
 
-# Global settings
 global:
-  checkNewVersion: false
   sendAnonymousUsage: false
