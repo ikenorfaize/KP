@@ -28,6 +28,7 @@ services:
       - "traefik.http.routers.traefik-dashboard.middlewares=dashboard-auth"
 
       # Basic Auth Dashboard
+      # admin / admin (GANTI DI PRODUCTION)
       - "traefik.http.middlewares.dashboard-auth.basicauth.users=admin:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/"
 
   # ============================================
@@ -49,13 +50,8 @@ services:
     labels:
       - "traefik.enable=true"
 
-      # ===== HTTP Router (WAJIB untuk ACME HTTP-01) =====
-      - "traefik.http.routers.frontend-http.rule=Host(`fairuzfd.site`,`www.fairuzfd.site`)"
-      - "traefik.http.routers.frontend-http.entrypoints=web"
-      - "traefik.http.routers.frontend-http.service=frontend"
-
-      # ===== HTTPS Router =====
-      - "traefik.http.routers.frontend.rule=Host(`fairuzfd.site`,`www.fairuzfd.site`)"
+      # HTTPS Router (Traefik v3 FIX)
+      - "traefik.http.routers.frontend.rule=Host(`fairuzfd.site`) || Host(`www.fairuzfd.site`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.routers.frontend.tls=true"
       - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
@@ -79,12 +75,7 @@ services:
     labels:
       - "traefik.enable=true"
 
-      # ===== HTTP Router (ACME Support) =====
-      - "traefik.http.routers.backend-http.rule=Host(`api.fairuzfd.site`)"
-      - "traefik.http.routers.backend-http.entrypoints=web"
-      - "traefik.http.routers.backend-http.service=backend"
-
-      # ===== HTTPS Router =====
+      # API HTTPS Router
       - "traefik.http.routers.backend.rule=Host(`api.fairuzfd.site`)"
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls=true"
