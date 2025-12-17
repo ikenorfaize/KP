@@ -173,9 +173,9 @@ Centralized in `utils/helpers.js`:
 Your existing tunnels will work without changes:
 
 ```
-1. pergunu.fairuzfd.dev     → http://localhost:5173  (Frontend)
-2. apipergunu.fairuzfd.dev  → http://localhost:3001  (Backend API)
-3. fspergunu.fairuzfd.dev   → http://localhost:3002  (File Server)
+1. pergunu.fairuzfd.site     → http://localhost:5173  (Frontend)
+2. apipergunu.fairuzfd.site  → http://localhost:3001  (Backend API)
+3. fspergunu.fairuzfd.site   → http://localhost:3002  (File Server)
 ```
 
 Just make sure to:

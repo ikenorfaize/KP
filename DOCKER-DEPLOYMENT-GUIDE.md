@@ -1,4 +1,4 @@
-# Docker Deployment Guide - fairuzfd.dev
+# Docker Deployment Guide - fairuzfd.site
 
 Panduan lengkap untuk deploy aplikasi menggunakan Docker dan Docker Compose dengan Traefik sebagai reverse proxy.
 
@@ -10,12 +10,12 @@ Panduan lengkap untuk deploy aplikasi menggunakan Docker dan Docker Compose deng
    - Domain `fairuzfd.dev` yang sudah pointing ke IP server
 
 2. **DNS Configuration** - Pastikan DNS records sudah dikonfigurasi:
-   ```
-   A    fairuzfd.dev       → IP_SERVER
-   A    www.fairuzfd.dev   → IP_SERVER
-   A    api.fairuzfd.dev   → IP_SERVER
-   A    traefik.fairuzfd.dev → IP_SERVER (optional, untuk dashboard)
-   ```
+  ```
+  A    fairuzfd.site       → IP_SERVER
+  A    www.fairuzfd.site   → IP_SERVER
+  A    api.fairuzfd.site   → IP_SERVER
+  A    traefik.fairuzfd.site → IP_SERVER (optional, untuk dashboard)
+  ```
 
 ## 🚀 Quick Start
 
@@ -58,7 +58,7 @@ Edit `traefik/traefik.yml` dan ganti email untuk Let's Encrypt:
 certificatesResolvers:
   letsencrypt:
     acme:
-      email: your-email@fairuzfd.dev  # GANTI INI
+      email: your-email@fairuzfd.site  # GANTI INI
 ```
 
 ### 5. Build & Run
@@ -119,10 +119,10 @@ certificatesResolvers:
 
 | Service | URL |
 |---------|-----|
-| Frontend | https://fairuzfd.dev |
-| Frontend (www) | https://www.fairuzfd.dev → redirect ke https://fairuzfd.dev |
-| Backend API | https://api.fairuzfd.dev |
-| Traefik Dashboard | https://traefik.fairuzfd.dev (protected) |
+| Frontend | https://fairuzfd.site |
+| Frontend (www) | https://www.fairuzfd.site → redirect ke https://fairuzfd.site |
+| Backend API | https://api.fairuzfd.site |
+| Traefik Dashboard | https://traefik.fairuzfd.site (protected) |
 
 ## 📝 Useful Commands
 
@@ -189,7 +189,7 @@ docker compose restart traefik
 
 Jika ingin menggunakan domain berbeda, update di:
 
-1. `docker-compose.yml` - Semua label yang mengandung `fairuzfd.dev`
+1. `docker-compose.yml` - Semua label yang mengandung `fairuzfd.site`
 2. `traefik/traefik.yml` - Email address
 3. `backend/.env.docker` - CORS dan FRONTEND_URL
 
@@ -203,7 +203,7 @@ services:
     build: ./new-service
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.new-service.rule=Host(`newservice.fairuzfd.dev`)"
+      - "traefik.http.routers.new-service.rule=Host(`newservice.fairuzfd.site`)"
       - "traefik.http.routers.new-service.entrypoints=websecure"
       - "traefik.http.routers.new-service.tls.certresolver=letsencrypt"
     networks:

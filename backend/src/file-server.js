@@ -39,8 +39,8 @@ const corsOptions = {
       const allowList = new Set([
         ...allowedOrigins,
         process.env.FRONTEND_URL,
-        'https://pergunu.fairuzfd.dev',
-        'https://apipergunu.fairuzfd.dev',
+        'https://pergunu.fairuzfd.site',
+        'https://apipergunu.fairuzfd.site',
         'http://localhost:5173',
         'http://localhost:3000'
       ].filter(Boolean));

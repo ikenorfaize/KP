@@ -82,7 +82,7 @@ fi
 
 echo ""
 echo "🎯 All services restart complete!"
-echo "🌐 Access website at: https://pergunu.fairuzfd.dev"
+echo "🌐 Access website at: https://pergunu.fairuzfd.site"
 echo ""
 echo "📊 View logs:"
 echo "  - Backend:     tail -f ~/backend/backend.log"

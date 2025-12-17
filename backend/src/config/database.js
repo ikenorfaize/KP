@@ -21,7 +21,7 @@ export const config = {
   fileServerPort: 3002,
   corsOrigins: [
     'http://localhost:5173',
-    'https://pergunu.fairuzfd.dev',
+    'https://pergunu.fairuzfd.site',
     'https://kp-mocha.vercel.app'
   ]
 };

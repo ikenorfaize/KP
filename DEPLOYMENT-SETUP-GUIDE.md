@@ -5,9 +5,12 @@
 - **VM**: Azure Ubuntu (20.2.83.176)
 - **User**: azureuser
 - **Domains**:
-  - Frontend: https://pergunu.fairuzfd.dev
-  - Backend API: https://apipergunu.fairuzfd.dev
-  - File Server: https://fspergunu.fairuzfd.dev
+  - Frontend: https://pergunu.fairuzfd.site
+  - Backend API: https://apipergunu.fairuzfd.site
+  - File Server: https://fspergunu.fairuzfd.site
+ - Frontend: https://pergunu.fairuzfd.site
+ - Backend API: https://apipergunu.fairuzfd.site
+ - File Server: https://fspergunu.fairuzfd.site
 
 ## 🔧 Setup Awal (Hanya Sekali)
 
@@ -48,13 +51,16 @@ tunnel: pergunu-vm
 credentials-file: /home/azureuser/.cloudflared/<TUNNEL_ID>.json
 
 ingress:
-  - hostname: pergunu.fairuzfd.dev
+  - hostname: pergunu.fairuzfd.site
     service: http://localhost:5173
-  - hostname: apipergunu.fairuzfd.dev
+  - hostname: apipergunu.fairuzfd.site
     service: http://localhost:3001
-  - hostname: fspergunu.fairuzfd.dev
+  - hostname: fspergunu.fairuzfd.site
     service: http://localhost:3002
   - service: http_status:404
+    - hostname: pergunu.fairuzfd.site
+    - hostname: apipergunu.fairuzfd.site
+    - hostname: fspergunu.fairuzfd.site
 ```
 
 ### 3. Setup DNS di Cloudflare Dashboard
@@ -118,8 +124,8 @@ ps aux | grep -E "(cloudflared|node|vite)" | grep -v grep
 ss -tlnp | grep -E "(5173|3001|3002)"
 
 # Test via tunnel
-curl -I https://pergunu.fairuzfd.dev
-curl https://apipergunu.fairuzfd.dev/api/health
+curl -I https://pergunu.fairuzfd.site
+curl https://apipergunu.fairuzfd.site/api/health
 ```
 
 ---

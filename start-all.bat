@@ -34,9 +34,9 @@ echo   File Server:    http://localhost:3002
 echo   Frontend:       http://localhost:5173
 echo.
 echo   Public URLs (if Cloudflare tunnels running):
-echo   - https://apipergunu.fairuzfd.dev
-echo   - https://fspergunu.fairuzfd.dev
-echo   - https://pergunu.fairuzfd.dev
+echo   - https://apipergunu.fairuzfd.site
+echo   - https://fspergunu.fairuzfd.site
+echo   - https://pergunu.fairuzfd.site
 echo.
 echo Press any key to open frontend in browser...
 pause >nul
