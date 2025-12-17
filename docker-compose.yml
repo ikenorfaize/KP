@@ -7,10 +7,10 @@ services:
   traefik:
     image: traefik:v3.2
     container_name: traefik
-    entrypoint: ["traefik"]
+    # entrypoint: ["traefik"]
     restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
+    # security_opt:
+    #   - no-new-privileges:true
     ports:
       - "80:80"
       - "443:443"
