@@ -19,7 +19,8 @@ certificatesResolvers:
     acme:
       email: admin@fairuzfd.site
       storage: /etc/traefik/acme/acme.json
-      tlsChallenge: true
+      httpChallenge:
+        entryPoint: web
 
 providers:
   docker:
