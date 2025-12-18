@@ -8,8 +8,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Database path
-export const DB_PATH = join(__dirname, '..', 'db.json');
+// Database path (can be overridden by env var DB_PATH)
+export const DB_PATH = process.env.DB_PATH || join(__dirname, '..', 'db.json');
 
 // MongoDB disabled - using LOCAL JSON only
 export const USE_MONGODB = false;

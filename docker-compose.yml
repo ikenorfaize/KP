@@ -68,8 +68,10 @@ services:
     restart: unless-stopped
     env_file:
       - ./backend/.env.docker
+    environment:
+      - DB_PATH=/app/data/db.json
     volumes:
-      - ./backend/db.json:/app/db.json
+      - backend_db:/app/data
       - ./backend/uploads:/app/uploads
     networks:
       - web
@@ -104,4 +106,7 @@ networks:
 # ============================================
 volumes:
   backend_uploads:
+    driver: local
+  backend_db:
+    name: kp_backend_db
     driver: local
