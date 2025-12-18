@@ -4,6 +4,9 @@
 
 import express from 'express';
 import cors from 'cors';
+import multer from 'multer';
+import { existsSync, mkdirSync } from 'fs';
+import { join } from 'path';
 import { join } from 'path';
 import { config } from './config/database.js';
 import authRoutes from './routes/auth.js';
@@ -40,6 +43,36 @@ app.use('/api/applications', applicationsRoutes);
 // Serve uploaded files from project uploads folder (bind-mounted at /app/uploads)
 const PROJECT_UPLOADS = join(process.cwd(), 'uploads');
 app.use('/uploads', express.static(PROJECT_UPLOADS));
+
+// ===== IMAGE UPLOAD (compatibility for frontend) =====
+const IMAGES_DIR = join(PROJECT_UPLOADS, 'images');
+if (!existsSync(IMAGES_DIR)) mkdirSync(IMAGES_DIR, { recursive: true });
+
+const imageStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, IMAGES_DIR),
+  filename: (_req, file, cb) => {
+    const timestamp = Date.now();
+    const rand = Math.random().toString(36).substring(2, 12);
+    const ext = file.originalname.includes('.') ? file.originalname.slice(file.originalname.lastIndexOf('.')) : '';
+    cb(null, `${timestamp}_${rand}${ext}`);
+  }
+});
+
+const imageUpload = multer({
+  storage: imageStorage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    const allowed = ['image/jpeg','image/jpg','image/png','image/gif','image/webp'];
+    cb(null, allowed.includes(file.mimetype));
+  }
+});
+
+// Accept POST /api/upload/image (frontend expects this path)
+app.post('/api/upload/image', imageUpload.single('image'), (req, res) => {
+  if (!req.file) return res.status(400).json({ success: false, message: 'No image uploaded' });
+  const url = `/uploads/images/${req.file.filename}`;
+  res.json({ success: true, filename: req.file.filename, url });
+});
 
 // ===== HEALTH CHECK =====
 app.get('/api/health', (req, res) => {
