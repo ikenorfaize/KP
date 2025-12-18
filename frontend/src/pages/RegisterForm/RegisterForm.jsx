@@ -103,52 +103,44 @@ const RegisterForm = () => {
       
       // Build registration payload and POST to auth register endpoint
       // Use environment-provided API base URL only; do not fallback to Vercel URL
-      const apiUrl = import.meta.env.VITE_API_BASE_URL;
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || '/api';
 
       // Derive a safe username from email (fallback) and generate a temporary password
       const derivedUsername = (formData.email || '').split('@')[0] || `user${Date.now()}`;
       const tempPassword = Math.random().toString(36).slice(-10);
 
-      const registerPayload = {
+      // Build application payload and POST to applications endpoint
+      const applicationData = {
+        id: Date.now().toString(),
         fullName: formData.fullName,
         email: formData.email,
-        username: derivedUsername,
-        password: tempPassword,
-        position: formData.position,
         phone: formData.phone,
-        school: formData.school,
+        position: formData.position,
+        address: formData.school || '',
+        education: formData.education,
+        experience: formData.experience,
         pw: formData.pw,
         pc: formData.pc,
-        experience: formData.experience,
-        education: formData.education
+        status: 'pending',
+        submittedAt: new Date().toISOString()
       };
 
-      const dbResponse = await fetch(`${apiUrl}/auth/register`, {
+      const dbResponse = await fetch(`${apiUrl}/applications`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(registerPayload)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(applicationData)
       });
 
       if (!dbResponse.ok) {
         let errBody = { error: 'Unknown' };
-        try {
-          errBody = await dbResponse.json();
-        } catch (parseErr) {
-          try {
-            const txt = await dbResponse.text();
-            errBody = { error: txt || 'Unknown' };
-          } catch (txtErr) {
-            errBody = { error: 'Unknown' };
-          }
+        try { errBody = await dbResponse.json(); } catch (e) {
+          try { const txt = await dbResponse.text(); errBody = { error: txt || 'Unknown' }; } catch { errBody = { error: 'Unknown' }; }
         }
         throw new Error(errBody.error || `Database error: ${dbResponse.status}`);
       }
 
       const dbResult = await dbResponse.json();
-      const savedUser = dbResult.user || dbResult.data || dbResult;
-      console.log('✅ Registration successful, ID:', savedUser?.id || savedUser?.user?.id || 'unknown');
+      console.log('✅ Application submitted, ID:', dbResult.data?.id || dbResult.id || dbResult);
       
       // === STEP 3: USER FEEDBACK & RESULT DISPLAY ===
       // Show hasil akhir ke user dengan alert yang sesuai

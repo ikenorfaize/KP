@@ -47,8 +47,8 @@ router.get('/:id', requireAuth, (req, res) => {
   }
 });
 
-// Create application
-router.post('/', requireAuth, (req, res) => {
+// Create application (public - does not require authentication)
+router.post('/', (req, res) => {
   try {
     const {
       beasiswaId,
@@ -57,27 +57,29 @@ router.post('/', requireAuth, (req, res) => {
       phone,
       address,
       reason,
-      documents
+      documents,
+      submittedAt
     } = req.body;
-    
-    if (!beasiswaId || !fullName || !email) {
+
+    if (!fullName || !email) {
       return res.status(400).json(errorResponse('Required fields missing'));
     }
-    
+
     const newApplication = addDocument('applications', {
-      userId: req.user.id,
-      beasiswaId: parseInt(beasiswaId),
+      userId: req.user?.id || null,
+      beasiswaId: beasiswaId ? parseInt(beasiswaId) : null,
       fullName,
       email,
-      phone,
-      address,
-      reason,
+      phone: phone || '',
+      address: address || '',
+      reason: reason || '',
       documents: documents || [],
-      status: 'pending'
+      status: 'pending',
+      submittedAt: submittedAt || new Date().toISOString()
     });
-    
+
     console.log(`✅ Application created: ${newApplication.id}`);
-    
+
     res.status(201).json(successResponse(newApplication, 'Application submitted successfully'));
   } catch (error) {
     console.error('❌ Create application error:', error);
