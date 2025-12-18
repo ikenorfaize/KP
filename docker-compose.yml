@@ -76,7 +76,7 @@ services:
       - "traefik.enable=true"
 
       # API HTTPS Router
-      - "traefik.http.routers.backend.rule=Host(`api.fairuzfd.site`)"
+      - "traefik.http.routers.backend.rule=Host(`api.fairuzfd.site`) || (Host(`fairuzfd.site`) && PathPrefix(`/api`))"
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls=true"
       - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
