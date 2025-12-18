@@ -4,6 +4,7 @@
 
 import express from 'express';
 import cors from 'cors';
+import { join } from 'path';
 import { config } from './config/database.js';
 import authRoutes from './routes/auth.js';
 import newsRoutes from './routes/news.js';
@@ -35,6 +36,10 @@ app.use('/api/news', newsRoutes);
 app.use('/api/beasiswa', beasiswaRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/applications', applicationsRoutes);
+
+// Serve uploaded files from project uploads folder (bind-mounted at /app/uploads)
+const PROJECT_UPLOADS = join(process.cwd(), 'uploads');
+app.use('/uploads', express.static(PROJECT_UPLOADS));
 
 // ===== HEALTH CHECK =====
 app.get('/api/health', (req, res) => {
