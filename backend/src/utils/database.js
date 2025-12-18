@@ -59,7 +59,7 @@ export const saveCollection = (collectionName, items) => {
 export const updateDocument = (collectionName, documentId, updates) => {
   const data = readDB();
   const items = data[collectionName] || [];
-  const index = items.findIndex(item => item.id === documentId);
+  const index = items.findIndex(item => String(item.id) === String(documentId));
   
   if (index !== -1) {
     items[index] = { ...items[index], ...updates, updatedAt: new Date().toISOString() };
@@ -76,7 +76,7 @@ export const updateDocument = (collectionName, documentId, updates) => {
 export const deleteDocument = (collectionName, documentId) => {
   const data = readDB();
   const items = data[collectionName] || [];
-  const filteredItems = items.filter(item => item.id !== documentId);
+  const filteredItems = items.filter(item => String(item.id) !== String(documentId));
   
   if (filteredItems.length < items.length) {
     data[collectionName] = filteredItems;
@@ -115,7 +115,10 @@ export const addDocument = (collectionName, document) => {
 export const findOne = (collectionName, query) => {
   const items = getCollection(collectionName);
   return items.find(item => {
-    return Object.keys(query).every(key => item[key] === query[key]);
+    return Object.keys(query).every(key => {
+      if (key === 'id') return String(item[key]) === String(query[key]);
+      return item[key] === query[key];
+    });
   });
 };
 
@@ -130,6 +133,9 @@ export const findMany = (collectionName, query = {}) => {
   }
   
   return items.filter(item => {
-    return Object.keys(query).every(key => item[key] === query[key]);
+    return Object.keys(query).every(key => {
+      if (key === 'id') return String(item[key]) === String(query[key]);
+      return item[key] === query[key];
+    });
   });
 };
