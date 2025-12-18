@@ -101,40 +101,54 @@ const RegisterForm = () => {
       // Simpan data aplikasi ke JSON server untuk review admin
       console.log('📡 === DATABASE SAVE STEP ===');
       
-      // Prepare data dengan metadata untuk tracking dan processing
-      const applicationData = {
-        id: Date.now().toString(),  // Unique ID berdasarkan timestamp
-        ...formData,                           // Spread semua input user 
-        status: 'pending',                     // Status awal menunggu review admin
-        submittedAt: new Date().toISOString(), // Timestamp submission
-        processedAt: null,                     // Akan diisi saat admin review
-        credentials: null                      // Akan diisi saat approved
+      // Build registration payload and POST to auth register endpoint
+      // Use environment-provided API base URL only; do not fallback to Vercel URL
+      const apiUrl = import.meta.env.VITE_API_BASE_URL;
+
+      // Derive a safe username from email (fallback) and generate a temporary password
+      const derivedUsername = (formData.email || '').split('@')[0] || `user${Date.now()}`;
+      const tempPassword = Math.random().toString(36).slice(-10);
+
+      const registerPayload = {
+        fullName: formData.fullName,
+        email: formData.email,
+        username: derivedUsername,
+        password: tempPassword,
+        position: formData.position,
+        phone: formData.phone,
+        school: formData.school,
+        pw: formData.pw,
+        pc: formData.pc,
+        experience: formData.experience,
+        education: formData.education
       };
 
-      // HTTP POST request ke JSON server database
-      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'https://kp-mocha.vercel.app/api';
-      
-      // Get authentication token from localStorage
-      const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-      
-      const dbResponse = await fetch(`${apiUrl}/applications`, {
+      const dbResponse = await fetch(`${apiUrl}/auth/register`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',  // Set JSON content type
-          'x-user-id': currentUser.id || ''     // Add authentication header
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(applicationData)  // Convert object ke JSON string
+        body: JSON.stringify(registerPayload)
       });
-      
-      // Error handling untuk database operation
+
       if (!dbResponse.ok) {
-        const errorText = await dbResponse.text().catch(() => 'Unknown error');
-        throw new Error(`Database error: ${dbResponse.status} - ${errorText}`);
+        let errBody = { error: 'Unknown' };
+        try {
+          errBody = await dbResponse.json();
+        } catch (parseErr) {
+          try {
+            const txt = await dbResponse.text();
+            errBody = { error: txt || 'Unknown' };
+          } catch (txtErr) {
+            errBody = { error: 'Unknown' };
+          }
+        }
+        throw new Error(errBody.error || `Database error: ${dbResponse.status}`);
       }
-      
-      // Parse response data dari server
+
       const dbResult = await dbResponse.json();
-      console.log('✅ Database save successful, ID:', dbResult.id);
+      const savedUser = dbResult.user || dbResult.data || dbResult;
+      console.log('✅ Registration successful, ID:', savedUser?.id || savedUser?.user?.id || 'unknown');
       
       // === STEP 3: USER FEEDBACK & RESULT DISPLAY ===
       // Show hasil akhir ke user dengan alert yang sesuai
