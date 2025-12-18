@@ -29,7 +29,7 @@ services:
 
       # Basic Auth Dashboard
       # admin / admin (GANTI DI PRODUCTION)
-      - "traefik.http.middlewares.dashboard-auth.basicauth.users=admin:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/"
+      - "traefik.http.middlewares.dashboard-auth.basicauth.users=admin:$$apr1$$z7gmVgEj$$b0X2r1xE/STaUCesyD5Yz1"
 
   # ============================================
   # FRONTEND - React / Vite (Nginx)
