@@ -7,7 +7,6 @@ import cors from 'cors';
 import multer from 'multer';
 import { existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
-import { join } from 'path';
 import { config } from './config/database.js';
 import authRoutes from './routes/auth.js';
 import newsRoutes from './routes/news.js';
