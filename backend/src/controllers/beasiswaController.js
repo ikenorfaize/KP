@@ -11,21 +11,42 @@ import { generateId, sanitizeHtml, successResponse, errorResponse, paginate } fr
 export const getAllBeasiswa = (req, res) => {
   try {
     const beasiswa = getCollection('beasiswa').sort((a, b) => b.id - a.id);
-    
+
     const { page, limit, status } = req.query;
-    
-    // Filter by status if provided
+
+    // Filter by status if provided (we'll compute status later)
     let filtered = beasiswa;
     if (status) {
       filtered = beasiswa.filter(b => b.status === status);
     }
-    
+
+    // Helper to calculate status based on tanggal_mulai and deadline
+    const calculateBeasiswaStatus = (tanggal_mulai, deadline) => {
+      try {
+        const now = new Date();
+        const startDate = new Date(tanggal_mulai);
+        const endDate = new Date(deadline);
+        if (isNaN(startDate) || isNaN(endDate)) return 'TBA';
+        if (now < startDate) return 'Segera';
+        if (now >= startDate && now <= endDate) return 'Buka';
+        return 'Tutup';
+      } catch (e) {
+        return 'TBA';
+      }
+    };
+
+    // Map to include computed status
+    const mapped = filtered.map(b => ({
+      ...b,
+      status: calculateBeasiswaStatus(b.tanggal_mulai || b.tanggalMulai, b.deadline)
+    }));
+
     if (page && limit) {
-      const result = paginate(filtered, parseInt(page), parseInt(limit));
+      const result = paginate(mapped, parseInt(page), parseInt(limit));
       return res.json(successResponse(result));
     }
-    
-    res.json(filtered);
+
+    res.json(mapped);
   } catch (error) {
     console.error('❌ Get beasiswa error:', error);
     res.status(500).json(errorResponse('Failed to fetch beasiswa', error));
@@ -43,8 +64,27 @@ export const getBeasiswaById = (req, res) => {
     if (!beasiswa) {
       return res.status(404).json(errorResponse('Beasiswa not found'));
     }
-    
-    res.json(beasiswa);
+    // compute status
+    const calculateBeasiswaStatus = (tanggal_mulai, deadline) => {
+      try {
+        const now = new Date();
+        const startDate = new Date(tanggal_mulai);
+        const endDate = new Date(deadline);
+        if (isNaN(startDate) || isNaN(endDate)) return 'TBA';
+        if (now < startDate) return 'Segera';
+        if (now >= startDate && now <= endDate) return 'Buka';
+        return 'Tutup';
+      } catch (e) {
+        return 'TBA';
+      }
+    };
+
+    const withStatus = {
+      ...beasiswa,
+      status: calculateBeasiswaStatus(beasiswa.tanggal_mulai || beasiswa.tanggalMulai, beasiswa.deadline)
+    };
+
+    res.json(withStatus);
   } catch (error) {
     console.error('❌ Get beasiswa by ID error:', error);
     res.status(500).json(errorResponse('Failed to fetch beasiswa', error));
