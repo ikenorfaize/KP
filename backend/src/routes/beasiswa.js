@@ -6,6 +6,7 @@ import express from 'express';
 import {
   getAllBeasiswa,
   getBeasiswaById,
+  getBeasiswaByKategori,
   createBeasiswa,
   updateBeasiswa,
   deleteBeasiswa
@@ -16,6 +17,7 @@ const router = express.Router();
 
 // Public routes
 router.get('/', getAllBeasiswa);
+router.get('/kategori/:kategori', getBeasiswaByKategori);
 router.get('/:id', getBeasiswaById);
 
 // Protected routes (admin only)

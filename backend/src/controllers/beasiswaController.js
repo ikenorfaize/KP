@@ -52,6 +52,52 @@ export const getBeasiswaById = (req, res) => {
 };
 
 /**
+ * Get beasiswa by kategori
+ */
+export const getBeasiswaByKategori = (req, res) => {
+  try {
+    const beasiswa = getCollection('beasiswa');
+    const kategori = req.params.kategori;
+
+    let filteredBeasiswa = beasiswa;
+
+    // Filter by kategori (case insensitive), kecuali "Semua Program"
+    if (kategori && kategori !== 'Semua Program') {
+      filteredBeasiswa = filteredBeasiswa.filter(b => {
+        const k = (b.kategori || b.category || '').toString().toLowerCase();
+        return k === kategori.toLowerCase();
+      });
+    }
+
+    // Helper to calculate status
+    const calculateBeasiswaStatus = (tanggal_mulai, deadline) => {
+      try {
+        const now = new Date();
+        const startDate = new Date(tanggal_mulai);
+        const endDate = new Date(deadline);
+
+        if (isNaN(startDate) || isNaN(endDate)) return 'TBA';
+        if (now < startDate) return 'Segera';
+        if (now >= startDate && now <= endDate) return 'Buka';
+        return 'Tutup';
+      } catch (e) {
+        return 'TBA';
+      }
+    };
+
+    const beasiswaWithStatus = filteredBeasiswa.map(b => ({
+      ...b,
+      status: calculateBeasiswaStatus(b.tanggal_mulai || b.tanggalMulai, b.deadline)
+    }));
+
+    res.json(beasiswaWithStatus);
+  } catch (error) {
+    console.error('❌ Get beasiswa by kategori error:', error);
+    res.status(500).json(errorResponse('Failed to fetch beasiswa by kategori', error));
+  }
+};
+
+/**
  * Create beasiswa
  */
 export const createBeasiswa = (req, res) => {
