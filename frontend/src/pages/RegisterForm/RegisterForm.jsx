@@ -22,6 +22,7 @@ const RegisterForm = () => {
     phone: '',             // Nomor telepon/WhatsApp
     position: '',          // Posisi/jabatan yang diinginkan di PERGUNU
     school: '',            // Nama sekolah/institusi tempat mengajar
+    address: '',           // Alamat rumah lengkap
     pw: '',                // Pengurus Wilayah (struktur organisasi)
     pc: '',                // Pengurus Cabang (struktur organisasi)
     experience: '',        // Pengalaman mengajar/berorganisasi
@@ -111,12 +112,12 @@ const RegisterForm = () => {
 
       // Build application payload and POST to applications endpoint
       const applicationData = {
-        id: Date.now().toString(),
         fullName: formData.fullName,
         email: formData.email,
         phone: formData.phone,
         position: formData.position,
-        address: formData.school || '',
+        school: formData.school,
+        address: formData.address || '',
         education: formData.education,
         experience: formData.experience,
         pw: formData.pw,
@@ -132,11 +133,25 @@ const RegisterForm = () => {
       });
 
       if (!dbResponse.ok) {
-        let errBody = { error: 'Unknown' };
-        try { errBody = await dbResponse.json(); } catch (e) {
-          try { const txt = await dbResponse.text(); errBody = { error: txt || 'Unknown' }; } catch { errBody = { error: 'Unknown' }; }
+        let errBody = { error: 'Unknown', message: '' };
+        try { 
+          errBody = await dbResponse.json(); 
+        } catch (e) {
+          try { 
+            const txt = await dbResponse.text(); 
+            errBody = { error: txt || 'Unknown', message: txt || 'Unknown' }; 
+          } catch { 
+            errBody = { error: 'Unknown', message: 'Unknown error' }; 
+          }
         }
-        throw new Error(errBody.error || `Database error: ${dbResponse.status}`);
+        
+        // Handle 409 Conflict (duplicate email)
+        if (dbResponse.status === 409) {
+          const errorMsg = errBody.message || errBody.error || 'Email already used. Please use another email.';
+          throw new Error(errorMsg);
+        }
+        
+        throw new Error(errBody.message || errBody.error || `Database error: ${dbResponse.status}`);
       }
 
       const dbResult = await dbResponse.json();
@@ -159,11 +174,18 @@ Terima kasih telah bergabung dengan PERGUNU!`, dbResult.id);
       // === ERROR HANDLING ===
       // Tangani semua error yang mungkin terjadi selama proses submit
       console.error('❌ === MAIN SUBMISSION ERROR ===', mainError);
-      showCustomAlert('error', 'Pendaftaran Gagal!', `❌ Terjadi kesalahan saat memproses pendaftaran Anda.
-
-Error: ${mainError.message}
-
-Silakan coba lagi atau hubungi admin jika masalah berlanjut.`);
+      
+      // User-friendly error messages
+      let errorTitle = 'Pendaftaran Gagal!';
+      let errorMessage = mainError.message;
+      
+      // Customize message for duplicate email
+      if (mainError.message.includes('Email already used') || mainError.message.includes('already registered')) {
+        errorTitle = 'Email Sudah Terdaftar';
+        errorMessage = `Email ${formData.email} sudah digunakan untuk pendaftaran lain.\n\nSilakan gunakan email yang berbeda atau hubungi admin jika Anda yakin ini adalah kesalahan.`;
+      }
+      
+      showCustomAlert('error', errorTitle, `❌ ${errorMessage}\n\nJika masalah berlanjut, silakan hubungi admin.`);
       
     } finally {
       // === CLEANUP ===
@@ -319,6 +341,22 @@ Silakan coba lagi atau hubungi admin jika masalah berlanjut.`);
               required
               placeholder="Contoh: SMA Al-Hikmah Surabaya"
               autoComplete="organization"        // Browser autofill hint
+            />
+          </div>
+          
+          {/* Input alamat rumah lengkap */}
+          <div className="form-group">
+            <label htmlFor="address">Alamat Lengkap *</label>
+            <textarea
+              id="address"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              required
+              placeholder="Contoh: Jl. Pendidikan No. 123, RT 02/RW 05, Kelurahan Sukamaju, Kecamatan Cibeunying, Kota Bandung, Jawa Barat 40123"
+              autoComplete="street-address"
+              rows="3"
+              style={{ resize: 'vertical' }}
             />
           </div>
 

@@ -65,6 +65,13 @@ const normalizeList = (list) =>
     ...a,
     fullName: a.fullName || a.applicantName || '',
     submittedAt: a.submittedAt || a.submissionDate || a.createdAt || null,
+    position: a.position || '',
+    school: a.school || '',
+    address: a.address || '',
+    education: a.education || '',
+    experience: a.experience || '',
+    pw: a.pw || '',
+    pc: a.pc || '',
   }));
 
 export const ApplicationService = {
@@ -120,11 +127,15 @@ export const ApplicationService = {
       await apiService.init();
       const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
       
+      if (!currentUser.id) {
+        throw new Error('User not logged in or session expired');
+      }
+      
       const resp = await fetch(`${apiService.API_URL}/applications/${id}/status`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
-          'x-user-id': currentUser.id || ''
+          'x-user-id': String(currentUser.id)
         },
         body: JSON.stringify({ status: 'approved', ...meta })
       });
@@ -140,17 +151,16 @@ export const ApplicationService = {
           console.warn('Failed to clear applications mode:', storageError);
         }
         return application;
+      } else {
+        // Log error details for debugging
+        const errorText = await resp.text();
+        console.error('Approve API error:', resp.status, errorText);
+        throw new Error(`Server returned ${resp.status}: ${errorText}`);
       }
     } catch (error) {
       console.error('Approve API failed:', error);
-      // ignore and fallback to localStorage
+      throw error; // Re-throw instead of silent fallback
     }
-    // Local fallback: update in localStorage
-    const apps = await this.getApplications();
-    const updated = apps.map(a => a.id === id ? { ...a, status: 'approved', processedAt: new Date().toISOString(), ...meta } : a);
-    localStorage.setItem('applications', JSON.stringify(updated));
-    localStorage.setItem('applications_mode', 'local');
-    return updated.find(a => a.id === id);
   },
 
   async rejectApplication(id, reason) {
@@ -235,7 +245,8 @@ export const ApplicationService = {
       password, // backend hashes it
       position: app.position || '',
       address: app.address || '',
-      phone: app.phone || ''
+      phone: app.phone || '',
+      updateIfExists: true // Allow updating existing pending users
     };
     const api = apiService.API_URL;
     // Try a few username variants if conflict
@@ -299,6 +310,7 @@ export const ApplicationService = {
   // Orchestrate: create user then approve application; returns {application, user}
   async approveAndRegister(application, { username, password }) {
     try {
+      // Step 1: Create/Update user account
       const { user, username: finalUsername, isExisting } = await this.registerUserFromApplication(application, { username, password });
       
       // Log if using existing user
@@ -306,35 +318,25 @@ export const ApplicationService = {
         console.log('🔄 Approving application with existing user account');
       }
       
-      const updatedApp = await this.approveApplication(application.id, { username: finalUsername });
-      return { application: updatedApp, user };
+      // Step 2: Approve application on server
+      const updatedApp = await this.approveApplication(application.id, { 
+        username: finalUsername,
+        processedBy: 'admin',
+        processedAt: new Date().toISOString()
+      });
+      
+      // Step 3: Clear localStorage cache to force fetch from server
+      try {
+        localStorage.removeItem('applications');
+        localStorage.removeItem('applications_mode');
+      } catch (e) {
+        console.warn('Failed to clear applications cache:', e);
+      }
+      
+      return { application: updatedApp, user, credentials: { username: finalUsername, password } };
     } catch (error) {
       console.error('❌ Approve and register failed:', error);
-      // Fallback: local-only (AdminDashboard server users list won't reflect this)
-      const apps = await this.getApplications();
-      const updated = apps.map(a => a.id === application.id ? { ...a, status: 'approved', processedAt: new Date().toISOString(), username } : a);
-      localStorage.setItem('applications', JSON.stringify(updated));
-      localStorage.setItem('applications_mode', 'local');
-      // Also store a local users list so the UI could use it later if needed
-      try {
-        const localUsers = JSON.parse(localStorage.getItem('users') || '[]');
-        localUsers.push({
-          id: `local_${Date.now()}`,
-          fullName: application.fullName,
-          email: application.email,
-          username,
-          position: application.position || '',
-          address: application.address || '',
-          phone: application.phone || '',
-          status: 'active',
-          role: 'user',
-          createdAt: new Date().toISOString()
-        });
-        localStorage.setItem('users', JSON.stringify(localUsers));
-      } catch (storageError) {
-        console.warn('Failed to save local users:', storageError);
-      }
-      return { application: updated.find(a => a.id === application.id), user: null };
+      throw error; // Re-throw to show error to admin
     }
   }
 };

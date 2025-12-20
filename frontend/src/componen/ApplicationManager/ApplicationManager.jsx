@@ -69,19 +69,20 @@ const ApplicationManager = ({ onPendingCountChange, onUsersChanged }) => {
       };
 
       // Create real user, then approve the application (server-backed if available)
-  const { application: updatedApp, user } = await ApplicationService.approveAndRegister(application, creds);
+      const { application: updatedApp, user, credentials } = await ApplicationService.approveAndRegister(application, creds);
 
       // Update local state to reflect persisted data
       setApplications(prev => prev.map(app => app.id === application.id ? { ...app, ...updatedApp } : app));
 
-  // Notify parent to refresh users if needed
-  try { if (typeof onUsersChanged === 'function') onUsersChanged(); } catch (notificationError) {
-    console.warn('Failed to notify parent of user changes:', notificationError);
-  }
+      // Notify parent to refresh users if needed
+      try { if (typeof onUsersChanged === 'function') onUsersChanged(); } catch (notificationError) {
+        console.warn('Failed to notify parent of user changes:', notificationError);
+      }
 
-  // User feedback with final username
+      // User feedback with final credentials
+      const finalCredentials = credentials || creds;
       const finalUser = user || { username: updatedApp?.username || creds.username };
-      alert(`✅ ${application.fullName} disetujui.\n\n🔑 Akun Pengguna:\nUsername: ${finalUser.username}\nPassword: ${creds.password}`);
+      alert(`✅ ${application.fullName} disetujui.\n\n🔑 Akun Pengguna:\nUsername: ${finalCredentials.username}\nPassword: ${finalCredentials.password}\n\n⚠️ PENTING: Simpan password ini karena tidak dapat dilihat lagi!`);
       
     } catch (error) {
       console.error('Error approving application:', error);
@@ -239,8 +240,13 @@ const ApplicationManager = ({ onPendingCountChange, onUsersChanged }) => {
                 <div className="card-body">
                   <p><strong>📧 Email:</strong> {app.email}</p>
                   <p><strong>📱 Phone:</strong> {app.phone}</p>
-                  <p><strong>💼 Position:</strong> {app.position}</p>
-                  <p><strong>📍 Address:</strong> {app.address}</p>
+                  <p><strong>💼 Jabatan:</strong> {app.position || '-'}</p>
+                  <p><strong>🏫 Sekolah:</strong> {app.school || '-'}</p>
+                  <p><strong>📍 Alamat:</strong> {app.address || '-'}</p>
+                  <p><strong>🎓 Pendidikan:</strong> {app.education || '-'}</p>
+                  <p><strong>⏱️ Pengalaman:</strong> {app.experience || '-'}</p>
+                  <p><strong>🗺️ PW:</strong> {app.pw || '-'}</p>
+                  <p><strong>🏢 PC:</strong> {app.pc || '-'}</p>
                   <p><strong>📅 Submitted:</strong> {app.submittedAt ? new Date(app.submittedAt).toLocaleDateString('id-ID') : '-'}</p>
                 </div>
                 {/* Action buttons untuk approve/reject dengan loading state */}
@@ -277,10 +283,12 @@ const ApplicationManager = ({ onPendingCountChange, onUsersChanged }) => {
                 <tr>
                   <th>Nama</th>
                   <th>Email</th>
-                  <th>Position</th>
+                  <th>Jabatan</th>
+                  <th>Sekolah</th>
                   <th>Status</th>
                   <th>Tanggal</th>
                   <th>Diproses</th>
+                  <th>Aksi</th>
                 </tr>
               </thead>
               <tbody>
@@ -288,7 +296,8 @@ const ApplicationManager = ({ onPendingCountChange, onUsersChanged }) => {
                   <tr key={app.id}>
                     <td>{app.fullName}</td>
                     <td>{app.email}</td>
-                    <td>{app.position}</td>
+                    <td>{app.position || '-'}</td>
+                    <td>{app.school || '-'}</td>
                     <td>{getStatusBadge(app.status)}</td>
                     <td>{app.submittedAt ? new Date(app.submittedAt).toLocaleDateString('id-ID') : '-'}</td>
                     <td>
