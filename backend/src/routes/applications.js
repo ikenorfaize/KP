@@ -56,22 +56,48 @@ router.post('/', (req, res) => {
       email,
       phone,
       address,
+      position,
+      school,
+      education,
+      experience,
+      pw,
+      pc,
       reason,
       documents,
       submittedAt
     } = req.body;
 
+    // Validation: Required fields
     if (!fullName || !email) {
       return res.status(400).json(errorResponse('Required fields missing'));
+    }
+
+    // Validation: Email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json(errorResponse('Invalid email format'));
+    }
+
+    // Validation: Email uniqueness - Check if email already exists in active applications
+    const existingApplication = findOne('applications', { email: email.toLowerCase() });
+    if (existingApplication) {
+      console.log(`⚠️ Duplicate email attempt: ${email}`);
+      return res.status(409).json(errorResponse('Email already used. Please use another email.'));
     }
 
     const newApplication = addDocument('applications', {
       userId: req.user?.id || null,
       beasiswaId: beasiswaId ? parseInt(beasiswaId) : null,
       fullName,
-      email,
+      email: email.toLowerCase(), // Store in lowercase for case-insensitive comparison
       phone: phone || '',
       address: address || '',
+      position: position || '',
+      school: school || '',
+      education: education || '',
+      experience: experience || '',
+      pw: pw || '',
+      pc: pc || '',
       reason: reason || '',
       documents: documents || [],
       status: 'pending',
@@ -134,7 +160,9 @@ router.delete('/:id', requireAuth, (req, res) => {
       return res.status(404).json(errorResponse('Application not found'));
     }
     
-    res.json(successResponse({ id }, 'Application deleted'));
+    console.log(`✅ Application deleted (email ${application.email} now available): ${id}`);
+    
+    res.json(successResponse({ id, email: application.email }, 'Application deleted'));
   } catch (error) {
     res.status(500).json(errorResponse('Failed to delete application', error));
   }

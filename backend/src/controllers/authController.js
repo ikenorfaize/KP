@@ -72,6 +72,33 @@ export const register = async (req, res) => {
 
     const existingEmail = findOne('users', { email });
     if (existingEmail) {
+      // If user exists with pending status, update and activate them
+      if (existingEmail.status === 'pending' && req.body.updateIfExists) {
+        // Update existing user with new data
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const users = getCollection('users');
+        const userIndex = users.findIndex(u => u.email === email);
+        
+        if (userIndex !== -1) {
+          users[userIndex] = {
+            ...users[userIndex],
+            username,
+            password: hashedPassword,
+            fullName: fullName || username,
+            status: 'active',
+            updatedAt: new Date().toISOString()
+          };
+          saveCollection('users', users);
+          
+          const { password: _, ...userWithoutPassword } = users[userIndex];
+          console.log(`✅ User reactivated: ${username}`);
+          return res.status(200).json(successResponse({
+            user: userWithoutPassword,
+            isExisting: true,
+            message: 'User account updated and activated'
+          }));
+        }
+      }
       return res.status(400).json(errorResponse('Email already registered'));
     }
 
