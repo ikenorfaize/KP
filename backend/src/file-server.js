@@ -21,7 +21,7 @@ const PORT = process.env.FILE_PORT || 3002;
 const corsOptions = {
   origin: (origin, callback) => {
     // Get allowed origins from environment
-    const allowedOrigins = (process.env.ALLOWED_ORIGINS || '').split(',').filter(Boolean);
+    const allowedOrigins = (process.env.ALLOWED_ORIGINS || '').split(',').map(o => o.trim()).filter(Boolean);
     
     // Allow same-origin requests (no origin header)
     if (!origin) return callback(null, true);
@@ -29,21 +29,23 @@ const corsOptions = {
     try {
       const url = new URL(origin);
       
-      // In development, allow localhost origins
-      if (process.env.NODE_ENV !== 'production') {
-        const isLocalhost = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
-        if (isLocalhost) return callback(null, true);
-      }
-      
-      // Check against whitelist of allowed origins
+      // Build dynamic allow list
       const allowList = new Set([
         ...allowedOrigins,
         process.env.FRONTEND_URL,
         'https://pergunu.fairuzfd.site',
-        'https://apipergunu.fairuzfd.site',
-        'http://localhost:5173',
-        'http://localhost:3000'
+        'https://apipergunu.fairuzfd.site'
       ].filter(Boolean));
+      
+      // In development, allow localhost origins
+      if (process.env.NODE_ENV !== 'production') {
+        const isLocalhost = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
+        if (isLocalhost) {
+          allowList.add(`http://localhost:5173`);
+          allowList.add(`http://localhost:3000`);
+          return callback(null, true);
+        }
+      }
       
       if (allowList.has(origin)) {
         return callback(null, true);

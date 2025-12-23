@@ -162,10 +162,13 @@ app.use((err, req, res, next) => {
 
 // ===== SERVER START =====
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  const host = process.env.HOST || 'localhost';
   app.listen(PORT, () => {
     console.log('🚀 ===== PERGUNU API SERVER STARTED =====');
-    console.log(`🌐 Server running on http://localhost:${PORT}`);
-    console.log(`📡 SSE endpoint: http://localhost:${PORT}/api/news/events`);
+    console.log(`🌐 Server running on http://${host}:${PORT}`);
+    console.log(`📡 SSE endpoint: http://${host}:${PORT}/api/news/events`);
+    console.log(`🔧 Environment: ${config.nodeEnv}`);
+    console.log(`🔗 CORS Origins: ${config.corsOrigins.join(', ')}`);
     console.log('📝 API Routes:');
     console.log('  🔐 /api/auth/*        - Authentication');
     console.log('  📰 /api/news/*        - News management');

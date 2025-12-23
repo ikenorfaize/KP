@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 // import { emailService } from '../../services/EmailService';  // Service untuk mengirim email notifikasi (unused for now)
 import { ApplicationService } from '../../services/ApplicationService';
+import { generateUniquePassword, validatePasswordUniqueness } from '../../utils/passwordValidation';
 import './ApplicationManager.css';
 import { usePendingApplications } from '../../context/PendingApplicationsContext';
 
@@ -59,14 +60,26 @@ const ApplicationManager = ({ onPendingCountChange, onUsersChanged }) => {
     try {
       setProcessing(application.id); // Set loading state untuk mencegah double click
 
-      // Generate random credentials
-      const creds = {
-        username: (application.fullName || 'user')
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '_')
-          .replace(/^_+|_+$/g, '') + '_' + Math.floor(Math.random() * 1000),
-        password: 'Pg' + Math.random().toString(36).slice(2, 8) + Math.floor(Math.random()*90+10)
-      };
+      // Generate random credentials with unique password
+      const username = (application.fullName || 'user')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '_')
+        .replace(/^_+|_+$/g, '') + '_' + Math.floor(Math.random() * 1000);
+
+      // Generate unique password that doesn't exist in system
+      console.log('🔐 Generating unique password...');
+      const password = await generateUniquePassword();
+      console.log('✅ Unique password generated');
+
+      const creds = { username, password };
+
+      // Validate password uniqueness (double-check)
+      const validation = await validatePasswordUniqueness(password);
+      if (!validation.isValid) {
+        alert(`❌ Password validation failed: ${validation.error}\nPlease try again.`);
+        setProcessing(null);
+        return;
+      }
 
       // Create real user, then approve the application (server-backed if available)
       const { application: updatedApp, user, credentials } = await ApplicationService.approveAndRegister(application, creds);

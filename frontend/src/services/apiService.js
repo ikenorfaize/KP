@@ -24,9 +24,17 @@ class ApiService {
     const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
     const fileServerUrl = import.meta.env.VITE_FILE_SERVER_URL;
     
-    // Use environment variables or fallback to production URLs
-    this.API_URL = apiBaseUrl || 'https://kp-mocha.vercel.app/api';
-    this.FILE_SERVER_URL = fileServerUrl || 'https://kp-mocha.vercel.app';
+    // CRITICAL: Use environment variables ONLY - no hardcoded fallbacks
+    // This ensures the same code works in development, staging, and production
+    if (!apiBaseUrl) {
+      console.error('❌ VITE_API_BASE_URL is not defined! Check your .env file.');
+    }
+    if (!fileServerUrl) {
+      console.error('❌ VITE_FILE_SERVER_URL is not defined! Check your .env file.');
+    }
+    
+    this.API_URL = apiBaseUrl;
+    this.FILE_SERVER_URL = fileServerUrl;
     
     this.initialized = false;                       // Initialization status
     this._initializingPromise = null;               // Promise to guard concurrent init
@@ -39,6 +47,7 @@ class ApiService {
     console.log('🆕 ApiService version:', this.version);
     console.log('📡 API_URL:', this.API_URL);
     console.log('📁 FILE_SERVER_URL:', this.FILE_SERVER_URL);
+    console.log('🔧 Environment:', isDevelopment ? 'development' : 'production');
     
     // Security configuration dari environment variables
     this.saltRounds = parseInt(import.meta.env.VITE_BCRYPT_SALT_ROUNDS) || 12;
