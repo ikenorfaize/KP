@@ -68,7 +68,7 @@
   display: inline-block;
   padding: 12px 30px;
   background-color: #1a4d2e;
-  color: white;
+  color: white !important;
   text-decoration: none;
   border-radius: 50px;
   font-weight: 600;
@@ -80,6 +80,14 @@
   background-color: #143d23;
   transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(26, 77, 46, 0.3);
+  color: white !important;
+}
+
+.back-button:visited,
+.back-button:active,
+.back-button:focus {
+  color: white !important;
+  text-decoration: none;
 }
 
 @media (max-width: 768px) {
