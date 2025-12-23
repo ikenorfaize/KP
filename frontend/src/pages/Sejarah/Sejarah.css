@@ -1,0 +1,97 @@
+.sejarah-page {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.sejarah-container {
+  flex: 1;
+  max-width: 900px;
+  margin: 100px auto 60px; /* Top margin accounts for fixed navbar */
+  padding: 0 20px;
+}
+
+.sejarah-content {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.sejarah-title {
+  font-size: 2.5rem;
+  color: #1a4d2e; /* Green theme */
+  margin-bottom: 30px;
+  text-align: center;
+  font-weight: 700;
+  border-bottom: 3px solid #e9ecef;
+  padding-bottom: 20px;
+}
+
+.sejarah-text {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #495057;
+}
+
+.sejarah-text p {
+  margin-bottom: 20px;
+  text-align: justify;
+}
+
+.sejarah-text h2 {
+  font-size: 1.8rem;
+  color: #2d3436;
+  margin-top: 35px;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.sejarah-text ul {
+  margin-bottom: 25px;
+  padding-left: 25px;
+}
+
+.sejarah-text li {
+  margin-bottom: 10px;
+  list-style-type: disc;
+}
+
+.sejarah-actions {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+.back-button {
+  display: inline-block;
+  padding: 12px 30px;
+  background-color: #1a4d2e;
+  color: white;
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(26, 77, 46, 0.2);
+}
+
+.back-button:hover {
+  background-color: #143d23;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(26, 77, 46, 0.3);
+}
+
+@media (max-width: 768px) {
+  .sejarah-content {
+    padding: 25px;
+  }
+
+  .sejarah-title {
+    font-size: 2rem;
+  }
+
+  .sejarah-text {
+    font-size: 1rem;
+  }
+}

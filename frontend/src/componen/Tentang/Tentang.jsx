@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "./Tentang.css";
 import TentangCard from "./TentangCard";
 import aboutImg from "../../assets/about.png";
@@ -39,7 +40,7 @@ const Tentang = () => {
             kemuliaan profesi guru, dan menguatkan peran strategis pendidikan
             dalam membangun peradaban bangsa.
           </p>
-          <button className="tentang-button">Baca selengkapnya</button>
+          <Link to="/sejarah-pergunu" className="tentang-button">Baca selengkapnya</Link>
         </div>
 
         <div className="tentang-middle">

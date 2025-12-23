@@ -30,6 +30,7 @@ import LayananPage from "./pages/Layanan/LayananPage"; // Halaman khusus layanan
 import Beasiswa from "./pages/Beasiswa/beasiswa_page";         // Halaman informasi beasiswa
 import BeasiswaDetail from "./pages/Beasiswa/BeasiswaDetail"; // Halaman detail beasiswa
 import LayananDetail from "./pages/Layanan/LayananDetail"; // Halaman detail layanan
+import Sejarah from "./pages/Sejarah/Sejarah"; // Halaman sejarah PERGUNU
 
 import "./App.css";
 import { PendingApplicationsProvider } from './context/PendingApplicationsContext';
@@ -128,6 +129,7 @@ const App = () => {
         <Route path="/layanan/:id" element={<><Navbar /><LayananDetail /><Footer /></>} />
         <Route path="/beasiswa" element={<><Navbar /><Beasiswa /><Footer /></>} />
         <Route path="/beasiswa/:id" element={<BeasiswaDetail />} />
+        <Route path="/sejarah-pergunu" element={<Sejarah />} />
         
         {/* ROUTES SISTEM - Authentication dan Dashboard */}
         {/* Halaman-halaman yang memerlukan interaksi khusus atau autentikasi */}
