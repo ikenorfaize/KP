@@ -14,6 +14,7 @@ import beasiswaRoutes from './routes/beasiswa.js';
 import usersRoutes from './routes/users.js';
 import applicationsRoutes from './routes/applications.js';
 import cleanupRoutes from './routes/cleanup.js';
+import fileServerRoutes from './routes/fileServer.js';
 
 const app = express();
 const PORT = config.port;
@@ -40,6 +41,10 @@ app.use('/api/beasiswa', beasiswaRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/applications', applicationsRoutes);
 app.use('/api/database', cleanupRoutes); // Database cleanup routes
+
+// File server routes (upload, download, delete certificates)
+// Mount at root level (not /api) to match frontend expectations
+app.use('/', fileServerRoutes);
 
 // Serve uploaded files from project uploads folder (bind-mounted at /app/uploads)
 const PROJECT_UPLOADS = join(process.cwd(), 'uploads');
@@ -177,6 +182,9 @@ if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
     console.log('  🎓 /api/beasiswa/*    - Beasiswa management');
     console.log('  👥 /api/users/*       - User management');
     console.log('  📋 /api/applications/* - Application management');
+    console.log('  📄 /upload-certificate - Certificate upload');
+    console.log('  🗑️  /delete-certificate/:id - Certificate delete');
+    console.log('  ⬇️  /download-certificate/:id - Certificate download');
     console.log('🎯 Ready to serve!');
   });
 }

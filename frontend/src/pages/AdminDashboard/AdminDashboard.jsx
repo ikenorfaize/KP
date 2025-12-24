@@ -630,53 +630,41 @@ const AdminDashboard = () => {
         return;
       }
 
-      // === DELETE FROM FILE SERVER (if file has proper ID and path) ===
-      if (certToDelete && certToDelete.id && certToDelete.filePath) {
-        try {
-          const fileServerUrl = import.meta.env.VITE_FILE_SERVER_URL || 'https://kp-mocha.vercel.app';
-          await fetch(`${fileServerUrl}/delete-certificate/${certToDelete.id}`, {
-            method: 'DELETE'
-          });
-          console.log('✅ File deleted from server');
-        } catch (fileError) {
-          console.warn('⚠️ Could not delete file from server:', fileError);
-          // Continue with database cleanup even if file deletion fails
+      // === DELETE FROM FILE SERVER ===
+      // File server will handle BOTH file deletion AND database update
+      if (certToDelete && certToDelete.id) {
+        const fileServerUrl = import.meta.env.VITE_FILE_SERVER_URL || 'https://kp-mocha.vercel.app';
+        const response = await fetch(`${fileServerUrl}/delete-certificate/${certToDelete.id}`, {
+          method: 'DELETE'
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+          throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
+
+        console.log('✅ Certificate deleted from server and database');
+        
+        // Update local state to reflect deletion
+        const updatedCertificates = userToUpdate.certificates.filter((cert, idx) => idx !== certificateIndex);
+        setUsers(prevUsers =>
+          prevUsers.map(user =>
+            user.id === userId ? { ...user, certificates: updatedCertificates } : user
+          )
+        );
+
+        showToast('✅ Sertifikat berhasil dihapus!', 'success');
       } else {
-        console.warn('⚠️ Old certificate format - no file server cleanup needed');
+        // Old certificate format without ID - just remove from local state
+        console.warn('⚠️ Old certificate format - removing from local state only');
+        const updatedCertificates = userToUpdate.certificates.filter((cert, idx) => idx !== certificateIndex);
+        setUsers(prevUsers =>
+          prevUsers.map(user =>
+            user.id === userId ? { ...user, certificates: updatedCertificates } : user
+          )
+        );
+        showToast('⚠️ Sertifikat lama dihapus (hanya dari UI)', 'warning');
       }
-
-      // Remove certificate from array by index
-      const updatedCertificates = userToUpdate.certificates.filter((cert, idx) => idx !== certificateIndex);
-
-      // PATCH update (not PUT to avoid password issues)
-      const certificateUpdate = {
-        certificates: updatedCertificates
-      };
-
-      // Update local state
-      setUsers(prevUsers =>
-        prevUsers.map(user =>
-          user.id === userId ? { ...user, certificates: updatedCertificates } : user
-        )
-      );
-
-      // Update in Express.js API using PATCH
-      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'https://kp-mocha.vercel.app/api';
-      const response = await fetch(`${apiUrl}/users/${userId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-user-id': currentUser?.id || currentUser?.userId || ''
-        },
-        body: JSON.stringify(certificateUpdate)
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      alert('✅ Sertifikat berhasil dihapus!');
       
     } catch (error) {
       console.error('❌ Error deleting certificate:', error);
