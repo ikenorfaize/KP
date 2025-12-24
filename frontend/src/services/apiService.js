@@ -253,7 +253,23 @@ class ApiService {
         loginTime: new Date().toISOString()
       };
       
+      // Store session data
       localStorage.setItem('currentUser', JSON.stringify(userSession));
+      
+      // Store token if provided by backend (for future JWT implementation)
+      if (result.token) {
+        localStorage.setItem('token', result.token);
+        if (isDevelopment) {
+          console.log('🔑 Token stored:', result.token.substring(0, 20) + '...');
+        }
+      } else {
+        // For now, create a session identifier as fallback
+        const sessionId = `session_${userData.id}_${Date.now()}`;
+        localStorage.setItem('token', sessionId);
+        if (isDevelopment) {
+          console.log('🔑 Session ID stored (no JWT from backend):', sessionId);
+        }
+      }
       
       return {
         success: true,

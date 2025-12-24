@@ -395,9 +395,20 @@ const AdminDashboard = () => {
       // Send POST request ke Express.js API with authentication
       const apiUrl = import.meta.env.VITE_API_BASE_URL || 'https://kp-mocha.vercel.app/api';
       
-      // Get authentication token from localStorage
+      // Get authentication data from localStorage
       const token = localStorage.getItem('token');
+      const currentUserStr = localStorage.getItem('currentUser');
+      const adminAuthStr = localStorage.getItem('adminAuth');
+      
+      console.log('🔍 Checking authentication...');
+      console.log('📦 localStorage keys:', Object.keys(localStorage));
+      console.log('🔑 Token:', token ? token.substring(0, 30) + '...' : 'NOT FOUND');
+      console.log('👤 currentUser:', currentUserStr ? 'EXISTS' : 'NOT FOUND');
+      console.log('🔐 adminAuth:', adminAuthStr ? 'EXISTS' : 'NOT FOUND');
+      
       if (!token) {
+        console.error('❌ Token not found in localStorage!');
+        console.log('💡 Available keys:', Object.keys(localStorage));
         alert('❌ Sesi login tidak ditemukan. Silakan login kembali sebagai admin.');
         window.location.href = '/login';
         setIsSubmitting(false);
