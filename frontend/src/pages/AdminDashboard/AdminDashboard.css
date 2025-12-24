@@ -27,7 +27,7 @@
 
 /* Header */
 .admin-header {
-  background: linear-gradient(to right, #0f7536, #56b269) !important;
+  background: var(--primary-green) !important;
   color: var(--white);
   padding: 1rem 2rem;
   box-shadow: 0 2px 10px var(--shadow);
@@ -576,7 +576,7 @@ h3[style*="color: #0f7536"] {
 }
 
 .add-user-header {
-  background: linear-gradient(135deg, var(--primary-green) 0%, var(--medium-green) 100%);
+  background: var(--primary-green);
   color: var(--white);
   padding: 2rem;
   text-align: center;
