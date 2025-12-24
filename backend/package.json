@@ -8,7 +8,9 @@
     "start": "node src/index-refactored.js",
     "start:old": "node src/index.js",
     "dev": "node src/index-refactored.js",
-    "file-server": "node src/file-server.js"
+    "file-server": "node src/file-server.js",
+    "cleanup": "node cleanup-db.js",
+    "cleanup:db": "node cleanup-db.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",

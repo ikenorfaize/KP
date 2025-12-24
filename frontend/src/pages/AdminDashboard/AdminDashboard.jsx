@@ -79,6 +79,22 @@ const AdminDashboard = () => {
   const [editingUser, setEditingUser] = useState(null); // Data user yang sedang diedit
   const [showEditModal, setShowEditModal] = useState(false); // Modal edit visibility
   const [showEditPassword, setShowEditPassword] = useState(false); // Toggle password di edit
+  const [news, setNews] = useState([]); // State untuk berita
+
+  // Fungsi untuk mengambil data berita dari API
+  const fetchNews = useCallback(async () => {
+    try {
+      await apiService.init();
+      const response = await fetch(`${apiService.API_URL}/news`);
+      if (response.ok) {
+        const newsData = await response.json();
+        setNews(newsData);
+      }
+    } catch (error) {
+      console.error('❌ Error fetching news:', error);
+      setNews([]);
+    }
+  }, []);
 
   // Fungsi untuk mengambil data pengguna dari Express.js API
   const fetchUsers = useCallback(async () => {
@@ -141,6 +157,7 @@ const AdminDashboard = () => {
   // Load users on component mount ONCE
   useEffect(() => {
     fetchUsers();
+    fetchNews(); // Fetch news juga
   }, []); // Remove fetchUsers from dependency to prevent infinite loops
 
   // Ensure we don't stick to local fallback for applications when API is available
@@ -797,7 +814,7 @@ const AdminDashboard = () => {
         <div className="stat-card">
           <div className="stat-icon">👥</div>
           <div className="stat-content">
-            <h3>{stats.totalUsers}</h3>
+            <h3>{users.length}</h3>
             <p>Total Users</p>
           </div>
         </div>
@@ -813,6 +830,13 @@ const AdminDashboard = () => {
           <div className="stat-content">
             <h3>{stats.totalDownloads}</h3>
             <p>Total Downloads</p>
+          </div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon">📰</div>
+          <div className="stat-content">
+            <h3>{news.length}</h3>
+            <p>Total Berita</p>
           </div>
         </div>
         <div className="stat-card pending-review">

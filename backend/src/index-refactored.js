@@ -13,6 +13,7 @@ import newsRoutes from './routes/news.js';
 import beasiswaRoutes from './routes/beasiswa.js';
 import usersRoutes from './routes/users.js';
 import applicationsRoutes from './routes/applications.js';
+import cleanupRoutes from './routes/cleanup.js';
 
 const app = express();
 const PORT = config.port;
@@ -38,6 +39,7 @@ app.use('/api/news', newsRoutes);
 app.use('/api/beasiswa', beasiswaRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/applications', applicationsRoutes);
+app.use('/api/database', cleanupRoutes); // Database cleanup routes
 
 // Serve uploaded files from project uploads folder (bind-mounted at /app/uploads)
 const PROJECT_UPLOADS = join(process.cwd(), 'uploads');

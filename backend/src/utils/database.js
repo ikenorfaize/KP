@@ -2,8 +2,13 @@
 // DATABASE UTILITIES
 // ===================================
 
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, unlinkSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { DB_PATH } from '../config/database.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 /**
  * Read entire database
@@ -72,13 +77,32 @@ export const updateDocument = (collectionName, documentId, updates) => {
 
 /**
  * Delete a single document by ID
+ * AUTO-DELETE: Hapus file gambar terkait jika ada
  */
 export const deleteDocument = (collectionName, documentId) => {
   const data = readDB();
   const items = data[collectionName] || [];
+  
+  // Cari dokumen yang akan dihapus
+  const documentToDelete = items.find(item => String(item.id) === String(documentId));
+  
+  // Filter dokumen
   const filteredItems = items.filter(item => String(item.id) !== String(documentId));
   
   if (filteredItems.length < items.length) {
+    // Hapus file gambar terkait jika ada (untuk berita)
+    if (documentToDelete && documentToDelete.image && documentToDelete.image.startsWith('/uploads/')) {
+      const imagePath = join(__dirname, '..', documentToDelete.image);
+      if (existsSync(imagePath)) {
+        try {
+          unlinkSync(imagePath);
+          console.log(`🗑️  Menghapus gambar: ${documentToDelete.image}`);
+        } catch (error) {
+          console.error(`❌ Error menghapus gambar: ${error.message}`);
+        }
+      }
+    }
+    
     data[collectionName] = filteredItems;
     writeDB(data);
     console.log(`✅ Deleted document from LOCAL JSON: ${collectionName}, id=${documentId}`);
