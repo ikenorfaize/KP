@@ -165,10 +165,11 @@ const UserDashboard = () => {
       let downloadHref = null;
 
       if (typeof certificate === 'object') {
-        // Use backend API proxy endpoint that includes auth
+        // Use file-server download endpoint directly
         if (certificate.id) {
-          // Backend will proxy to file server with proper auth
-          downloadHref = `${apiUrl}/certificates/download/${certificate.id}`;
+          // File server download endpoint
+          const fileServerUrl = import.meta.env.VITE_FILE_SERVER_URL || 'https://api.fairuzfd.site';
+          downloadHref = `${fileServerUrl}/download-certificate/${certificate.id}`;
         } else if (certificate.downloadUrl || certificate.fileUrl) {
           const raw = certificate.downloadUrl || certificate.fileUrl;
           downloadHref = raw.startsWith('http') ? raw : `${apiUrl}${raw}`;
@@ -192,7 +193,8 @@ const UserDashboard = () => {
       link.click();
       document.body.removeChild(link);
 
-      // Update download count in user data
+      // File server automatically increments download count
+      // Just update local state for immediate UI feedback
       const updatedUser = {
         ...user,
         certificates: user.certificates.map(cert => {
@@ -200,35 +202,10 @@ const UserDashboard = () => {
             return { ...cert, downloadCount: (cert.downloadCount || 0) + 1 };
           }
           return cert;
-        }),
-        downloads: (user.downloads || 0) + 1,
-        lastDownload: new Date().toLocaleString('id-ID'),
-        downloadHistory: [
-          {
-            id: Date.now().toString(),
-            certificateTitle: certificate.fileName || certificate.originalName,
-            downloadDate: new Date().toLocaleString('id-ID'),
-            fileName: certificate.fileName || certificate.originalName
-          },
-          ...(user.downloadHistory || [])
-        ]
+        })
       };
 
-      // Update local state
       setUser(updatedUser);
-
-      // Update in API (PATCH minimal fields)
-      const patchPayload = {
-        downloads: updatedUser.downloads,
-        lastDownload: updatedUser.lastDownload,
-        downloadHistory: updatedUser.downloadHistory,
-        certificates: updatedUser.certificates
-      };
-      await fetch(`${apiUrl}/users/${user.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(patchPayload)
-      });
 
       // Update stats
       setUserStats(prev => ({
