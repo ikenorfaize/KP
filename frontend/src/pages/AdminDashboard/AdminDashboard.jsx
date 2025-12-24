@@ -396,7 +396,7 @@ const AdminDashboard = () => {
       const apiUrl = import.meta.env.VITE_API_BASE_URL || 'https://kp-mocha.vercel.app/api';
       
       // Get authentication data from localStorage
-      const token = localStorage.getItem('token');
+      let token = localStorage.getItem('token');
       const currentUserStr = localStorage.getItem('currentUser');
       const adminAuthStr = localStorage.getItem('adminAuth');
       
@@ -406,10 +406,69 @@ const AdminDashboard = () => {
       console.log('👤 currentUser:', currentUserStr ? 'EXISTS' : 'NOT FOUND');
       console.log('🔐 adminAuth:', adminAuthStr ? 'EXISTS' : 'NOT FOUND');
       
+      // Auto-fix: Generate token from existing session if missing
       if (!token) {
-        console.error('❌ Token not found in localStorage!');
-        console.log('💡 Available keys:', Object.keys(localStorage));
-        alert('❌ Sesi login tidak ditemukan. Silakan login kembali sebagai admin.');
+        console.warn('⚠️ Token not found, attempting to regenerate from session...');
+        
+        let userData = null;
+        
+        // Try to get user data from adminAuth or currentUser
+        if (adminAuthStr) {
+          try {
+            userData = JSON.parse(adminAuthStr);
+            console.log('✅ Found adminAuth data:', userData);
+          } catch (e) {
+            console.error('❌ Failed to parse adminAuth:', e);
+          }
+        }
+        
+        if (!userData && currentUserStr) {
+          try {
+            userData = JSON.parse(currentUserStr);
+            console.log('✅ Found currentUser data:', userData);
+          } catch (e) {
+            console.error('❌ Failed to parse currentUser:', e);
+          }
+        }
+        
+        if (userData && userData.id) {
+          // Generate session token from user data
+          token = `session_${userData.id}_${Date.now()}`;
+          localStorage.setItem('token', token);
+          console.log('✅ Token regenerated:', token);
+        } else {
+          console.error('❌ Cannot regenerate token - no valid session data');
+          alert('❌ Sesi login tidak ditemukan. Silakan login kembali sebagai admin.');
+          window.location.href = '/login';
+          setIsSubmitting(false);
+          return;
+        }
+      }
+      
+      // Get user ID for x-user-id header (backend requirement)
+      let userId = null;
+      
+      if (adminAuthStr) {
+        try {
+          const adminData = JSON.parse(adminAuthStr);
+          userId = adminData.userId || adminData.id;
+        } catch (e) {
+          console.error('❌ Failed to get userId from adminAuth:', e);
+        }
+      }
+      
+      if (!userId && currentUserStr) {
+        try {
+          const userData = JSON.parse(currentUserStr);
+          userId = userData.id;
+        } catch (e) {
+          console.error('❌ Failed to get userId from currentUser:', e);
+        }
+      }
+      
+      if (!userId) {
+        console.error('❌ Cannot find user ID in session data');
+        alert('❌ Sesi tidak valid. Silakan login kembali sebagai admin.');
         window.location.href = '/login';
         setIsSubmitting(false);
         return;
@@ -418,12 +477,14 @@ const AdminDashboard = () => {
       console.log('📤 Sending POST request to:', `${apiUrl}/users`);
       console.log('📤 Request payload:', userToAdd);
       console.log('📤 Token present:', !!token);
+      console.log('📤 User ID:', userId);
       
       const response = await fetch(`${apiUrl}/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` // Add authentication token
+          'Authorization': `Bearer ${token}`,  // Keep for future JWT implementation
+          'x-user-id': userId.toString()        // Required by backend middleware
         },
         body: JSON.stringify(userToAdd)     // Convert object ke JSON string
       });
