@@ -217,10 +217,35 @@ const Berita = () => {
   // top 3 excluding featured if present + carousel rotation
   const topThree = React.useMemo(() => {
     const list = Array.isArray(items) ? items : [];
-    // CRITICAL: Remove featured news AND ensure unique IDs
-    const filtered = featured 
-      ? list.filter(n => n.id !== featured.id && n.featured !== true) 
-      : list.filter(n => n.featured !== true);
+    
+    // TRIPLE VERIFICATION: Remove featured news by ID, by status, AND by explicit check
+    // Filter 1: Remove by featured.id if featured exists
+    // Filter 2: Remove any item with featured=true status
+    // Filter 3: Additional safety check - exclude if matches featured object
+    const filtered = list.filter(n => {
+      // Safety check 1: Remove if ID matches featured news
+      if (featured && n.id === featured.id) {
+        console.log(`🚫 Excluding featured news by ID: ${n.id} - ${n.title}`);
+        return false;
+      }
+      
+      // Safety check 2: Remove if featured status is true
+      if (n.featured === true) {
+        console.log(`🚫 Excluding featured news by status: ${n.id} - ${n.title}`);
+        return false;
+      }
+      
+      // Safety check 3: Deep comparison with featured object
+      if (featured && JSON.stringify(n) === JSON.stringify(featured)) {
+        console.log(`🚫 Excluding featured news by deep comparison: ${n.id}`);
+        return false;
+      }
+      
+      return true; // Include in carousel
+    });
+    
+    console.log(`📊 Carousel array: ${filtered.length} items (excluded featured news)`);
+    console.log(`📋 Carousel IDs:`, filtered.map(n => n.id));
     
     // Ensure minimum 4 items for proper carousel with placeholders if needed
     let finalList = [...filtered];
@@ -236,6 +261,15 @@ const Berita = () => {
   // Initialize rotated items when topThree changes
   React.useEffect(() => {
     if (topThree.length > 0) {
+      // VERIFICATION: Log to confirm no featured news in rotated array
+      const hasFeatured = topThree.some(n => n.featured === true);
+      if (hasFeatured) {
+        console.error('❌ ERROR: Featured news found in rotatedItems!');
+        console.error('❌ This should NEVER happen. Check filter logic.');
+      } else {
+        console.log('✅ Verified: No featured news in rotatedItems');
+      }
+      
       setRotatedItems([...topThree]);
     }
   }, [topThree]);
@@ -246,11 +280,24 @@ const Berita = () => {
   // Ambil 3 item pertama dari rotated array untuk ditampilkan
   // CRITICAL: Create completely new object references to force React re-render
   const currentGridItems = React.useMemo(() => {
-    return rotatedItems.slice(0, itemsPerPage).map((item, idx) => ({
-      ...item,
-      _displayIndex: idx, // Add display index for stable positioning
-      _renderKey: carouselRenderKey // Track which render cycle this is from
-    }));
+    // FINAL SAFETY CHECK: Filter out any featured news that somehow made it here
+    const safeItems = rotatedItems
+      .slice(0, itemsPerPage)
+      .filter(item => {
+        if (item.featured === true) {
+          console.error('❌ CRITICAL: Featured news in currentGridItems!', item.id);
+          return false; // Exclude it
+        }
+        return true;
+      })
+      .map((item, idx) => ({
+        ...item,
+        _displayIndex: idx,        // Stable positioning
+        _renderKey: carouselRenderKey  // Track render cycle
+      }));
+    
+    console.log(`🎯 Rendering ${safeItems.length} carousel cards`);
+    return safeItems;
   }, [rotatedItems, itemsPerPage, carouselRenderKey]);
 
   // Navigation functions - array rotation carousel dengan animasi
