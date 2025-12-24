@@ -119,6 +119,7 @@ export const createBeasiswa = (req, res) => {
       description,
       amount,
       deadline,
+      tanggal_mulai,
       requirements,
       image,
       status,
@@ -130,18 +131,19 @@ export const createBeasiswa = (req, res) => {
     }
     
     const newBeasiswa = addDocument('beasiswa', {
-      name: name.trim(),
-      description: sanitizeHtml(description),
-      amount: parseInt(amount),
+      judul: name.trim(),
+      deskripsi: sanitizeHtml(description),
+      nominal: parseInt(amount),
       deadline: deadline || null,
-      requirements: requirements || [],
+      tanggal_mulai: tanggal_mulai || null,
+      persyaratan: requirements || [],
       image: image || '/uploads/images/placeholder-beasiswa.png',
       status: status || 'active',
-      category: category || 'Umum',
+      kategori: category || 'Umum',
       applicants: 0
     });
     
-    console.log(`✅ Beasiswa created: ${newBeasiswa.name}`);
+    console.log(`✅ Beasiswa created: ${newBeasiswa.judul}`);
     
     res.status(201).json(successResponse(newBeasiswa, 'Beasiswa created successfully'));
   } catch (error) {
@@ -156,17 +158,28 @@ export const createBeasiswa = (req, res) => {
 export const updateBeasiswa = (req, res) => {
   try {
     const { id } = req.params;
-    const updates = req.body;
+    const {
+      name,
+      description,
+      amount,
+      deadline,
+      tanggal_mulai,
+      requirements,
+      category,
+      status
+    } = req.body;
     
-    // Sanitize description if provided
-    if (updates.description) {
-      updates.description = sanitizeHtml(updates.description);
-    }
+    // Build update object with Indonesian field names
+    const updates = {};
     
-    // Convert amount to number if provided
-    if (updates.amount) {
-      updates.amount = parseInt(updates.amount);
-    }
+    if (name !== undefined) updates.judul = name.trim();
+    if (description !== undefined) updates.deskripsi = sanitizeHtml(description);
+    if (amount !== undefined) updates.nominal = parseInt(amount);
+    if (deadline !== undefined) updates.deadline = deadline;
+    if (tanggal_mulai !== undefined) updates.tanggal_mulai = tanggal_mulai;
+    if (requirements !== undefined) updates.persyaratan = requirements;
+    if (category !== undefined) updates.kategori = category;
+    if (status !== undefined) updates.status = status;
     
     const updatedBeasiswa = updateDocument('beasiswa', parseInt(id), updates);
     

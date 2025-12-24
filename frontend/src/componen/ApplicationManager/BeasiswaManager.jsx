@@ -128,9 +128,16 @@ const BeasiswaManager = () => {
         throw new Error('Minimal satu persyaratan harus diisi');
       }
 
+      // Map data dari frontend ke format backend
       const beasiswaData = {
-        ...formData,
-        persyaratan: validPersyaratan
+        name: formData.judul,
+        description: formData.deskripsi,
+        amount: parseInt(formData.nominal.replace(/\./g, '')), // Remove dots and convert to integer
+        deadline: formData.deadline,
+        tanggal_mulai: formData.tanggal_mulai,
+        requirements: validPersyaratan,
+        category: formData.kategori,
+        status: 'active'
       };
 
       const url = editingId 
@@ -148,17 +155,23 @@ const BeasiswaManager = () => {
         body: JSON.stringify(beasiswaData)
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
-        throw new Error('Gagal menyimpan beasiswa');
+        const errorMsg = result.error || result.message || 'Gagal menyimpan beasiswa';
+        console.error('Server error:', result);
+        throw new Error(errorMsg);
       }
 
       // Reset form dan refresh data
       resetForm();
       await fetchBeasiswa();
+      alert(editingId ? '✅ Beasiswa berhasil diupdate!' : '✅ Beasiswa berhasil ditambahkan!');
       
     } catch (err) {
       console.error('Error saving beasiswa:', err);
       setError(err.message);
+      alert(`❌ Error: ${err.message}`);
     } finally {
       setLoading(false);
     }
