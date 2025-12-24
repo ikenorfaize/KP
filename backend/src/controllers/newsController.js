@@ -139,11 +139,23 @@ export const setFeaturedNews = (req, res) => {
     // Get all news
     const allNews = getCollection('news');
     
-    // Check if this news is currently featured
-    const targetNews = allNews.find(news => news.id === parseInt(id));
+    console.log(`🔍 Looking for news with ID: ${id} (type: ${typeof id})`);
+    console.log(`📊 Total news in database: ${allNews.length}`);
+    console.log(`📋 Available news IDs:`, allNews.map(n => `${n.id} (${typeof n.id})`).slice(0, 5));
+    
+    // Check if this news exists - handle both string and number IDs
+    const targetNews = allNews.find(news => {
+      // Convert both to string for comparison to handle mixed types
+      return String(news.id) === String(id);
+    });
+    
     if (!targetNews) {
+      console.error(`❌ News not found with ID: ${id}`);
+      console.error(`Available IDs:`, allNews.map(n => n.id));
       return res.status(404).json(errorResponse('News not found'));
     }
+    
+    console.log(`✅ Found news: ${targetNews.title}`);
     
     // If featured status is explicitly provided in request body, use that
     // Otherwise, toggle current status
@@ -154,7 +166,7 @@ export const setFeaturedNews = (req, res) => {
     // - If shouldBeFeatured is false, unset featured from target news (and all others)
     const updatedNews = allNews.map(news => ({
       ...news,
-      featured: shouldBeFeatured ? (news.id === parseInt(id)) : false
+      featured: shouldBeFeatured ? (String(news.id) === String(id)) : false
     }));
     
     saveCollection('news', updatedNews);
