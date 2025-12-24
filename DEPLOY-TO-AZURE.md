@@ -84,6 +84,21 @@ docker-compose logs frontend | tail -20
 # Test health check
 curl -X GET http://localhost:3001/api/health
 
+# Test GET all news (check if featured route exists)
+curl -X GET http://localhost:3001/api/news | jq '.[0] | {id, title, featured}'
+
+# Test SET FEATURED NEWS (IMPORTANT - NEW ENDPOINT!)
+# Replace 1758789415408 with actual news ID from above command
+curl -X PUT http://localhost:3001/api/news/1758789415408/feature \
+  -H "Content-Type: application/json" \
+  -H "x-user-id: admin_user_id" \
+  -d '{"featured": true}'
+# Expected: {"success":true,"data":{"id":"1758789415408","featured":true},"message":"Featured news set successfully"}
+
+# Test GET FEATURED NEWS
+curl -X GET http://localhost:3001/api/news/featured
+# Expected: JSON object dengan featured: true
+
 # Test DELETE route (should return "Certificate not found" - this is correct!)
 curl -X DELETE http://localhost:3001/delete-certificate/test123
 # Expected: {"error":"Certificate not found"}
@@ -98,7 +113,24 @@ curl -X POST http://localhost:3001/upload-certificate \
 ### 9. Test from Browser
 Open browser and test:
 
-1. **Test Upload Certificate:**
+1. **Test Featured News (NEW FEATURE!):**
+   - Go to: https://fairuzfd.site/admin (or your admin dashboard URL)
+   - Login as admin
+   - Scroll to "Kelola Berita" section
+   - Click "⭐ Jadikan Utama" button on any news
+   - **Expected:** 
+     - Button turns yellow with text "⭐ Berita Utama"
+     - News card gets yellow border and badge
+     - News moves to top of list
+     - Success message appears
+   - Open https://fairuzfd.site in new tab
+   - Scroll to "Berita" section
+   - **Expected:** Featured news appears in large card at top with yellow border
+   - Go back to admin panel, click "⭐ Berita Utama" again (toggle off)
+   - **Expected:** Button returns to white, highlight removed
+   - Refresh homepage → Featured news section shows newest news
+
+2. **Test Upload Certificate:**
    - Go to: https://fairuzfd.site
    - Login as admin
    - Dashboard → Manage Users
@@ -106,11 +138,11 @@ Open browser and test:
    - Select a PDF file
    - **Expected:** No 404 error, file uploads successfully
 
-2. **Test Delete Certificate:**
+3. **Test Delete Certificate:**
    - Click ❌ (delete) on a certificate
    - **Expected:** Certificate removed from UI immediately
 
-3. **Test Persistence (CRITICAL):**
+4. **Test Persistence (CRITICAL):**
    - Press F5 to refresh page
    - **Expected:** Deleted certificate STAYS deleted (tidak kembali lagi)
 
@@ -161,12 +193,19 @@ After deployment, verify:
 
 - [ ] `docker-compose ps` shows all containers running
 - [ ] Backend logs show file-server routes registered
+- [ ] Backend logs show news routes with PUT /:id/feature
 - [ ] `curl localhost:3001/api/health` returns 200 OK
+- [ ] `curl localhost:3001/api/news` returns news array with featured field
 - [ ] `curl localhost:3001/delete-certificate/test` returns JSON (not 404 HTML)
 - [ ] Browser: https://fairuzfd.site loads correctly
+- [ ] Browser: Admin can click "⭐ Jadikan Utama" button (no 404 error)
+- [ ] Browser: Featured news button turns yellow when activated
+- [ ] Browser: Featured news appears at top of admin news list
+- [ ] Browser: Homepage displays featured news in yellow-bordered card
 - [ ] Browser: Upload certificate works (no 404)
 - [ ] Browser: Delete certificate works
 - [ ] Browser: Refresh page - deleted certificate stays deleted
+- [ ] Browser: Refresh page - featured news status persists
 
 ## 🎯 Quick Deploy (One-Liner)
 
