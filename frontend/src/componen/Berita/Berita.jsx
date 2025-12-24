@@ -23,6 +23,7 @@ const Berita = () => {
   const [error, setError] = React.useState("");
   const [rotatedItems, setRotatedItems] = React.useState([]); // Array yang akan diputar untuk carousel
   const [isTransitioning, setIsTransitioning] = React.useState(false); // State untuk animasi
+  const [carouselRenderKey, setCarouselRenderKey] = React.useState(0); // Force image reload on rotation
 
   const API_BASE = import.meta.env.VITE_API_BASE_URL || "https://kp-mocha.vercel.app/api";
   const FILE_SERVER = import.meta.env.VITE_FILE_SERVER_URL || "https://kp-mocha.vercel.app";
@@ -216,7 +217,10 @@ const Berita = () => {
   // top 3 excluding featured if present + carousel rotation
   const topThree = React.useMemo(() => {
     const list = Array.isArray(items) ? items : [];
-    const filtered = featured ? list.filter(n => n.id !== featured.id) : list;
+    // CRITICAL: Remove featured news AND ensure unique IDs
+    const filtered = featured 
+      ? list.filter(n => n.id !== featured.id && n.featured !== true) 
+      : list.filter(n => n.featured !== true);
     
     // Ensure minimum 4 items for proper carousel with placeholders if needed
     let finalList = [...filtered];
@@ -240,15 +244,21 @@ const Berita = () => {
   const itemsPerPage = 3;
   
   // Ambil 3 item pertama dari rotated array untuk ditampilkan
+  // CRITICAL: Create completely new object references to force React re-render
   const currentGridItems = React.useMemo(() => {
-    return rotatedItems.slice(0, itemsPerPage);
-  }, [rotatedItems, itemsPerPage]);
+    return rotatedItems.slice(0, itemsPerPage).map((item, idx) => ({
+      ...item,
+      _displayIndex: idx, // Add display index for stable positioning
+      _renderKey: carouselRenderKey // Track which render cycle this is from
+    }));
+  }, [rotatedItems, itemsPerPage, carouselRenderKey]);
 
   // Navigation functions - array rotation carousel dengan animasi
   const goToPrevGrid = () => {
     if (isTransitioning) return; // Prevent multiple clicks during transition
     
     setIsTransitioning(true);
+    setCarouselRenderKey(prev => prev + 1); // Force image reload
     setTimeout(() => {
       setRotatedItems(prevItems => {
         if (prevItems.length === 0) return prevItems;
@@ -270,6 +280,7 @@ const Berita = () => {
     if (isTransitioning) return; // Prevent multiple clicks during transition
     
     setIsTransitioning(true);
+    setCarouselRenderKey(prev => prev + 1); // Force image reload
     setTimeout(() => {
       setRotatedItems(prevItems => {
         if (prevItems.length === 0) return prevItems;
@@ -407,10 +418,19 @@ const Berita = () => {
               currentGridItems.map((n, idx) => {
                 // Dynamic routing berdasarkan ID berita
                 const to = `/berita/${n.id}`;
+                // CRITICAL: Stable unique key based on actual data
+                const stableKey = `carousel-news-${n.id}-${idx}-render${carouselRenderKey}`;
+                // Get base image URL
+                const baseImageUrl = getImageWithFallback(n.image || n.imageUrl, n.id, n.featured);
+                // Add cache-busting query param to force browser reload
+                const cacheBustingUrl = baseImageUrl.includes('?') 
+                  ? `${baseImageUrl}&_cb=${n.id}_${carouselRenderKey}` 
+                  : `${baseImageUrl}?_cb=${n.id}_${carouselRenderKey}`;
+                
                 return (
-                  <div key={n.id || idx} className="berita-card" onClick={() => navigate(to)}>
+                  <div key={stableKey} className="berita-card" onClick={() => navigate(to)}>
                     <img 
-                      src={getImageWithFallback(n.image || n.imageUrl, n.id, n.featured)} 
+                      src={cacheBustingUrl} 
                       alt={n.title || `Berita ${idx + 1}`}
                       onError={(e) => {
                         e.target.src = noImageImg;
