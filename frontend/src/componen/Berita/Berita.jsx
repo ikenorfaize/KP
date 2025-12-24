@@ -463,6 +463,18 @@ const Berita = () => {
             {/* Jika API tersedia, tampilkan 3 berita per halaman; jika tidak, fallback ke konten statis */}
             {currentGridItems.length > 0 && !loading && !error ? (
               currentGridItems.map((n, idx) => {
+                // ⛔ ABSOLUTE BLOCK: If featured news somehow reached here, DO NOT RENDER
+                if (n.featured === true) {
+                  console.error(`⛔ BLOCKED: Featured news in render! ID: ${n.id}`);
+                  return null; // DO NOT RENDER THIS CARD
+                }
+                
+                // Additional check: if ID matches featured news ID, BLOCK
+                if (featured && n.id === featured.id) {
+                  console.error(`⛔ BLOCKED: Featured ID match in render! ID: ${n.id}`);
+                  return null; // DO NOT RENDER THIS CARD
+                }
+                
                 // Dynamic routing berdasarkan ID berita
                 const to = `/berita/${n.id}`;
                 // CRITICAL: Stable unique key based on actual data
