@@ -64,26 +64,41 @@ const StatusTracker = () => {
       
       if (data.success && data.application) {
         // Email ditemukan - tampilkan status
+        const app = data.application;
+        
         setStatus({
-          email: data.application.email,
-          fullName: data.application.fullName,
-          status: data.application.status,
-          submittedDate: new Date(data.application.submittedAt).toLocaleDateString('id-ID', {
+          email: app.email,
+          fullName: app.fullName,
+          status: app.status,
+          submittedDate: new Date(app.submittedAt).toLocaleDateString('id-ID', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
           }),
-          processedDate: data.application.processedAt ? 
-            new Date(data.application.processedAt).toLocaleDateString('id-ID', {
+          processedDate: app.processedAt ? 
+            new Date(app.processedAt).toLocaleDateString('id-ID', {
               year: 'numeric',
               month: 'long',
               day: 'numeric'
             }) : null,
           message: data.message,
-          notes: data.application.notes || '',
-          position: data.application.position,
-          school: data.application.school
+          notes: app.notes || '',
+          position: app.position,
+          school: app.school,
+          adminContact: app.adminContact // Kontak admin untuk approved
         });
+        
+        // Show popup for rejected status
+        if (app.status === 'rejected') {
+          const notes = app.notes ? `\n\nCatatan Admin: ${app.notes}` : '';
+          alert(`❌ PENDAFTARAN DITOLAK\n\nMaaf, pendaftaran Anda ditolak oleh admin.${notes}\n\nSilakan perbaiki data Anda dan daftar ulang.`);
+        }
+        
+        // Show popup for approved status with admin contact
+        if (app.status === 'approved' && app.adminContact) {
+          const message = `✅ PENDAFTARAN DISETUJUI!\n\nSelamat! Pendaftaran Anda telah disetujui.\n\nSilakan hubungi admin untuk langkah selanjutnya:\n📞 WhatsApp: ${app.adminContact}\n\nAnda juga akan menerima email berisi username dan password untuk login.`;
+          alert(message);
+        }
       } else {
         // Email tidak ditemukan
         setStatus({
@@ -198,8 +213,21 @@ const StatusTracker = () => {
                 <li>✅ Cek email Anda untuk username & password</li>
                 <li>🔐 Login menggunakan credentials yang dikirim</li>
                 <li>📥 Mulai download sertifikat di dashboard</li>
+                {status.adminContact && (
+                  <li>📞 <strong>Hubungi Admin: {status.adminContact}</strong></li>
+                )}
               </ul>
               <div className="action-buttons">
+                {status.adminContact && (
+                  <a 
+                    href={`https://wa.me/${status.adminContact.replace(/\D/g, '')}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="btn-action btn-success"
+                  >
+                    💬 Chat Admin via WhatsApp
+                  </a>
+                )}
                 <a href="/login" className="btn-action btn-primary">
                   🚀 Login Sekarang
                 </a>

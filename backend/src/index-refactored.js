@@ -15,6 +15,7 @@ import usersRoutes from './routes/users.js';
 import applicationsRoutes from './routes/applications.js';
 import cleanupRoutes from './routes/cleanup.js';
 import fileServerRoutes from './routes/fileServer.js';
+import statusRoutes from './routes/status.js';
 
 const app = express();
 const PORT = config.port;
@@ -40,6 +41,7 @@ app.use('/api/news', newsRoutes);
 app.use('/api/beasiswa', beasiswaRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/applications', applicationsRoutes);
+app.use('/api/check-status', statusRoutes); // Status checking route
 app.use('/api/database', cleanupRoutes); // Database cleanup routes
 
 // File server routes (upload, download, delete certificates)
@@ -184,6 +186,7 @@ if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
     console.log('  🎓 /api/beasiswa/*    - Beasiswa management');
     console.log('  👥 /api/users/*       - User management');
     console.log('  📋 /api/applications/* - Application management');
+    console.log('  ✅ /api/check-status/:email - Check application status');
     console.log('  📄 /upload-certificate - Certificate upload');
     console.log('  🗑️  /delete-certificate/:id - Certificate delete');
     console.log('  ⬇️  /download-certificate/:id - Certificate download');
@@ -197,6 +200,7 @@ if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
   console.log('  🎓 /api/beasiswa/*    - Beasiswa management');
   console.log('  👥 /api/users/*       - User management');
   console.log('  📋 /api/applications/* - Application management');
+  console.log('  ✅ /api/check-status/:email - Check application status');
   console.log('  📄 /upload-certificate - Certificate upload');
   console.log('  🗑️  /delete-certificate/:id - Certificate delete');
   console.log('  ⬇️  /download-certificate/:id - Certificate download');
