@@ -13,6 +13,17 @@ const UserDashboard = () => {
     lastLogin: null
   });
   
+  // State for password change
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  
   // API URL - accessible in all functions
   const apiUrl = import.meta.env.VITE_API_BASE_URL || 'https://kp-mocha.vercel.app/api';
 
@@ -149,6 +160,81 @@ const UserDashboard = () => {
       localStorage.removeItem('loggedInUser');
       console.log('🚪 User logged out');
       navigate('/', { replace: true });
+    }
+  };
+
+  // Change password function
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPasswordError('');
+    setPasswordSuccess('');
+    
+    // Validation
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      setPasswordError('Semua field harus diisi');
+      return;
+    }
+    
+    if (passwordData.newPassword.length < 6) {
+      setPasswordError('Password baru minimal 6 karakter');
+      return;
+    }
+    
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordError('Password baru dan konfirmasi password tidak cocok');
+      return;
+    }
+    
+    if (passwordData.currentPassword === passwordData.newPassword) {
+      setPasswordError('Password baru harus berbeda dengan password lama');
+      return;
+    }
+    
+    setIsChangingPassword(true);
+    
+    try {
+      const userAuth = localStorage.getItem('userAuth') || localStorage.getItem('loggedInUser');
+      const userData = JSON.parse(userAuth);
+      const token = userData.token;
+      const userId = userData.userId || userData.id;
+      
+      const response = await fetch(`${apiUrl}/users/${userId}/change-password`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'x-user-id': userId
+        },
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Gagal mengubah password');
+      }
+      
+      setPasswordSuccess('Password berhasil diubah!');
+      setPasswordData({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      });
+      
+      // Close form after 2 seconds
+      setTimeout(() => {
+        setShowChangePassword(false);
+        setPasswordSuccess('');
+      }, 2000);
+      
+    } catch (error) {
+      console.error('❌ Error changing password:', error);
+      setPasswordError(error.message || 'Gagal mengubah password. Silakan coba lagi.');
+    } finally {
+      setIsChangingPassword(false);
     }
   };
 
@@ -489,6 +575,71 @@ const UserDashboard = () => {
               <span className="label">Bergabung:</span>
               <span className="value">{user?.joinDate}</span>
             </div>
+          </div>
+
+          <div className="info-group">
+            <h4>🔐 Keamanan</h4>
+            <button 
+              className="change-password-btn"
+              onClick={() => setShowChangePassword(!showChangePassword)}
+            >
+              {showChangePassword ? '❌ Batal Ganti Password' : '🔑 Ganti Password'}
+            </button>
+            
+            {showChangePassword && (
+              <div className="change-password-form">
+                <form onSubmit={handleChangePassword}>
+                  <div className="form-group">
+                    <label>Password Lama:</label>
+                    <input
+                      type="password"
+                      value={passwordData.currentPassword}
+                      onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
+                      placeholder="Masukkan password lama"
+                      disabled={isChangingPassword}
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>Password Baru:</label>
+                    <input
+                      type="password"
+                      value={passwordData.newPassword}
+                      onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                      placeholder="Minimal 6 karakter"
+                      disabled={isChangingPassword}
+                    />
+                  </div>
+                  
+                  <div className="form-group">
+                    <label>Konfirmasi Password Baru:</label>
+                    <input
+                      type="password"
+                      value={passwordData.confirmPassword}
+                      onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                      placeholder="Ulangi password baru"
+                      disabled={isChangingPassword}
+                    />
+                  </div>
+                  
+                  {passwordError && (
+                    <div className="password-error">❌ {passwordError}</div>
+                  )}
+                  
+                  {passwordSuccess && (
+                    <div className="password-success">✅ {passwordSuccess}</div>
+                  )}
+                  
+                  <button 
+                    type="submit" 
+                    className="submit-password-btn"
+                    disabled={isChangingPassword}
+                  >
+                    {isChangingPassword ? '⏳ Mengubah...' : '💾 Simpan Password Baru'}
+                  </button>
+                </form>
+              </div>
+            )}
           </div>
         </div>
       </div>

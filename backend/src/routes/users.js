@@ -238,4 +238,63 @@ router.post('/:id/reject', requireAuth, requireAdmin, (req, res) => {
   }
 });
 
+// Change password (user can change their own password)
+router.put('/:id/change-password', requireAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { currentPassword, newPassword } = req.body;
+    
+    // Validation
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json(errorResponse('Current password and new password are required'));
+    }
+    
+    if (newPassword.length < 6) {
+      return res.status(400).json(errorResponse('New password must be at least 6 characters'));
+    }
+    
+    const user = findUserById(id);
+    
+    if (!user) {
+      return res.status(404).json(errorResponse('User not found'));
+    }
+    
+    // Only user can change their own password (not even admin can change other users' passwords)
+    if (req.user.id !== user.id) {
+      return res.status(403).json(errorResponse('You can only change your own password'));
+    }
+    
+    // Verify current password
+    const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    
+    if (!isPasswordValid) {
+      return res.status(400).json(errorResponse('Current password is incorrect'));
+    }
+    
+    // Check if new password is same as current password
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    
+    if (isSamePassword) {
+      return res.status(400).json(errorResponse('New password must be different from current password'));
+    }
+    
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    
+    // Update password
+    const updatedUser = updateDocument('users', user.id, {
+      password: hashedPassword
+    });
+    
+    if (!updatedUser) {
+      return res.status(500).json(errorResponse('Failed to update password'));
+    }
+    
+    res.json(successResponse({ message: 'Password changed successfully' }, 'Password changed successfully'));
+  } catch (error) {
+    console.error('❌ Error changing password:', error);
+    res.status(500).json(errorResponse('Failed to change password', error));
+  }
+});
+
 export default router;
