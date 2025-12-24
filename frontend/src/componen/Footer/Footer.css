@@ -40,6 +40,11 @@
   gap: 20px;
 }
 
+.footer-social a {
+  text-decoration: none;
+  color: inherit;
+}
+
 .icon-circle {
   width: 44px;
   height: 44px;
@@ -51,11 +56,13 @@
   font-size: 18px;
   cursor: pointer;
   transition: 0.3s;
+  color: white;
 }
 
 .icon-circle:hover {
   background-color: white;
   color: #0c6537;
+  transform: scale(1.1);
 }
 
 .footer-divider {

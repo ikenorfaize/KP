@@ -23,9 +23,33 @@ const Footer = () => {
           
           {/* Icon media sosial untuk engagement online */}
           <div className="footer-social">
-            <div className="icon-circle"><FaInstagram /></div>   {/* Link Instagram */}
-            <div className="icon-circle"><FaYoutube /></div>     {/* Link YouTube */}
-            <div className="icon-circle"><FaWhatsapp /></div>    {/* Link WhatsApp */}
+            <a 
+              href="https://www.instagram.com/pergunusitubondo/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="icon-circle"
+              aria-label="Instagram PERGUNU Situbondo"
+            >
+              <FaInstagram />
+            </a>
+            <a 
+              href="https://youtube.com/@disnakan?si=_jn7U0QvLsUXUJ7Z" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="icon-circle"
+              aria-label="YouTube PERGUNU Situbondo"
+            >
+              <FaYoutube />
+            </a>
+            <a 
+              href="https://wa.me/6289631011926" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="icon-circle"
+              aria-label="WhatsApp PERGUNU Situbondo"
+            >
+              <FaWhatsapp />
+            </a>
           </div>
         </div>
 
