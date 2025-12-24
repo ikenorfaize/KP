@@ -479,7 +479,13 @@ export default function NewsManager() {
 
   // Set berita sebagai featured (utama)
   const handleSetFeatured = async (newsId) => {
+    if (!confirm('Jadikan berita ini sebagai berita utama? Berita utama sebelumnya akan diganti.')) {
+      return;
+    }
+
     try {
+      console.log(`⭐ Setting news ${newsId} as featured...`);
+      
       const response = await fetch(`${API_BASE}/news/${newsId}/feature`, {
         method: 'PUT',
         headers: {
@@ -490,15 +496,19 @@ export default function NewsManager() {
       });
       
       if (response.ok) {
-        setSuccess('Berita dijadikan utama!');
-        await fetchNews();
+        console.log('✅ News set as featured successfully');
+        setSuccess('✅ Berita berhasil dijadikan utama!');
+        await fetchNews(); // Reload news list
         // Trigger custom event for live update
         window.dispatchEvent(new Event('news-updated'));
       } else {
-        setError('Gagal menjadikan berita utama');
+        const errorData = await response.json().catch(() => ({}));
+        console.error('❌ Failed to set featured:', response.status, errorData);
+        setError(`Gagal menjadikan berita utama: ${errorData.message || response.statusText}`);
       }
-    } catch (_error) {
-      setError('Gagal koneksi ke server');
+    } catch (error) {
+      console.error('❌ Set featured error:', error);
+      setError(`Gagal koneksi ke server: ${error.message}`);
     }
   };
 
