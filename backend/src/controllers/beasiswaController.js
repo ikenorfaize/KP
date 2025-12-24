@@ -6,6 +6,23 @@ import { getCollection, addDocument, updateDocument, deleteDocument, findOne } f
 import { generateId, sanitizeHtml, successResponse, errorResponse, paginate } from '../utils/helpers.js';
 
 /**
+ * Helper to calculate beasiswa status based on dates
+ */
+const calculateBeasiswaStatus = (tanggal_mulai, deadline) => {
+  try {
+    const now = new Date();
+    const startDate = new Date(tanggal_mulai);
+    const endDate = new Date(deadline);
+    if (isNaN(startDate) || isNaN(endDate)) return 'TBA';
+    if (now < startDate) return 'Segera';
+    if (now >= startDate && now <= endDate) return 'Buka';
+    return 'Tutup';
+  } catch (e) {
+    return 'TBA';
+  }
+};
+
+/**
  * Get all beasiswa
  */
 export const getAllBeasiswa = (req, res) => {
@@ -19,21 +36,6 @@ export const getAllBeasiswa = (req, res) => {
     if (status) {
       filtered = beasiswa.filter(b => b.status === status);
     }
-
-    // Helper to calculate status based on tanggal_mulai and deadline
-    const calculateBeasiswaStatus = (tanggal_mulai, deadline) => {
-      try {
-        const now = new Date();
-        const startDate = new Date(tanggal_mulai);
-        const endDate = new Date(deadline);
-        if (isNaN(startDate) || isNaN(endDate)) return 'TBA';
-        if (now < startDate) return 'Segera';
-        if (now >= startDate && now <= endDate) return 'Buka';
-        return 'Tutup';
-      } catch (e) {
-        return 'TBA';
-      }
-    };
 
     // Map to include computed status
     const mapped = filtered.map(b => ({
@@ -64,20 +66,6 @@ export const getBeasiswaById = (req, res) => {
     if (!beasiswa) {
       return res.status(404).json(errorResponse('Beasiswa not found'));
     }
-    // compute status
-    const calculateBeasiswaStatus = (tanggal_mulai, deadline) => {
-      try {
-        const now = new Date();
-        const startDate = new Date(tanggal_mulai);
-        const endDate = new Date(deadline);
-        if (isNaN(startDate) || isNaN(endDate)) return 'TBA';
-        if (now < startDate) return 'Segera';
-        if (now >= startDate && now <= endDate) return 'Buka';
-        return 'Tutup';
-      } catch (e) {
-        return 'TBA';
-      }
-    };
 
     const withStatus = {
       ...beasiswa,
@@ -108,22 +96,6 @@ export const getBeasiswaByKategori = (req, res) => {
         return k === kategori.toLowerCase();
       });
     }
-
-    // Helper to calculate status
-    const calculateBeasiswaStatus = (tanggal_mulai, deadline) => {
-      try {
-        const now = new Date();
-        const startDate = new Date(tanggal_mulai);
-        const endDate = new Date(deadline);
-
-        if (isNaN(startDate) || isNaN(endDate)) return 'TBA';
-        if (now < startDate) return 'Segera';
-        if (now >= startDate && now <= endDate) return 'Buka';
-        return 'Tutup';
-      } catch (e) {
-        return 'TBA';
-      }
-    };
 
     const beasiswaWithStatus = filteredBeasiswa.map(b => ({
       ...b,

@@ -6,6 +6,7 @@ import express from 'express';
 import { requireAuth, requireAdmin } from '../middleware/auth.js';
 import cleanDatabase from '../utils/cleanDatabase.js';
 import { successResponse, errorResponse } from '../utils/helpers.js';
+import { readDB } from '../utils/database.js';
 
 const router = express.Router();
 
@@ -36,7 +37,6 @@ router.post('/cleanup', requireAuth, requireAdmin, (req, res) => {
  */
 router.get('/cleanup/info', requireAuth, requireAdmin, (req, res) => {
   try {
-    const { readDB } = require('../utils/database.js');
     const data = readDB();
     
     const info = {

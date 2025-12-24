@@ -18,7 +18,7 @@ export const requireAuth = (req, res, next) => {
   }
   
   // Try both string and integer ID formats for compatibility
-  const user = findOne('users', { id: userId }) || findOne('users', { id: parseInt(userId) });
+  const user = findOne('users', { id: parseInt(userId) });
   
   if (!user) {
     return res.status(401).json({
@@ -41,21 +41,5 @@ export const requireAdmin = (req, res, next) => {
       message: 'Admin access required'
     });
   }
-  next();
-};
-
-/**
- * Optional auth - attach user if authenticated
- */
-export const optionalAuth = (req, res, next) => {
-  const userId = req.headers['x-user-id'];
-  
-  if (userId) {
-    const user = findOne('users', { id: parseInt(userId) });
-    if (user) {
-      req.user = user;
-    }
-  }
-  
   next();
 };

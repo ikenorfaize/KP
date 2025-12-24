@@ -6,22 +6,18 @@
   "main": "src/index-refactored.js",
   "scripts": {
     "start": "node src/index-refactored.js",
-    "start:old": "node src/index.js",
     "dev": "node src/index-refactored.js",
     "file-server": "node src/file-server.js",
-    "cleanup": "node cleanup-db.js",
-    "cleanup:db": "node cleanup-db.js"
+    "cleanup": "node cleanup-db.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
-    "cloudinary": "^2.8.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^4.21.2",
     "mongodb": "^7.0.0",
     "multer": "^2.0.2"
   },
-  "devDependencies": {},
   "engines": {
     "node": ">=18.0.0"
   }

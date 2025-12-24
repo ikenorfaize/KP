@@ -11,6 +11,14 @@ import { isValidEmail } from '../utils/helpers.js';
 
 const router = express.Router();
 
+/**
+ * Helper: Find user by ID (support both string and integer)
+ */
+const findUserById = (id) => {
+  const users = getCollection('users');
+  return users.find(u => u.id === id || u.id === parseInt(id));
+};
+
 // Create user (admin only) - Manual user creation
 router.post('/', requireAuth, requireAdmin, async (req, res) => {
   try {
@@ -92,9 +100,7 @@ router.get('/', requireAuth, requireAdmin, (req, res) => {
 router.get('/:id', requireAuth, (req, res) => {
   try {
     const { id } = req.params;
-    const users = getCollection('users');
-    // Support both string and integer ID formats
-    const user = users.find(u => u.id === id || u.id === parseInt(id));
+    const user = findUserById(id);
     
     if (!user) {
       return res.status(404).json(errorResponse('User not found'));
@@ -125,52 +131,7 @@ router.put('/:id', requireAuth, (req, res) => {
     delete updates.id;
     delete updates.createdAt;
     
-    // Support both string and integer ID
-    const users = getCollection('users');
-    const user = users.find(u => u.id === id || u.id === parseInt(id));
-    
-    if (!user) {
-      return res.status(404).json(errorResponse('User not found'));
-    }
-    
-    // Only admin can update other users
-    if (req.user.role !== 'admin' && req.user.id !== user.id) {
-      return res.status(403).json(errorResponse('Access denied'));
-    }
-    
-    // Only admin can change role
-    if (updates.role && req.user.role !== 'admin') {
-      delete updates.role;
-    }
-    
-    const updatedUser = updateDocument('users', user.id, updates);
-    
-    if (!updatedUser) {
-      return res.status(404).json(errorResponse('User not found'));
-    }
-    
-    const { password, ...userWithoutPassword } = updatedUser;
-    
-    res.json(successResponse(userWithoutPassword, 'User updated successfully'));
-  } catch (error) {
-    res.status(500).json(errorResponse('Failed to update user', error));
-  }
-});
-
-// PATCH user (partial update for certificates, etc)
-router.patch('/:id', requireAuth, (req, res) => {
-  try {
-    const { id } = req.params;
-    const updates = req.body;
-    
-    // Prevent updating password through this endpoint
-    delete updates.password;
-    delete updates.id;
-    delete updates.createdAt;
-    
-    // Support both string and integer ID
-    const users = getCollection('users');
-    const user = users.find(u => u.id === id || u.id === parseInt(id));
+    const user = findUserById(id);
     
     if (!user) {
       return res.status(404).json(errorResponse('User not found'));
@@ -205,9 +166,7 @@ router.delete('/:id', requireAuth, requireAdmin, (req, res) => {
   try {
     const { id } = req.params;
     
-    // Support both string and integer ID
-    const users = getCollection('users');
-    const user = users.find(u => u.id === id || u.id === parseInt(id));
+    const user = findUserById(id);
     
     if (!user) {
       return res.status(404).json(errorResponse('User not found'));
@@ -230,9 +189,7 @@ router.post('/:id/approve', requireAuth, requireAdmin, (req, res) => {
   try {
     const { id } = req.params;
     
-    // Support both string and integer ID
-    const users = getCollection('users');
-    const user = users.find(u => u.id === id || u.id === parseInt(id));
+    const user = findUserById(id);
     
     if (!user) {
       return res.status(404).json(errorResponse('User not found'));
@@ -259,9 +216,7 @@ router.post('/:id/reject', requireAuth, requireAdmin, (req, res) => {
   try {
     const { id } = req.params;
     
-    // Support both string and integer ID
-    const users = getCollection('users');
-    const user = users.find(u => u.id === id || u.id === parseInt(id));
+    const user = findUserById(id);
     
     if (!user) {
       return res.status(404).json(errorResponse('User not found'));

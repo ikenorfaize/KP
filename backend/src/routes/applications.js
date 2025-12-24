@@ -3,7 +3,7 @@
 // ===================================
 
 import express from 'express';
-import { getCollection, addDocument, updateDocument, deleteDocument, findOne, findMany } from '../utils/database.js';
+import { getCollection, addDocument, updateDocument, deleteDocument, findOne } from '../utils/database.js';
 import { successResponse, errorResponse } from '../utils/helpers.js';
 import { requireAuth, requireAdmin } from '../middleware/auth.js';
 
@@ -123,11 +123,7 @@ router.put('/:id/status', requireAuth, requireAdmin, (req, res) => {
       return res.status(400).json(errorResponse('Invalid status'));
     }
     
-    // Try string ID first, then integer ID
-    let updatedApplication = updateDocument('applications', id, { status });
-    if (!updatedApplication) {
-      updatedApplication = updateDocument('applications', parseInt(id), { status });
-    }
+    const updatedApplication = updateDocument('applications', parseInt(id), { status });
     
     if (!updatedApplication) {
       return res.status(404).json(errorResponse('Application not found'));

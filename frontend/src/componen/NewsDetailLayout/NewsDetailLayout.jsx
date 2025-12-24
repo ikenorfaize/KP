@@ -205,9 +205,6 @@ const NewsDetailLayout = () => {
     );
   }
 
-  // Process content for future enhanced formatting
-  const _contentBlocks = parseContent(newsData.content);
-
   return (
     <div className="news-detail-layout">
       {/* 1. Image Overlay Section */}

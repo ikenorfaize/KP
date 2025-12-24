@@ -1,7 +1,6 @@
 // ApplicationManager Component - Komponen untuk mengelola aplikasi pendaftaran
 // Digunakan di AdminDashboard untuk review, approve, dan reject pendaftaran
 import React, { useState, useEffect } from 'react';
-// import { emailService } from '../../services/EmailService';  // Service untuk mengirim email notifikasi (unused for now)
 import { ApplicationService } from '../../services/ApplicationService';
 import { generateUniquePassword, validatePasswordUniqueness } from '../../utils/passwordValidation';
 import './ApplicationManager.css';
@@ -31,10 +30,6 @@ const ApplicationManager = ({ onPendingCountChange, onUsersChanged }) => {
   // State untuk menyimpan aplikasi yang dipilih untuk aksi
   const [selectedApp, setSelectedApp] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
-
-  // Ref untuk memaksa styling hijau
-
-
 
   // Effect untuk fetch aplikasi saat component mount
   useEffect(() => {

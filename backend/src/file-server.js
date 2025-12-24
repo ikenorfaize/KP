@@ -306,18 +306,17 @@ app.get('/download-certificate/:certificateId', (req, res) => {
         db.users[userIndex].downloadHistory = [];
       }
       
+      const fileName = certificate.fileName || certificate.originalName || certificate.filename;
       db.users[userIndex].downloadHistory.push({
         id: Date.now(),
-    certificateTitle: certificate.fileName || certificate.originalName || certificate.filename,
-        downloadDate: new Date().toISOString(),
-    fileName: certificate.fileName || certificate.originalName || certificate.filename
+        fileName: fileName,
+        downloadDate: new Date().toISOString()
       });
 
       writeDB(db);
     }
 
   const downloadName = certificate.fileName || certificate.originalName || certificate.filename || 'certificate.pdf';
-  // Use sendFile with explicit headers for better reliability across environments
   res.setHeader('Content-Disposition', `attachment; filename="${downloadName}"`);
   res.setHeader('Content-Type', 'application/pdf');
   return res.sendFile(certificate.filePath);
@@ -359,15 +358,13 @@ app.delete('/delete-certificate/:certificateId', async (req, res) => {
     for (let i = 0; i < db.users.length; i++) {
       const u = db.users[i];
       if (u.certificates) {
-        for (let j = 0; j < u.certificates.length; j++) {
-          if (u.certificates[j].id && u.certificates[j].id.toString() === certificateId) {
-            certificate = u.certificates[j];
-            userIndex = i;
-            certIndex = j;
-            break;
-          }
+        const j = u.certificates.findIndex(c => c.id && c.id.toString() === certificateId);
+        if (j !== -1) {
+          certificate = u.certificates[j];
+          userIndex = i;
+          certIndex = j;
+          break;
         }
-        if (certificate) break;
       }
     }
 

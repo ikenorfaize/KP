@@ -1,13 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import "./Tentang.css";
 
 const TentangCard = ({ title, children, isOpen, onToggle }) => {
-  const [_shouldAnimate, _setShouldAnimate] = useState(false);
-
-  useEffect(() => {
-    _setShouldAnimate(true);
-  }, [_setShouldAnimate]);
-
   return (
     <div
       className={`tentang-card ${isOpen ? "active" : ""}`}

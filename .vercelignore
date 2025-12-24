@@ -1,9 +1,0 @@
-# Vercel ignore file - files to exclude from deployment
-.env
-.env.local
-.env.*.local
-node_modules
-dist
-.git
-*.log
-.DS_Store

@@ -1,4 +1,3 @@
-/* aku */
 .tentang-section {
   padding: 80px 20px;
   background: #fff;
@@ -173,18 +172,6 @@
   opacity: 0;
   transform: translateY(30px);
   transition: opacity 0.8s ease-out, transform 0.8s ease-out, box-shadow 0.3s ease, background-color 0.3s ease;
-}
-
-/* Efek sinkron perubahan warna saat expand/collapse langsung */
-.tentang-card.expanding,
-.tentang-card.collapsing {
-  background-color: #1e7e34 !important;
-  color: white !important;
-}
-
-.tentang-card.expanding .tentang-card-arrow,
-.tentang-card.collapsing .tentang-card-arrow {
-  color: white;
 }
 
 .tentang-card:hover {

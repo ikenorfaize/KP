@@ -62,15 +62,3 @@ export const paginate = (array, page = 1, limit = 10) => {
     }
   };
 };
-
-/**
- * Generate random string
- */
-export const randomString = (length = 8) => {
-  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
-};

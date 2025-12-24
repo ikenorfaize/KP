@@ -31,17 +31,6 @@ export const formatRupiah = (value) => {
 };
 
 /**
- * Parse rupiah format string menjadi number
- * @param {string} rupiahString - String format rupiah
- * @returns {number} - Angka murni
- */
-export const parseRupiah = (rupiahString) => {
-  if (!rupiahString) return 0;
-  const numberString = rupiahString.toString().replace(/[^\d]/g, '');
-  return parseInt(numberString, 10) || 0;
-};
-
-/**
  * Format input nominal saat user mengetik
  * @param {string} value - Input value dari user
  * @returns {string} - Format rupiah tanpa "Rp" prefix untuk input field

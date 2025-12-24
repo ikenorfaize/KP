@@ -555,41 +555,6 @@ export default function NewsManager() {
     }, 50);
   };
 
-  // Render konten dengan format markdown lengkap (currently unused but available for future use)
-  const _renderPreview = (content) => {
-    if (!content) return <p className="preview-empty">Tidak ada konten untuk dipreview</p>;
-    
-    // Parse markdown dengan format lengkap
-    let html = content
-      // Article Lead (paragraph pertama dengan class khusus)
-      .replace(/^([^\n#\-\*].+?)(\n\n)/m, '<p class="article-lead">$1</p>$2')
-      // Headers
-      .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-      .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-      .replace(/^# (.*$)/gm, '<h1>$1</h1>')
-      // Bold dan Italic (urutan penting!)
-      .replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>') // Bold + Italic
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold
-      .replace(/\*([^*]*)\*/g, '<em>$1</em>') // Italic
-      // Lists dengan (-) dan (*)
-      .replace(/^- (.*$)/gm, '<li>$1</li>')
-      .replace(/^\\* (.*$)/gm, '<li>$1</li>')
-      // Wrap consecutive list items
-      .replace(/(<li>.*<\/li>(?:\s*<li>.*<\/li>)*)/gs, '<ul>$1</ul>')
-      // Links
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
-      // Line breaks dan paragraphs
-      .replace(/\n\n/g, '</p><p>')
-      .replace(/\n/g, '<br>');
-
-    // Wrap in paragraphs jika belum ada
-    if (!html.includes('<p>') && !html.includes('<h1>') && !html.includes('<h2>') && !html.includes('<h3>')) {
-      html = '<p>' + html + '</p>';
-    }
-    
-    return <div className="preview-content" dangerouslySetInnerHTML={{ __html: html }} />;
-  };
-
   // Format tanggal untuk tampilan
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('id-ID', {

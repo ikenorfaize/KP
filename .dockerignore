@@ -52,3 +52,12 @@ coverage/
 docker-compose*.yml
 Dockerfile*
 traefik/
+
+# Files not needed in container
+*.md
+!README.md
+*.docx
+*.pdf
+file MD/
+start-all.bat
+restart-services.sh

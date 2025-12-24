@@ -20,9 +20,6 @@ const Navbar = () => {
   // State untuk menyimpan data user yang sedang login (null jika belum login)
   const [user, setUser] = useState(null);
   
-  // State untuk mobile menu toggle (reserved for future mobile menu implementation)
-  const [_isMobileMenuOpen, _setIsMobileMenuOpen] = useState(false);
-  
   // State untuk menyimpan active section berdasarkan scroll position
   const [activeSection, setActiveSection] = useState('');
 

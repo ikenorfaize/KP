@@ -109,7 +109,6 @@ export async function generateUniquePassword(maxAttempts = 5) {
 }
 
 export default {
-  checkPasswordDuplicate,
   validatePasswordUniqueness,
   generateUniquePassword
 };
