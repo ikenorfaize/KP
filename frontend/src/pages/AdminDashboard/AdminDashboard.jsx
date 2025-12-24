@@ -398,8 +398,15 @@ const AdminDashboard = () => {
       // Get authentication token from localStorage
       const token = localStorage.getItem('token');
       if (!token) {
-        throw new Error('Authentication required. Please login again.');
+        alert('❌ Sesi login tidak ditemukan. Silakan login kembali sebagai admin.');
+        window.location.href = '/login';
+        setIsSubmitting(false);
+        return;
       }
+      
+      console.log('📤 Sending POST request to:', `${apiUrl}/users`);
+      console.log('📤 Request payload:', userToAdd);
+      console.log('📤 Token present:', !!token);
       
       const response = await fetch(`${apiUrl}/users`, {
         method: 'POST',
@@ -410,9 +417,23 @@ const AdminDashboard = () => {
         body: JSON.stringify(userToAdd)     // Convert object ke JSON string
       });
       
-      // Check response status
+      console.log('📥 Response status:', response.status);
+      console.log('📥 Response ok:', response.ok);
+      
+      // Check response status and extract proper error message
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        let errorMessage = `HTTP ${response.status}`;
+        try {
+          const errorData = await response.json();
+          console.error('📥 Error response data:', errorData);
+          errorMessage = errorData.message || errorData.error || response.statusText || errorMessage;
+        } catch (parseError) {
+          console.error('📥 Could not parse error response:', parseError);
+          errorMessage = response.statusText || errorMessage;
+        }
+        
+        console.error('❌ Request failed:', errorMessage);
+        throw new Error(errorMessage);
       }
       
       const savedUser = await response.json(); // Parse response data
@@ -435,48 +456,59 @@ const AdminDashboard = () => {
       
     } catch (error) {
       console.error('❌ Error adding user:', error);
+      console.error('❌ Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+        type: typeof error,
+        errorObject: error
+      });
       
-      // Check for authentication error
-      if (error.message.includes('Authentication required')) {
-        alert('❌ Sesi login Anda telah berakhir. Silakan login kembali.');
+      const errorMessage = error.message || error.toString() || 'Unknown error occurred';
+      console.error('❌ Final error message:', errorMessage);
+      
+      // Network or connection errors (check first)
+      if (errorMessage.includes('Failed to fetch') || 
+          errorMessage.includes('NetworkError') || 
+          errorMessage.includes('Network request failed') ||
+          error.name === 'TypeError') {
+        alert('❌ Koneksi gagal!\n\nTidak dapat terhubung ke server.\nPastikan:\n- Koneksi internet aktif\n- Server sedang berjalan\n- URL API benar');
+        setIsSubmitting(false);
+        return;
+      }
+      
+      // Check for specific HTTP status codes
+      if (errorMessage.includes('401') || errorMessage.toLowerCase().includes('unauthorized')) {
+        alert('❌ Akses ditolak!\n\nAnda tidak memiliki izin untuk menambah user.\nSilakan login sebagai admin.');
+        // Clear token and redirect to login
         localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        localStorage.removeItem('currentUser');
         window.location.href = '/login';
         return;
       }
       
-      // Check for authorization error
-      if (error.message.includes('401') || error.message.includes('Unauthorized')) {
-        alert('❌ Anda tidak memiliki akses untuk menambah user. Silakan login sebagai admin.');
+      if (errorMessage.includes('403') || errorMessage.toLowerCase().includes('forbidden')) {
+        alert('❌ Forbidden!\n\nAnda tidak memiliki hak akses admin.');
+        setIsSubmitting(false);
         return;
       }
       
-      // Show generic error message
-      alert(`❌ Gagal menambahkan user: ${error.message}\n\nSilakan coba lagi atau hubungi administrator.`);
+      if (errorMessage.includes('400') || errorMessage.toLowerCase().includes('bad request')) {
+        alert(`❌ Data tidak valid!\n\n${errorMessage}\n\nPastikan semua field diisi dengan benar:\n- Email format valid\n- Password minimal 6 karakter\n- Username dan email belum terdaftar`);
+        setIsSubmitting(false);
+        return;
+      }
       
-      // === FALLBACK: LOCAL STATE SAVE (temporary until page refresh) ===
-      // CATATAN: Data ini TIDAK PERSISTEN dan akan hilang saat refresh!
-      console.log('⚠️ Saving to local state only (temporary, not persistent)');
+      if (errorMessage.includes('409') || errorMessage.toLowerCase().includes('already exists')) {
+        alert(`❌ Data sudah ada!\n\n${errorMessage}\n\nUsername atau email sudah terdaftar di sistem.`);
+        setIsSubmitting(false);
+        return;
+      }
       
-      const userToAdd = {
-        id: Date.now().toString(),          // Generate ID dari timestamp
-        ...newUser,                         // Spread form data
-        profileImage: `https://ui-avatars.com/api/?name=${encodeURIComponent(newUser.fullName)}&background=0F7536&color=fff`,
-        downloads: 0,                       // Initialize download counter
-        certificates: [],                   // Initialize empty certificates array
-        lastDownload: null,                 // Initialize last download timestamp
-        createdAt: new Date().toISOString() // Timestamp creation
-      };
+      // Show generic error message with actual error
+      alert(`❌ Gagal menambahkan user!\n\nError: ${errorMessage}\n\nSilakan coba lagi atau hubungi administrator.`);
       
-      setUsers(prev => [...prev, userToAdd]); // Add to local state
-      
-      // Show warning that data is not persistent
-      alert(`⚠️ PERHATIAN: Data TIDAK TERSIMPAN ke database!\n\nUser ditambahkan ke local state saja (sementara).\nData akan HILANG saat refresh halaman.\n\nCredentials:\n👤 Username: ${newUser.username}\n🔑 Password: ${newUser.password}\n\n⚠️ PENTING: Pastikan koneksi ke server dan login sebagai admin!`);
-      
-      resetNewUserForm();    // Reset form
-      setActiveTab('dashboard'); // Switch tab
-    } finally {
-      setIsSubmitting(false); // Reset loading state
+      setIsSubmitting(false);
     }
   };
 
