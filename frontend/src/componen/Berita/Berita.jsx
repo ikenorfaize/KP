@@ -218,58 +218,35 @@ const Berita = () => {
   const topThree = React.useMemo(() => {
     const list = Array.isArray(items) ? items : [];
     
-    // TRIPLE VERIFICATION: Remove featured news by ID, by status, AND by explicit check
-    // Filter 1: Remove by featured.id if featured exists
-    // Filter 2: Remove any item with featured=true status
-    // Filter 3: Additional safety check - exclude if matches featured object
-    const filtered = list.filter(n => {
-      // Safety check 1: Remove if ID matches featured news
-      if (featured && n.id === featured.id) {
-        console.log(`🚫 Excluding featured news by ID: ${n.id} - ${n.title}`);
-        return false;
-      }
-      
-      // Safety check 2: Remove if featured status is true
-      if (n.featured === true) {
-        console.log(`🚫 Excluding featured news by status: ${n.id} - ${n.title}`);
-        return false;
-      }
-      
-      // Safety check 3: Deep comparison with featured object
-      if (featured && JSON.stringify(n) === JSON.stringify(featured)) {
-        console.log(`🚫 Excluding featured news by deep comparison: ${n.id}`);
-        return false;
-      }
-      
-      return true; // Include in carousel
-    });
+    // ABSOLUTELY CRITICAL: Get featured news ID to exclude
+    const featuredId = featured?.id;
     
-    console.log(`📊 Carousel array: ${filtered.length} items (excluded featured news)`);
-    console.log(`📋 Carousel IDs:`, filtered.map(n => n.id));
-    
-    // Ensure minimum 4 items for proper carousel with placeholders if needed
-    let finalList = [...filtered];
-    if (finalList.length < 4) {
-      const placeholderCount = 4 - finalList.length;
-      const placeholders = generatePlaceholders(placeholderCount);
-      finalList = [...finalList, ...placeholders];
+    if (!featuredId) {
+      console.log('⚠️ No featured news set, showing all items in carousel');
+      return list.slice(0, 7); // Return up to 7 items if no featured
     }
     
-    return finalList;
+    // STRICT FILTER: Remove featured news by ID ONLY (most reliable)
+    const filtered = list.filter(n => {
+      const shouldExclude = String(n.id) === String(featuredId);
+      
+      if (shouldExclude) {
+        console.log(`🚫 EXCLUDED from carousel: ${n.id} - "${n.title?.substring(0, 40)}..."`);
+      }
+      
+      return !shouldExclude; // Only include if NOT featured
+    });
+    
+    console.log(`📊 Carousel items: ${filtered.length} (featured ${featuredId} excluded)`);
+    console.log(`📋 Carousel IDs:`, filtered.map(n => n.id).join(', '));
+    
+    return filtered;
   }, [items, featured]);
 
   // Initialize rotated items when topThree changes
   React.useEffect(() => {
     if (topThree.length > 0) {
-      // VERIFICATION: Log to confirm no featured news in rotated array
-      const hasFeatured = topThree.some(n => n.featured === true);
-      if (hasFeatured) {
-        console.error('❌ ERROR: Featured news found in rotatedItems!');
-        console.error('❌ This should NEVER happen. Check filter logic.');
-      } else {
-        console.log('✅ Verified: No featured news in rotatedItems');
-      }
-      
+      console.log(`🔄 Initializing carousel with ${topThree.length} items`);
       setRotatedItems([...topThree]);
     }
   }, [topThree]);
@@ -278,26 +255,15 @@ const Berita = () => {
   const itemsPerPage = 3;
   
   // Ambil 3 item pertama dari rotated array untuk ditampilkan
-  // CRITICAL: Create completely new object references to force React re-render
   const currentGridItems = React.useMemo(() => {
-    // FINAL SAFETY CHECK: Filter out any featured news that somehow made it here
-    const safeItems = rotatedItems
-      .slice(0, itemsPerPage)
-      .filter(item => {
-        if (item.featured === true) {
-          console.error('❌ CRITICAL: Featured news in currentGridItems!', item.id);
-          return false; // Exclude it
-        }
-        return true;
-      })
-      .map((item, idx) => ({
-        ...item,
-        _displayIndex: idx,        // Stable positioning
-        _renderKey: carouselRenderKey  // Track render cycle
-      }));
+    const items = rotatedItems.slice(0, itemsPerPage).map((item, idx) => ({
+      ...item,
+      _displayIndex: idx,
+      _renderKey: carouselRenderKey
+    }));
     
-    console.log(`🎯 Rendering ${safeItems.length} carousel cards`);
-    return safeItems;
+    console.log(`🎯 Displaying ${items.length} cards in carousel`);
+    return items;
   }, [rotatedItems, itemsPerPage, carouselRenderKey]);
 
   // Navigation functions - array rotation carousel dengan animasi
@@ -463,16 +429,11 @@ const Berita = () => {
             {/* Jika API tersedia, tampilkan 3 berita per halaman; jika tidak, fallback ke konten statis */}
             {currentGridItems.length > 0 && !loading && !error ? (
               currentGridItems.map((n, idx) => {
-                // ⛔ ABSOLUTE BLOCK: If featured news somehow reached here, DO NOT RENDER
-                if (n.featured === true) {
-                  console.error(`⛔ BLOCKED: Featured news in render! ID: ${n.id}`);
-                  return null; // DO NOT RENDER THIS CARD
-                }
-                
-                // Additional check: if ID matches featured news ID, BLOCK
-                if (featured && n.id === featured.id) {
-                  console.error(`⛔ BLOCKED: Featured ID match in render! ID: ${n.id}`);
-                  return null; // DO NOT RENDER THIS CARD
+                // ⛔ ABSOLUTE FINAL CHECK: Do NOT render if this is featured news
+                const featuredId = featured?.id;
+                if (featuredId && String(n.id) === String(featuredId)) {
+                  console.error(`⛔ RENDER BLOCKED: Featured news ${n.id} tried to render in carousel!`);
+                  return null; // DO NOT RENDER
                 }
                 
                 // Dynamic routing berdasarkan ID berita
@@ -480,7 +441,7 @@ const Berita = () => {
                 // CRITICAL: Stable unique key based on actual data
                 const stableKey = `carousel-news-${n.id}-${idx}-render${carouselRenderKey}`;
                 // Get base image URL
-                const baseImageUrl = getImageWithFallback(n.image || n.imageUrl, n.id, n.featured);
+                const baseImageUrl = getImageWithFallback(n.image || n.imageUrl, n.id, false); // NEVER pass featured flag
                 // Add cache-busting query param to force browser reload
                 const cacheBustingUrl = baseImageUrl.includes('?') 
                   ? `${baseImageUrl}&_cb=${n.id}_${carouselRenderKey}` 
