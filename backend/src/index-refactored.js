@@ -168,6 +168,8 @@ app.use((err, req, res, next) => {
 });
 
 // ===== SERVER START =====
+// For development/testing: start server directly
+// For production: export app for start-server.js to handle
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
   const host = process.env.HOST || 'localhost';
   app.listen(PORT, () => {
@@ -187,7 +189,18 @@ if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
     console.log('  ⬇️  /download-certificate/:id - Certificate download');
     console.log('🎯 Ready to serve!');
   });
+} else {
+  // Production: Log routes even if not starting server here
+  console.log('📝 Registered API Routes:');
+  console.log('  🔐 /api/auth/*        - Authentication');
+  console.log('  📰 /api/news/*        - News management');
+  console.log('  🎓 /api/beasiswa/*    - Beasiswa management');
+  console.log('  👥 /api/users/*       - User management');
+  console.log('  📋 /api/applications/* - Application management');
+  console.log('  📄 /upload-certificate - Certificate upload');
+  console.log('  🗑️  /delete-certificate/:id - Certificate delete');
+  console.log('  ⬇️  /download-certificate/:id - Certificate download');
 }
 
-// Export for Vercel
+// Export for Vercel and production (start-server.js)
 export default app;

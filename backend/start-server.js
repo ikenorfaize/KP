@@ -4,13 +4,30 @@ import { config } from './src/config/database.js';
 
 const PORT = process.env.PORT || config.port || 3001;
 
-app.listen(PORT, '0.0.0.0', (err) => {
+// Handle uncaught errors
+process.on('uncaughtException', (err) => {
+  console.error('❌ Uncaught Exception:', err);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (err) => {
+  console.error('❌ Unhandled Rejection:', err);
+  process.exit(1);
+});
+
+const server = app.listen(PORT, '0.0.0.0', (err) => {
   if (err) {
     console.error('❌ Failed to start server:', err);
     process.exit(1);
   }
   console.log('🚀 PERGUNU API SERVER STARTED');
   console.log(`🌐 Server running on http://0.0.0.0:${PORT}`);
+  console.log(`✅ Listening for connections...`);
+});
+
+server.on('error', (err) => {
+  console.error('❌ Server error:', err);
+  process.exit(1);
 });
 
 export default app;
