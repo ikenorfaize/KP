@@ -257,24 +257,33 @@
 
 .modal-header {
   padding: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #0f7536;
+  background: #0f7536 !important;
 }
 
 .modal-header h3 {
   margin: 0;
-  color: white;
+  color: white !important;
+  font-weight: 600;
 }
 
-.close-btn {
+.close-btn,
+.modal-close {
   background: none;
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: white;
+  color: white !important;
+  transition: 0.2s ease;
+}
+
+.close-btn:hover,
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
 }
 
 .modal-body {

@@ -110,8 +110,8 @@
   overflow-y: auto;
 }
 
-.modal-header {
-  background: #0f7536;
+.beasiswa-form-modal .modal-header {
+  background: #0f7536 !important;
   padding: 1.5rem;
   display: flex;
   justify-content: space-between;
@@ -119,17 +119,17 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.modal-header h3 {
+.beasiswa-form-modal .modal-header h3 {
   margin: 0;
-  color: white;
+  color: white !important;
   font-size: 18px;
   font-weight: 600;
 }
 
-.modal-close {
+.beasiswa-form-modal .modal-close {
   background: none;
   border: none;
-  color: white;
+  color: white !important;
   font-size: 24px;
   cursor: pointer;
   padding: 0;
@@ -142,7 +142,7 @@
   transition: 0.2s ease;
 }
 
-.modal-close:hover {
+.beasiswa-form-modal .modal-close:hover {
   background: rgba(255, 255, 255, 0.2);
 }
 
