@@ -358,16 +358,16 @@ export default function NewsManager() {
         finalFormData.content = quillContent;
       }
 
-      // Handle image upload using file-server first, then submit news data
+      // Handle image upload to local file server first, then submit news data
       let response;
       let uploadedImagePath = formData.image; // Keep existing image if no new file
       
       if (formData.imageFile) {
-        // First, upload image to Cloudinary via API
+        // Upload image to local backend file server
         const imageFormData = new FormData();
         imageFormData.append('image', formData.imageFile);
         
-        console.log('📷 Uploading image file to Cloudinary via API:', formData.imageFile.name);
+        console.log('📷 Uploading image file to local server:', formData.imageFile.name);
         console.log('📍 Upload URL:', `${API_BASE}/upload/image`);
         
         const imageUploadResponse = await fetch(`${API_BASE}/upload/image`, {
@@ -378,12 +378,12 @@ export default function NewsManager() {
         if (!imageUploadResponse.ok) {
           const errorText = await imageUploadResponse.text();
           console.error('❌ Upload failed:', errorText);
-          throw new Error('Failed to upload image to Cloudinary');
+          throw new Error('Failed to upload image to server');
         }
         
         const imageResult = await imageUploadResponse.json();
-        uploadedImagePath = imageResult.url; // Use Cloudinary URL directly
-        console.log('✅ Image uploaded successfully to Cloudinary:', uploadedImagePath);
+        uploadedImagePath = imageResult.url; // Use server URL: /uploads/images/filename.jpg
+        console.log('✅ Image uploaded successfully to local server:', uploadedImagePath);
       }
 
       // Now submit news data with image URL
@@ -392,7 +392,7 @@ export default function NewsManager() {
         content: finalFormData.content,
         author: finalFormData.author || '',
         category: finalFormData.category,
-        image: uploadedImagePath // Use Cloudinary URL or existing path
+        image: uploadedImagePath // Use local server path
       };
 
       const url = editingId 
@@ -415,7 +415,7 @@ export default function NewsManager() {
         
         // Dispatch event untuk sinkronisasi gambar
         if (uploadedImagePath) {
-          // uploadedImagePath is already a full Cloudinary URL from the upload response
+          // uploadedImagePath is local server path like /uploads/images/123456.jpg
           const fullImageUrl = uploadedImagePath;
             
           window.dispatchEvent(new CustomEvent('news-image-updated', {
