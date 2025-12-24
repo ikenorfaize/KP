@@ -14,7 +14,7 @@ import noImageImg from "../../assets/noimage.png";
 const Berita = () => {
   const navigate = useNavigate(); // Hook untuk navigasi ke halaman berita
   const [ref, isVisible] = useScrollAnimation(); // Hook animasi saat scroll
-  const { getNewsImage, featuredNewsImage } = useNewsImage(); // Context untuk sinkronisasi gambar
+  const { getNewsImage, featuredNewsImage, checkAndUpdateFeaturedImage } = useNewsImage(); // Context untuk sinkronisasi gambar
 
   // Ambil berita dari API agar sinkron dengan Admin NewsManager
   const [items, setItems] = React.useState([]);
@@ -132,7 +132,14 @@ const Berita = () => {
     const handler = () => fetchBerita(isMounted);
     const featuredHandler = (event) => {
       console.log('🔄 Featured news changed event received:', event.detail);
-      fetchBerita(isMounted); // Reload berita when featured status changes
+      
+      // Update context featured image immediately
+      if (checkAndUpdateFeaturedImage) {
+        checkAndUpdateFeaturedImage();
+      }
+      
+      // Then reload berita data
+      fetchBerita(isMounted);
     };
     
     window.addEventListener('news-updated', handler);
@@ -143,7 +150,7 @@ const Berita = () => {
       window.removeEventListener('news-updated', handler);
       window.removeEventListener('featured-news-changed', featuredHandler);
     };
-  }, [fetchBerita]);
+  }, [fetchBerita, checkAndUpdateFeaturedImage]);
 
   // Generate placeholder news items to fill minimum requirement
   const generatePlaceholders = (count) => {
@@ -339,6 +346,7 @@ const Berita = () => {
             </button>
           </div>
           <img 
+            key={`featured-${featured?.id}-${featuredNewsImage}`}
             src={getImageWithFallback(featured?.image || featured?.imageUrl, featured?.id, true)} 
             alt="Berita utama" 
             onError={(e) => {

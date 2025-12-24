@@ -34,7 +34,7 @@ export const NewsImageProvider = ({ children }) => {
   };
 
   // Fungsi untuk check dan update featured image dari API
-  const checkAndUpdateFeaturedImage = async () => {
+  const checkAndUpdateFeaturedImage = React.useCallback(async () => {
     try {
       const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://kp-mocha.vercel.app/api';
       const FILE_SERVER = import.meta.env.VITE_FILE_SERVER_URL || 'https://kp-mocha.vercel.app';
@@ -62,7 +62,7 @@ export const NewsImageProvider = ({ children }) => {
     } catch (error) {
       console.log('Error fetching featured news:', error);
     }
-  };
+  }, []);
 
   // Load initial data
   useEffect(() => {
@@ -70,27 +70,48 @@ export const NewsImageProvider = ({ children }) => {
     
     // Listen untuk perubahan dari admin panel
     const handleNewsUpdate = (event) => {
+      console.log('📰 News image update event received:', event.detail);
+      
       if (event.detail) {
         const { newsId, imageUrl, featured } = event.detail;
         
         if (newsId && imageUrl) {
           updateNewsImage(newsId, imageUrl);
+          console.log(`✅ Updated image for news ${newsId}:`, imageUrl);
         }
         
         if (featured && imageUrl) {
           updateFeaturedImage(imageUrl);
+          console.log('⭐ Updated featured news image:', imageUrl);
+        }
+      }
+    };
+
+    const handleFeaturedChange = (event) => {
+      console.log('⭐ Featured news change event received:', event.detail);
+      
+      if (event.detail) {
+        const { imageUrl } = event.detail;
+        
+        if (imageUrl) {
+          updateFeaturedImage(imageUrl);
+          console.log('⭐ Featured image updated to:', imageUrl);
+        } else {
+          // If no imageUrl in event, refetch from API
+          console.log('⚠️ No imageUrl in event, refetching...');
+          checkAndUpdateFeaturedImage();
         }
       }
     };
 
     // Listen untuk custom events
     window.addEventListener('news-image-updated', handleNewsUpdate);
-    window.addEventListener('featured-news-changed', handleNewsUpdate);
+    window.addEventListener('featured-news-changed', handleFeaturedChange);
     
     // Cleanup
     return () => {
       window.removeEventListener('news-image-updated', handleNewsUpdate);
-      window.removeEventListener('featured-news-changed', handleNewsUpdate);
+      window.removeEventListener('featured-news-changed', handleFeaturedChange);
     };
   }, []);
 

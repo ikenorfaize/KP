@@ -516,16 +516,41 @@ export default function NewsManager() {
       });
       
       if (response.ok) {
-        console.log(`✅ News ${currentFeaturedStatus ? 'unset' : 'set'} as featured successfully`);
+        const result = await response.json();
+        console.log(`✅ News ${currentFeaturedStatus ? 'unset' : 'set'} as featured successfully`, result);
         setSuccess(currentFeaturedStatus ? '✅ Status berita utama dibatalkan!' : '✅ Berita berhasil dijadikan utama!');
+        
+        // Get the updated news data to send complete information
+        const newsData = result.data || result;
+        let imageUrl = newsData.image || newsData.imageUrl;
+        
+        // Convert image path to full URL if needed
+        if (imageUrl && imageUrl.startsWith('/uploads/')) {
+          imageUrl = `${FILE_SERVER}${imageUrl}`;
+        } else if (imageUrl && !imageUrl.includes('/') && !imageUrl.startsWith('http') && !imageUrl.startsWith('/src/')) {
+          imageUrl = `${FILE_SERVER}/uploads/images/${imageUrl}`;
+        }
         
         // Dispatch event untuk sinkronisasi dengan homepage
         window.dispatchEvent(new CustomEvent('featured-news-changed', {
           detail: {
             newsId: newsId,
-            featured: !currentFeaturedStatus
+            featured: !currentFeaturedStatus,
+            imageUrl: imageUrl,
+            title: newsData.title
           }
         }));
+        
+        // Also update the NewsImageContext
+        if (!currentFeaturedStatus && imageUrl) {
+          window.dispatchEvent(new CustomEvent('news-image-updated', {
+            detail: {
+              newsId: newsId,
+              imageUrl: imageUrl,
+              featured: true
+            }
+          }));
+        }
         
         await fetchNews(); // Reload news list with auto-sort
         window.dispatchEvent(new Event('news-updated'));
