@@ -392,12 +392,20 @@ const AdminDashboard = () => {
       };
       
       // === STEP 4: DATABASE SAVE OPERATION ===
-      // Send POST request ke Express.js API
+      // Send POST request ke Express.js API with authentication
       const apiUrl = import.meta.env.VITE_API_BASE_URL || 'https://kp-mocha.vercel.app/api';
+      
+      // Get authentication token from localStorage
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Authentication required. Please login again.');
+      }
+      
       const response = await fetch(`${apiUrl}/users`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // Add authentication token
         },
         body: JSON.stringify(userToAdd)     // Convert object ke JSON string
       });
@@ -428,9 +436,27 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('❌ Error adding user:', error);
       
-      // === FALLBACK: LOCAL STATE SAVE ===
-      // Jika JSON Server gagal, simpan ke local state sebagai backup
-      console.log('⚠️ JSON Server failed, saving to local state only');
+      // Check for authentication error
+      if (error.message.includes('Authentication required')) {
+        alert('❌ Sesi login Anda telah berakhir. Silakan login kembali.');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+        return;
+      }
+      
+      // Check for authorization error
+      if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+        alert('❌ Anda tidak memiliki akses untuk menambah user. Silakan login sebagai admin.');
+        return;
+      }
+      
+      // Show generic error message
+      alert(`❌ Gagal menambahkan user: ${error.message}\n\nSilakan coba lagi atau hubungi administrator.`);
+      
+      // === FALLBACK: LOCAL STATE SAVE (temporary until page refresh) ===
+      // CATATAN: Data ini TIDAK PERSISTEN dan akan hilang saat refresh!
+      console.log('⚠️ Saving to local state only (temporary, not persistent)');
       
       const userToAdd = {
         id: Date.now().toString(),          // Generate ID dari timestamp
@@ -444,7 +470,8 @@ const AdminDashboard = () => {
       
       setUsers(prev => [...prev, userToAdd]); // Add to local state
       
-      alert(`⚠️ User ditambahkan ke local state (JSON Server error).\n\nCredentials:\n👤 Username: ${newUser.username}\n🔑 Password: ${newUser.password}\n\nNOTE: Data mungkin tidak persisten!`);
+      // Show warning that data is not persistent
+      alert(`⚠️ PERHATIAN: Data TIDAK TERSIMPAN ke database!\n\nUser ditambahkan ke local state saja (sementara).\nData akan HILANG saat refresh halaman.\n\nCredentials:\n👤 Username: ${newUser.username}\n🔑 Password: ${newUser.password}\n\n⚠️ PENTING: Pastikan koneksi ke server dan login sebagai admin!`);
       
       resetNewUserForm();    // Reset form
       setActiveTab('dashboard'); // Switch tab
