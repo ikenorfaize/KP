@@ -544,30 +544,17 @@ const AdminDashboard = () => {
         certificates: updatedCertificates
       };
 
-      // Update local state
+      // Update local state to reflect new certificate
       setUsers(prevUsers =>
         prevUsers.map(user =>
           user.id === userId ? { ...user, certificates: updatedCertificates } : user
         )
       );
 
-      // Update in Express.js API - PATCH instead of PUT to avoid overwriting password
-      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'https://kp-mocha.vercel.app/api';
-      const response = await fetch(`${apiUrl}/users/${userId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-user-id': currentUser?.id || currentUser?.userId || ''
-        },
-        body: JSON.stringify(certificateUpdate)
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-  console.log('✅ Certificate uploaded successfully:', fileMetadata);
-  showToast(`✅ Sertifikat "${file.name}" berhasil diupload`, 'success');
+      // File server already updated the database, so no need for separate API call
+      // Just show success message
+      console.log('✅ Certificate uploaded successfully:', fileMetadata);
+      showToast(`✅ Sertifikat "${file.name}" berhasil diupload`, 'success');
       
     } catch (error) {
       console.error('❌ Error uploading certificate:', error);
