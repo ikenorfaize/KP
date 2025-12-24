@@ -76,14 +76,26 @@ export default function NewsManager() {
     return `${FILE_SERVER}/uploads/images/${imagePath}`;
   };
 
-  // Fetch berita dari API
+  // Fetch berita dari API dengan auto-sort (featured di atas)
   const fetchNews = async () => {
     setIsLoading(true);
     try {
       const response = await fetch(`${API_BASE}/news`);
       if (response.ok) {
         const data = await response.json();
-        setNewsList(data);
+        
+        // Sort: Featured news di paling atas, kemudian sort by createdAt (terbaru dulu)
+        const sortedData = data.sort((a, b) => {
+          // Featured news selalu di atas
+          if (a.featured && !b.featured) return -1;
+          if (!a.featured && b.featured) return 1;
+          
+          // Jika sama-sama featured atau sama-sama non-featured, sort by date
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+        
+        setNewsList(sortedData);
+        console.log('✅ News loaded and sorted (featured first):', sortedData.length, 'items');
       } else {
         setError('Gagal memuat data berita');
       }
@@ -477,14 +489,22 @@ export default function NewsManager() {
     }, 150); // Slightly longer timeout for better reliability
   };
 
-  // Set berita sebagai featured (utama)
-  const handleSetFeatured = async (newsId) => {
-    if (!confirm('Jadikan berita ini sebagai berita utama? Berita utama sebelumnya akan diganti.')) {
-      return;
-    }
-
+  // Toggle featured news (with improved UX)
+  const handleSetFeatured = async (newsId, currentFeaturedStatus) => {
     try {
-      console.log(`⭐ Setting news ${newsId} as featured...`);
+      // Jika sedang featured dan diklik lagi, batalkan featured
+      if (currentFeaturedStatus) {
+        if (!confirm('Batalkan berita utama ini?')) {
+          return;
+        }
+      } else {
+        // Jika belum featured, jadikan utama (auto-unset yang lama)
+        if (!confirm('Jadikan berita ini sebagai berita utama? Berita utama sebelumnya akan diganti.')) {
+          return;
+        }
+      }
+
+      console.log(`⭐ ${currentFeaturedStatus ? 'Unsetting' : 'Setting'} news ${newsId} as featured...`);
       
       const response = await fetch(`${API_BASE}/news/${newsId}/feature`, {
         method: 'PUT',
@@ -492,19 +512,27 @@ export default function NewsManager() {
           'Content-Type': 'application/json',
           'x-user-id': currentUser?.id || currentUser?.userId || ''
         },
-        body: JSON.stringify({ featured: true })
+        body: JSON.stringify({ featured: !currentFeaturedStatus })
       });
       
       if (response.ok) {
-        console.log('✅ News set as featured successfully');
-        setSuccess('✅ Berita berhasil dijadikan utama!');
-        await fetchNews(); // Reload news list
-        // Trigger custom event for live update
+        console.log(`✅ News ${currentFeaturedStatus ? 'unset' : 'set'} as featured successfully`);
+        setSuccess(currentFeaturedStatus ? '✅ Status berita utama dibatalkan!' : '✅ Berita berhasil dijadikan utama!');
+        
+        // Dispatch event untuk sinkronisasi dengan homepage
+        window.dispatchEvent(new CustomEvent('featured-news-changed', {
+          detail: {
+            newsId: newsId,
+            featured: !currentFeaturedStatus
+          }
+        }));
+        
+        await fetchNews(); // Reload news list with auto-sort
         window.dispatchEvent(new Event('news-updated'));
       } else {
         const errorData = await response.json().catch(() => ({}));
         console.error('❌ Failed to set featured:', response.status, errorData);
-        setError(`Gagal menjadikan berita utama: ${errorData.message || response.statusText}`);
+        setError(`Gagal mengubah status berita utama: ${errorData.message || response.statusText}`);
       }
     } catch (error) {
       console.error('❌ Set featured error:', error);
@@ -837,17 +865,13 @@ export default function NewsManager() {
                   {getExcerpt(news.content, 150)}
                 </div>
                 <div className="admin-news-card__actions">
-                  {news.featured && (
-                    <span className="admin-news-card__badge">⭐ Utama</span>
-                  )}
-                  {!news.featured && (
-                    <button
-                      className="btn-feature"
-                      onClick={() => handleSetFeatured(news.id)}
-                    >
-                      ⭐ Jadikan Utama
-                    </button>
-                  )}
+                  <button
+                    className={`btn-feature ${news.featured ? 'btn-feature--active' : ''}`}
+                    onClick={() => handleSetFeatured(news.id, news.featured)}
+                    title={news.featured ? 'Klik untuk batalkan berita utama' : 'Jadikan berita utama'}
+                  >
+                    {news.featured ? '⭐ Berita Utama' : '⭐ Jadikan Utama'}
+                  </button>
                   <button 
                     className="btn-edit"
                     onClick={() => handleEdit(news)}

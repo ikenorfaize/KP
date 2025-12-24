@@ -126,12 +126,21 @@ const Berita = () => {
   React.useEffect(() => {
     let isMounted = true;
     fetchBerita(isMounted);
-    // Listen for live update event
+    
+    // Listen for live update events
     const handler = () => fetchBerita(isMounted);
+    const featuredHandler = (event) => {
+      console.log('🔄 Featured news changed event received:', event.detail);
+      fetchBerita(isMounted); // Reload berita when featured status changes
+    };
+    
     window.addEventListener('news-updated', handler);
+    window.addEventListener('featured-news-changed', featuredHandler);
+    
     return () => {
       isMounted = false;
       window.removeEventListener('news-updated', handler);
+      window.removeEventListener('featured-news-changed', featuredHandler);
     };
   }, [fetchBerita]);
 

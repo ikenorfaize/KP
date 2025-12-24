@@ -127,24 +127,44 @@ export const deleteNews = (req, res) => {
 };
 
 /**
- * Set featured news
+ * Set/Toggle featured news
+ * If news is already featured, unset it
+ * Otherwise, set it as featured and unset all others
  */
 export const setFeaturedNews = (req, res) => {
   try {
     const { id } = req.params;
+    const { featured } = req.body; // Get desired featured status from request body
     
-    // Remove featured from all news
+    // Get all news
     const allNews = getCollection('news');
+    
+    // Check if this news is currently featured
+    const targetNews = allNews.find(news => news.id === parseInt(id));
+    if (!targetNews) {
+      return res.status(404).json(errorResponse('News not found'));
+    }
+    
+    // If featured status is explicitly provided in request body, use that
+    // Otherwise, toggle current status
+    const shouldBeFeatured = featured !== undefined ? featured : !targetNews.featured;
+    
+    // Update all news: 
+    // - If shouldBeFeatured is true, only target news is featured
+    // - If shouldBeFeatured is false, unset featured from target news (and all others)
     const updatedNews = allNews.map(news => ({
       ...news,
-      featured: news.id === parseInt(id)
+      featured: shouldBeFeatured ? (news.id === parseInt(id)) : false
     }));
     
     saveCollection('news', updatedNews);
     
-    console.log(`✅ Featured news set: ID ${id}`);
+    console.log(`✅ Featured news ${shouldBeFeatured ? 'set' : 'unset'}: ID ${id}`);
     
-    res.json(successResponse({ id }, 'Featured news updated'));
+    res.json(successResponse({ 
+      id, 
+      featured: shouldBeFeatured 
+    }, `Featured news ${shouldBeFeatured ? 'set' : 'unset'} successfully`));
   } catch (error) {
     console.error('❌ Set featured news error:', error);
     res.status(500).json(errorResponse('Failed to set featured news', error));

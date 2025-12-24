@@ -33,6 +33,24 @@
   gap: 20px;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  border: 2px solid #fbbf24; /* Yellow border for featured news */
+}
+
+/* Featured badge for homepage display */
+.berita-utama-card::before {
+  content: "⭐ Berita Utama";
+  position: absolute;
+  top: -12px;
+  left: 20px;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: white;
+  padding: 4px 16px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  z-index: 2;
 }
 
 .berita-utama-card:hover {
