@@ -59,5 +59,3 @@ traefik/
 *.docx
 *.pdf
 file MD/
-start-all.bat
-restart-services.sh

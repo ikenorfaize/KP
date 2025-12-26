@@ -10,6 +10,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';                    // Hook navigasi
+import { FiEye, FiEyeOff } from 'react-icons/fi';                  // Import icon untuk password toggle
 // Password hashing dilakukan di BACKEND untuk security
 import { apiService } from '../../services/apiService';            // Import API service
 import { ApplicationService } from '../../services/ApplicationService';
@@ -1243,7 +1244,7 @@ const AdminDashboard = () => {
                   }}
                   title={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? '🙈' : '👁️'}
+                  {showPassword ? <FiEyeOff /> : <FiEye />}
                 </button>
               </div>
               <small style={{color: '#6b7280', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block'}}>
