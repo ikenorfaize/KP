@@ -22,6 +22,8 @@ const heroContents = [
 const Hero = () => {
   const ref = useRef(null); // Ref untuk element animasi scroll
   const [index, setIndex] = useState(0); // State untuk index konten yang aktif
+  const [isChanging, setIsChanging] = useState(false);
+  const transitionTimer = useRef(null);
 
   // Effect untuk animasi scroll - menambah class 'animate' saat visible
   useEffect(() => {
@@ -45,16 +47,32 @@ const Hero = () => {
     return () => window.removeEventListener("scroll", handleScroll); // Cleanup
   }, []);
 
+  useEffect(() => () => window.clearTimeout(transitionTimer.current), []);
+
+  const changeContent = (nextIndex) => {
+    window.clearTimeout(transitionTimer.current);
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (reducedMotion) {
+      setIndex(nextIndex);
+      return;
+    }
+
+    setIsChanging(true);
+    transitionTimer.current = window.setTimeout(() => {
+      setIndex(nextIndex);
+      setIsChanging(false);
+    }, 320);
+  };
+
   // Fungsi untuk navigasi ke konten selanjutnya (carousel)
   const nextContent = () => {
-    setIndex((prevIndex) => (prevIndex + 1) % heroContents.length);
+    changeContent((index + 1) % heroContents.length);
   };
 
   // Fungsi untuk navigasi ke konten sebelumnya (carousel)
   const prevContent = () => {
-    setIndex((prevIndex) =>
-      (prevIndex - 1 + heroContents.length) % heroContents.length
-    );
+    changeContent((index - 1 + heroContents.length) % heroContents.length);
   };
 
   return (
@@ -70,10 +88,14 @@ const Hero = () => {
               <p className="hero-label">
                 PERGUNU (Persatuan Guru Nahdlatul Ulama)
               </p>
-              <h1 className="hero-title">{heroContents[index].title}</h1>
+              <h1 className={`hero-title ${isChanging ? "is-exiting" : "is-entering"}`} key={`hero-title-${index}`}>
+                {heroContents[index].title}
+              </h1>
             </div>
             <div className="hero-right">
-              <p className="hero-desc">{heroContents[index].desc}</p>
+              <p className={`hero-desc ${isChanging ? "is-exiting" : "is-entering"}`} key={`hero-desc-${index}`}>
+                {heroContents[index].desc}
+              </p>
               <div className="hero-buttons">
                 <a
                   href="/daftar"

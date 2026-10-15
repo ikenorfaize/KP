@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import Navbar from "../../componen/Navbar/Navbar";
 import Footer from "../../componen/Footer/Footer";
 import Sponsor from "../../componen/Sponsor/Sponsor";
-import beasiswaPoster from "../../assets/beasiswa_poster.png";
+import beasiswaPoster from "../../assets/beasiswa_poster.webp";
 import './SponsorPage.css';
 
 const SponsorPage = () => {

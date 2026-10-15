@@ -2,7 +2,7 @@ import React from 'react';
 import Navbar from "../../componen/Navbar/Navbar";
 import Footer from "../../componen/Footer/Footer";
 import Layanan from "../../componen/Layanan/Layanan";
-import bagroundlayanan from "../../assets/bagroundlayanan.png";
+import bagroundlayanan from "../../assets/bagroundlayanan.webp";
 import './LayananPage.css';
 
 const LayananPage = () => {

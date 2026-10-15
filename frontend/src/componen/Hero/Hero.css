@@ -103,6 +103,51 @@
   max-width: 100%;
 }
 
+.hero-title.is-entering,
+.hero-desc.is-entering {
+  animation: heroTextEnter 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.hero-desc.is-entering {
+  animation-delay: 180ms;
+}
+
+.hero-title.is-exiting,
+.hero-desc.is-exiting {
+  animation: heroTextExit 320ms ease both;
+}
+
+@keyframes heroTextEnter {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroTextExit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-title.is-entering,
+  .hero-desc.is-entering,
+  .hero-title.is-exiting,
+  .hero-desc.is-exiting {
+    animation: none;
+  }
+}
+
 .hero-button {
   display: inline-flex;
   align-items: center;
